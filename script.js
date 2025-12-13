@@ -1,8 +1,8 @@
 // ======================================================
 // 🟢 1. การตั้งค่า Supabase
 // ======================================================
-const SUPABASE_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co'; 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM'; 
+const SUPABASE_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM';
 
 let supabase;
 const ROOM_TYPES = ['สแตนดาร์ด', 'ดีลักซ์', 'ซูพีเรีย', 'พรีเมี่ยม', 'วีไอพี', 'วีวีไอพี'];
@@ -21,6 +21,56 @@ const ROOM_INVENTORY = {
 const roomTypeMapping = {
     'สแตนดาร์ด': 'standard', 'ดีลักซ์': 'deluxe', 'ซูพีเรีย': 'superior', 'พรีเมี่ยม': 'premium', 'วีไอพี': 'vip', 'วีวีไอพี': 'vvip'
 };
+
+
+// ======================================================
+// 🟢 0. ฟังก์ชัน Notification (แจ้งเตือนแบบสวยงาม) - NEW
+// ======================================================
+
+let resolveConfirmation;
+
+function showNotification(message, isError = false) {
+    const box = document.getElementById('notificationBox');
+    const content = document.getElementById('notificationContent');
+    if (!box || !content) return;
+
+    content.innerHTML = `
+        <h3 style="margin-top:0; color:${isError ? '#ef4444' : '#10b981'};">${isError ? '🚫 ข้อผิดพลาด' : '✅ สำเร็จ'}</h3>
+        <p style="margin-bottom:20px;">${message}</p>
+        <button class="submit-btn" style="width:100%; background:${isError ? '#ef4444' : '#10b981'};" onclick="hideNotification()">ตกลง</button>
+    `;
+    box.style.display = 'flex';
+}
+
+function showConfirmation(message, onConfirm) {
+    const box = document.getElementById('notificationBox');
+    const content = document.getElementById('notificationContent');
+    if (!box || !content) return;
+
+    resolveConfirmation = onConfirm;
+
+    content.innerHTML = `
+        <h3 style="margin-top:0; color:#f59e0b;">⚠️ ยืนยันการดำเนินการ</h3>
+        <p style="margin-bottom:20px;">${message}</p>
+        <div style="display:flex; gap:10px;">
+            <button class="submit-btn delete-btn" style="flex-grow:1;" onclick="confirmAction(true)">ยืนยัน</button>
+            <button class="submit-btn cancel-btn" style="flex-grow:1; background:#94a3b8;" onclick="confirmAction(false)">ยกเลิก</button>
+        </div>
+    `;
+    box.style.display = 'flex';
+}
+
+
+window.confirmAction = function (isConfirmed) {
+    hideNotification();
+    if (resolveConfirmation) {
+        resolveConfirmation(isConfirmed);
+    }
+}
+
+window.hideNotification = function () {
+    document.getElementById('notificationBox').style.display = 'none';
+}
 
 
 // ======================================================
@@ -57,7 +107,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('Auth state changed:', event);
     if (session) {
         showApp(true);
-        fetchAndRenderData(); 
+        fetchAndRenderData();
     } else {
         showApp(false);
         const summary = document.getElementById('summary-area');
@@ -73,7 +123,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 // 🟢 3. ฟังก์ชันการเข้าสู่ระบบ (Login)
 // ======================================================
 
-window.handleLogin = async function(event) {
+window.handleLogin = async function (event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -84,17 +134,19 @@ window.handleLogin = async function(event) {
     if (error) {
         updateAuthMessage(`เข้าสู่ระบบไม่สำเร็จ: ${error.message}`, true);
         console.error('Login Error:', error);
-    } 
+    }
 }
 
-window.handleLogout = async function() {
+window.handleLogout = async function () {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-        alert(`ออกจากระบบไม่สำเร็จ: ${error.message}`);
+        // alert(`ออกจากระบบไม่สำเร็จ: ${error.message}`); // OLD
+        showNotification(`ออกจากระบบไม่สำเร็จ: ${error.message}`, true); // NEW
         console.error('Logout Error:', error);
     } else {
-        alert('ออกจากระบบสำเร็จ');
+        // alert('ออกจากระบบสำเร็จ'); // OLD
+        showNotification('ออกจากระบบสำเร็จ'); // NEW
     }
 }
 
@@ -108,15 +160,15 @@ async function fetchAndRenderData() {
 
     const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('id, cat_names, room_type, start_date, end_date') 
-        .gte('end_date', '2025-11-01') 
-        .lte('start_date', '2026-02-01') 
+        .select('id, cat_names, room_type, start_date, end_date')
+        .gte('end_date', '2025-11-01')
+        .lte('start_date', '2026-02-01')
         .order('start_date', { ascending: true });
 
     if (error) {
-         if (error.code === '42501') { 
-             document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">🚫 ไม่ได้รับอนุญาตให้เข้าถึงข้อมูล (RLS Blocked).</h2><p style="text-align:center;">โปรดตรวจสอบสิทธิ์การเข้าถึงของผู้ใช้</p>`;
-             return;
+        if (error.code === '42501') {
+            document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">🚫 ไม่ได้รับอนุญาตให้เข้าถึงข้อมูล (RLS Blocked).</h2><p style="text-align:center;">โปรดตรวจสอบสิทธิ์การเข้าถึงของผู้ใช้</p>`;
+            return;
         }
         console.error('Error fetching bookings:', error);
         document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}</h2>`;
@@ -125,12 +177,12 @@ async function fetchAndRenderData() {
 
     const events = bookings.map(b => ({
         id: b.id,
-        title: `${b.cat_names} (${b.room_type})`, 
+        title: `${b.cat_names} (${b.room_type})`,
         start: new Date(b.start_date),
         end: new Date(b.end_date),
         cls: `ev-${roomTypeMapping[b.room_type] || 'default'}`,
         catNames: b.cat_names,
-        roomType: b.room_type 
+        roomType: b.room_type
     }));
 
     buildMonth(document.getElementById('days-dec'), document.getElementById('wd-dec'), 2025, 11, events);
@@ -172,38 +224,38 @@ function buildMonth(containerDays, containerWd, year, month, events) {
         const dayEvents = events.filter(ev => {
             const startDateOnly = new Date(ev.start);
             startDateOnly.setHours(0, 0, 0, 0);
-            
+
             const endDateOnly = new Date(ev.end);
             endDateOnly.setHours(0, 0, 0, 0);
 
             // เงื่อนไข: แสดงการจองตั้งแต่วันเข้าจนถึงวันออก (รวมวันออก)
             return currentCellTime >= startDateOnly.getTime() && currentCellTime <= endDateOnly.getTime();
         });
-        
+
         if (dayEvents.length > 0) {
             dayEvents.forEach(ev => {
                 const startDateOnly = new Date(ev.start);
                 startDateOnly.setHours(0, 0, 0, 0);
-                
+
                 const endDateOnly = new Date(ev.end);
                 endDateOnly.setHours(0, 0, 0, 0);
 
                 const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
-                let label = match ? match[1].trim() : ev.title; 
+                let label = match ? match[1].trim() : ev.title;
 
                 // *** แก้ไข Label ตรงนี้: ใช้แค่ (เข้า) และ (ออก) ***
                 if (currentCellTime === startDateOnly.getTime()) {
                     label += ' (เข้า)';
                 } else if (currentCellTime === endDateOnly.getTime()) {
-                    label += ' (ออก)'; 
-                } 
+                    label += ' (ออก)';
+                }
                 // ลบเงื่อนไข 'ก่อนออก' ออก
 
-                
+
                 const span = document.createElement('span');
                 span.className = 'event ' + ev.cls;
                 span.textContent = label;
-                span.dataset.eventId = ev.id; 
+                span.dataset.eventId = ev.id;
                 span.onclick = (e) => { e.stopPropagation(); showPopupAll(dayEvents, c.date); };
                 el.appendChild(span);
             });
@@ -223,8 +275,8 @@ function toYYYYMMDD(date) {
 }
 
 
-window.hidePopup = function() { document.getElementById('popupBox').style.display = 'none'; }
-window.closePopup = function(e) { if (e.target.id === 'popupBox') hidePopup(); }
+window.hidePopup = function () { document.getElementById('popupBox').style.display = 'none'; }
+window.closePopup = function (e) { if (e.target.id === 'popupBox') hidePopup(); }
 
 function showPopupAll(list, date) {
     let html = `<h3 style="margin-top:0; font-size:18px;">รายละเอียดการจองวันที่ ${formatDate(date)}</h3>`;
@@ -232,13 +284,13 @@ function showPopupAll(list, date) {
     list.forEach(ev => {
         const dt = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         const dtTime = dt.getTime();
-        
+
         const startDateOnly = new Date(ev.start);
         startDateOnly.setHours(0, 0, 0, 0);
-        
+
         const endDateOnly = new Date(ev.end);
         endDateOnly.setHours(0, 0, 0, 0);
-        
+
         // const dayBeforeEnd = endDateOnly.getTime() - (24 * 60 * 60 * 1000); // ไม่ได้ใช้แล้ว
 
         const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
@@ -247,13 +299,13 @@ function showPopupAll(list, date) {
 
         let status = '<span style="color:#27CCF5;"> กำลังพัก </span>'; // สถานะเริ่มต้น
         let icon = '🏠';
-        
+
         // *** แก้ไขสถานะใน Pop-up: ใช้แค่ เข้า และ ออก ***
-        if (dtTime === startDateOnly.getTime()) { 
-            status = '<span style="color:#10b981; font-weight:bold;"> เข้า </span>'; icon = '📥'; 
+        if (dtTime === startDateOnly.getTime()) {
+            status = '<span style="color:#10b981; font-weight:bold;"> เข้า </span>'; icon = '📥';
         }
         else if (dtTime === endDateOnly.getTime()) {
-             status = '<span style="color:#f59e0b; font-weight:bold;"> ออก </span>'; icon = '📤'; 
+            status = '<span style="color:#f59e0b; font-weight:bold;"> ออก </span>'; icon = '📤';
         }
         // ลบเงื่อนไข 'ก่อนออก' ออก
 
@@ -278,7 +330,7 @@ function showPopupAll(list, date) {
 // 6. ฟังก์ชัน CRUD (Create, Update, Delete) - สำคัญสำหรับการแก้ไข/ลบ
 // ======================================================
 
-window.submitBookingForm = async function(event) {
+window.submitBookingForm = async function (event) {
     event.preventDefault();
     const bookingId = document.getElementById('bookingId').value;
     const isUpdate = bookingId !== '';
@@ -292,7 +344,8 @@ window.submitBookingForm = async function(event) {
     };
 
     if (new Date(bookingData.start_date) >= new Date(bookingData.end_date)) {
-        alert('วันเช็คอินต้องก่อนวันเช็คเอาท์!');
+        // alert('วันเช็คอินต้องก่อนวันเช็คเอาท์!'); // OLD
+        showNotification('วันเช็คอินต้องก่อนวันเช็คเอาท์!', true); // NEW
         return;
     }
 
@@ -314,59 +367,64 @@ window.submitBookingForm = async function(event) {
     }
 
     if (error) {
-        if (error.code === '42501') { 
-            alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`);
+        if (error.code === '42501') {
+            // alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`); // OLD
+            showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล.`, true); // NEW
         } else {
-            alert(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`);
+            // alert(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`); // OLD
+            showNotification(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`, true); // NEW
         }
         console.error(`${actionText} Error:`, error);
     } else {
-        alert(`${actionText}ข้อมูลการจองสำเร็จ!`);
+        // alert(`${actionText}ข้อมูลการจองสำเร็จ!`); // OLD
+        showNotification(`${actionText}ข้อมูลการจองสำเร็จ!`); // NEW
         hideFormPopup();
-        hidePopup(); 
-        fetchAndRenderData(); 
+        hidePopup();
+        fetchAndRenderData();
     }
 }
 
-window.deleteBooking = async function(id, title) {
-    // ต้องตรวจสอบประเภทของ ID เพราะเราแก้การส่งค่าใน showPopupAll เป็น string
-    const bookingId = String(id); 
+window.deleteBooking = async function (id, title) {
+    const bookingId = String(id);
 
-    if (!confirm(`ยืนยันการลบการจอง "${title}" (ID: ${bookingId}) หรือไม่?`)) {
-        return;
-    }
-
-    // ** Delete (D) **
-    const { error } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('id', bookingId);
-
-    if (error) {
-        if (error.code === '42501') { 
-            alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`);
-        } else {
-            alert(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`);
+    showConfirmation(`ยืนยันการลบการจอง "${title}" หรือไม่?`, async (confirmed) => {
+        if (!confirmed) {
+            return;
         }
-        console.error('Delete Error: (ID:', id, ')', error);
-    } else {
-        alert('ลบข้อมูลการจองสำเร็จ!');
-        hidePopup(); 
-        fetchAndRenderData(); 
-    }
+        // ** Delete (D) **
+        const { error } = await supabase
+            .from('bookings')
+            .delete()
+            .eq('id', bookingId);
+        if (error) {
+            if (error.code === '42501') {
+                // alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`); // OLD
+                showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล.`, true); // NEW
+            } else {
+                // alert(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`); // OLD
+                showNotification(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`, true); // NEW
+            }
+            console.error('Delete Error: (ID:', id, ')', error);
+        } else {
+            // alert('ลบข้อมูลการจองสำเร็จ!'); // OLD
+            showNotification('ลบข้อมูลการจองสำเร็จ!'); // NEW
+            hidePopup();
+            fetchAndRenderData();
+        }
+    });
 }
 
 // ======================================================
 // 7. ฟังก์ชันแสดง/ซ่อนฟอร์ม
 // ======================================================
 
-window.showFormPopup = function(id = '', catNames = '', roomType = ROOM_TYPES[0], startDate = '', endDate = '') {
-    hidePopup(); 
-    
+window.showFormPopup = function (id = '', catNames = '', roomType = ROOM_TYPES[0], startDate = '', endDate = '') {
+    hidePopup();
+
     const popupTitle = id ? 'แก้ไขข้อมูลการจอง' : 'เพิ่มการจองใหม่';
     const submitText = id ? 'บันทึกการแก้ไข' : 'เพิ่มการจอง';
 
-    const roomOptions = ROOM_TYPES.map(room => 
+    const roomOptions = ROOM_TYPES.map(room =>
         `<option value="${room}" ${room === roomType ? 'selected' : ''}>${room}</option>`
     ).join('');
 
@@ -398,7 +456,7 @@ window.showFormPopup = function(id = '', catNames = '', roomType = ROOM_TYPES[0]
     document.getElementById('formPopupBox').style.display = 'flex';
 }
 
-window.hideFormPopup = function() {
+window.hideFormPopup = function () {
     document.getElementById('formPopupBox').style.display = 'none';
 }
 
@@ -465,23 +523,23 @@ function generateSummaryTable(events) {
 
     events.forEach(ev => {
         const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
-        const names = match ? match[1].trim() : ev.title; 
-        const roomType = match ? match[2].trim() : 'ไม่ระบุ'; 
+        const names = match ? match[1].trim() : ev.title;
+        const roomType = match ? match[2].trim() : 'ไม่ระบุ';
 
         const catCount = names.split(',').length;
 
         const item = { names, roomType, catCount, start: ev.start, end: ev.end, originalTitle: ev.title };
 
         const startDateOnlyTime = new Date(ev.start.getFullYear(), ev.start.getMonth(), ev.start.getDate()).getTime();
-        
+
         if (startDateOnlyTime <= nyeStart && ev.end.getTime() > nyeStart) {
             occupiedCounts[roomType] = (occupiedCounts[roomType] || 0) + 1;
         }
 
         if (ev.start.getFullYear() === 2025 && ev.end.getFullYear() === 2026) {
-             crossYear.push(item);
+            crossYear.push(item);
         } else {
-             notCrossYear.push(item);
+            notCrossYear.push(item);
         }
     });
 
