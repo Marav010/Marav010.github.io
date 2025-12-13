@@ -247,6 +247,15 @@ p.lead {
     background: linear-gradient(90deg, #94a3b8, #64748b);
 }
 
+/* *** NEW: สไตล์สำหรับ Event ที่มีสีที่กำหนดเอง (Custom Color) *** */
+.event.ev-custom {
+    /* ยกเลิกการใช้ gradient ที่กำหนดไว้ใน CSS เดิม */
+    background-image: none !important;
+    /* สีพื้นหลังจะถูกกำหนดผ่าน inline style ใน JS */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
 /* --- สไตล์สำหรับตารางสรุป (Summary) (คงเดิม) --- */
 .summary-section {
     margin-top: 40px;
@@ -428,6 +437,57 @@ tr:last-child td {
 .submit-btn:hover {
     background: #059669;
 }
+
+/* ====================================================== */
+/* *** NEW: สไตล์สำหรับ Color Legend ใน Form Popup *** */
+/* ====================================================== */
+.color-legend-box {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    width: 100%;
+}
+
+.color-legend-box label {
+    margin: 0 0 5px 0 !important;
+    font-size: 13px !important;
+    display: block !important;
+}
+
+.color-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 5px;
+    max-height: 90px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #4b5563;
+}
+
+.color-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+.color-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 /* ====================================================== */
 /* ** สไตล์สำหรับ Login Form (อัปเดตสำหรับ Email/Password เท่านั้น) ** */
