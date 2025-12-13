@@ -24,7 +24,7 @@ const roomTypeMapping = {
 
 
 // ======================================================
-// 🟢 0. ฟังก์ชัน Notification (แจ้งเตือนแบบสวยงาม) - NEW
+// 🟢 0. ฟังก์ชัน Notification (แจ้งเตือนแบบสวยงาม)
 // ======================================================
 
 let resolveConfirmation;
@@ -141,12 +141,10 @@ window.handleLogout = async function () {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-        // alert(`ออกจากระบบไม่สำเร็จ: ${error.message}`); // OLD
-        showNotification(`ออกจากระบบไม่สำเร็จ: ${error.message}`, true); // NEW
+        showNotification(`ออกจากระบบไม่สำเร็จ: ${error.message}`, true);
         console.error('Logout Error:', error);
     } else {
-        // alert('ออกจากระบบสำเร็จ'); // OLD
-        showNotification('ออกจากระบบสำเร็จ'); // NEW
+        showNotification('ออกจากระบบสำเร็จ');
     }
 }
 
@@ -160,18 +158,23 @@ async function fetchAndRenderData() {
 
     const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('id, cat_names, room_type, start_date, end_date')
+        // บรรทัดนี้คือส่วนที่เรียกคอลัมน์ color_hex
+        .select('id, cat_names, room_type, start_date, end_date, color_hex') 
         .gte('end_date', '2025-11-01')
         .lte('start_date', '2026-02-01')
         .order('start_date', { ascending: true });
 
     if (error) {
+        // *** ดักจับ Error Code 42703 (Undefined column) โดยเฉพาะ ***
         if (error.code === '42501') {
             document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">🚫 ไม่ได้รับอนุญาตให้เข้าถึงข้อมูล (RLS Blocked).</h2><p style="text-align:center;">โปรดตรวจสอบสิทธิ์การเข้าถึงของผู้ใช้</p>`;
-            return;
+        } else if (error.code === '42703') { 
+            // ข้อความเตือนเมื่อไม่พบคอลัมน์ color_hex
+            document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">🚫 ข้อผิดพลาด: ไม่พบคอลัมน์ 'color_hex' ในฐานข้อมูล! (Code: 42703)</h2><p style="text-align:center;">กรุณาทำตามขั้นตอน: เพิ่มคอลัมน์ 'color_hex' (Type: text) ในตาราง 'bookings' ใน Supabase Dashboard.</p>`;
+        } else {
+             document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message} (Code: ${error.code})</h2>`;
         }
         console.error('Error fetching bookings:', error);
-        document.getElementById('summary-area').innerHTML = `<h2 style="color:#ef4444; text-align:center;">เกิดข้อผิดพลาดในการดึงข้อมูล: ${error.message}</h2>`;
         return;
     }
 
@@ -182,7 +185,8 @@ async function fetchAndRenderData() {
         end: new Date(b.end_date),
         cls: `ev-${roomTypeMapping[b.room_type] || 'default'}`,
         catNames: b.cat_names,
-        roomType: b.room_type
+        roomType: b.room_type,
+        colorHex: b.color_hex // เก็บค่าสีที่ดึงมา
     }));
 
     buildMonth(document.getElementById('days-dec'), document.getElementById('wd-dec'), 2025, 11, events);
@@ -193,6 +197,7 @@ async function fetchAndRenderData() {
 // ======================================================
 // 5. ฟังก์ชันสร้างปฏิทิน & Popup
 // ======================================================
+
 function buildMonth(containerDays, containerWd, year, month, events) {
     const wdNames = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
     containerWd.innerHTML = '';
@@ -243,17 +248,24 @@ function buildMonth(containerDays, containerWd, year, month, events) {
                 const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
                 let label = match ? match[1].trim() : ev.title;
 
-                // *** แก้ไข Label ตรงนี้: ใช้แค่ (เข้า) และ (ออก) ***
                 if (currentCellTime === startDateOnly.getTime()) {
                     label += ' (เข้า)';
                 } else if (currentCellTime === endDateOnly.getTime()) {
                     label += ' (ออก)';
                 }
-                // ลบเงื่อนไข 'ก่อนออก' ออก
 
 
                 const span = document.createElement('span');
-                span.className = 'event ' + ev.cls;
+
+                // *** ใช้สีที่กำหนดเอง ถ้ามี ***
+                if (ev.colorHex && ev.colorHex.toUpperCase() !== '#000000') { 
+                    span.style.backgroundColor = ev.colorHex;
+                    span.style.backgroundImage = 'none'; // ยกเลิก gradient ของ CSS เดิม
+                    span.className = 'event ev-custom'; // ใช้ class ใหม่
+                } else {
+                    span.className = 'event ' + ev.cls; // ใช้สีตามประเภทห้องเดิม
+                }
+
                 span.textContent = label;
                 span.dataset.eventId = ev.id;
                 span.onclick = (e) => { e.stopPropagation(); showPopupAll(dayEvents, c.date); };
@@ -291,8 +303,6 @@ function showPopupAll(list, date) {
         const endDateOnly = new Date(ev.end);
         endDateOnly.setHours(0, 0, 0, 0);
 
-        // const dayBeforeEnd = endDateOnly.getTime() - (24 * 60 * 60 * 1000); // ไม่ได้ใช้แล้ว
-
         const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
         const names = match ? match[1].trim() : ev.title;
         const roomType = match ? match[2].trim() : 'ไม่ระบุ';
@@ -300,22 +310,26 @@ function showPopupAll(list, date) {
         let status = '<span style="color:#27CCF5;"> กำลังพัก </span>'; // สถานะเริ่มต้น
         let icon = '🏠';
 
-        // *** แก้ไขสถานะใน Pop-up: ใช้แค่ เข้า และ ออก ***
         if (dtTime === startDateOnly.getTime()) {
             status = '<span style="color:#10b981; font-weight:bold;"> เข้า </span>'; icon = '📥';
         }
         else if (dtTime === endDateOnly.getTime()) {
             status = '<span style="color:#f59e0b; font-weight:bold;"> ออก </span>'; icon = '📤';
         }
-        // ลบเงื่อนไข 'ก่อนออก' ออก
+
+        // *** เตรียมค่าสีสำหรับส่งไปฟอร์มแก้ไข ***
+        const colorHex = ev.colorHex || '#38bdf8'; // ค่าสี Default
 
         html += `<div style="background:#f3f4f6; padding:10px; border-radius:8px; font-size:13px;">
-                                <div style="font-weight:600; margin-bottom:2px;">${icon} ${names}</div>
+                                <div style="font-weight:600; margin-bottom:2px;">
+                                    ${icon} ${names}
+                                    ${ev.colorHex && ev.colorHex.toUpperCase() !== '#38BDF8' ? `<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${ev.colorHex}; margin-left:5px; border:1px solid #ccc;"></span>` : ''}
+                                </div>
                                 <div style="color:#374151;">ห้อง: <strong>${roomType}</strong></div>
                                 <div>สถานะ: ${status}</div>
                                 <div style="color:#6b7280; font-size:11px; margin-top:2px;">(จอง: ${formatDate(ev.start)} - ${formatDate(ev.end)})</div>
                                 <div style="display:flex; gap:8px; margin-top:8px;">
-                                    <button class="popup-action-btn edit-btn" onclick="showFormPopup('${ev.id}', '${ev.catNames}', '${ev.roomType}', '${toYYYYMMDD(ev.start)}', '${toYYYYMMDD(ev.end)}')">แก้ไข</button>
+                                    <button class="popup-action-btn edit-btn" onclick="showFormPopup('${ev.id}', '${ev.catNames}', '${ev.roomType}', '${toYYYYMMDD(ev.start)}', '${toYYYYMMDD(ev.end)}', '${colorHex}')">แก้ไข</button>
                                     <button class="popup-action-btn delete-btn" onclick="deleteBooking('${ev.id}', '${ev.title}')">ลบ</button>
                                 </div>
                             </div>`;
@@ -327,7 +341,7 @@ function showPopupAll(list, date) {
 }
 
 // ======================================================
-// 6. ฟังก์ชัน CRUD (Create, Update, Delete) - สำคัญสำหรับการแก้ไข/ลบ
+// 🟢 6. ฟังก์ชัน CRUD (Create, Update, Delete)
 // ======================================================
 
 window.submitBookingForm = async function (event) {
@@ -336,16 +350,18 @@ window.submitBookingForm = async function (event) {
     const isUpdate = bookingId !== '';
     const actionText = isUpdate ? 'แก้ไข' : 'เพิ่ม';
 
+    const colorHexValue = document.getElementById('colorHex').value; // ดึงค่าสี
+
     const bookingData = {
         cat_names: document.getElementById('catNames').value,
         room_type: document.getElementById('roomType').value,
         start_date: document.getElementById('startDate').value,
         end_date: document.getElementById('endDate').value,
+        color_hex: colorHexValue, // เพิ่ม color_hex ในข้อมูลที่จะบันทึก
     };
 
     if (new Date(bookingData.start_date) >= new Date(bookingData.end_date)) {
-        // alert('วันเช็คอินต้องก่อนวันเช็คเอาท์!'); // OLD
-        showNotification('วันเช็คอินต้องก่อนวันเช็คเอาท์!', true); // NEW
+        showNotification('วันเช็คอินต้องก่อนวันเช็คเอาท์!', true);
         return;
     }
 
@@ -368,16 +384,15 @@ window.submitBookingForm = async function (event) {
 
     if (error) {
         if (error.code === '42501') {
-            // alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`); // OLD
-            showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล.`, true); // NEW
+            showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการ ${actionText} ข้อมูล.`, true);
+        } else if (error.code === '42703') { 
+            showNotification(`🚫 ข้อผิดพลาด: ไม่พบคอลัมน์ 'color_hex' ในฐานข้อมูล! (Code: 42703) กรุณาแก้ไขฐานข้อมูล Supabase ก่อน`, true);
         } else {
-            // alert(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`); // OLD
-            showNotification(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`, true); // NEW
+            showNotification(`${actionText}ข้อมูลการจองไม่สำเร็จ: ${error.message}`, true);
         }
         console.error(`${actionText} Error:`, error);
     } else {
-        // alert(`${actionText}ข้อมูลการจองสำเร็จ!`); // OLD
-        showNotification(`${actionText}ข้อมูลการจองสำเร็จ!`); // NEW
+        showNotification(`${actionText}ข้อมูลการจองสำเร็จ!`);
         hideFormPopup();
         hidePopup();
         fetchAndRenderData();
@@ -398,16 +413,13 @@ window.deleteBooking = async function (id, title) {
             .eq('id', bookingId);
         if (error) {
             if (error.code === '42501') {
-                // alert(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล. (โปรดตรวจสอบนโยบาย RLS ใน Supabase)`); // OLD
-                showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล.`, true); // NEW
+                showNotification(`🚫 ไม่ได้รับอนุญาต! RLS ปฏิเสธการลบข้อมูล.`, true);
             } else {
-                // alert(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`); // OLD
-                showNotification(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`, true); // NEW
+                showNotification(`ลบข้อมูลการจองไม่สำเร็จ: ${error.message}`, true);
             }
             console.error('Delete Error: (ID:', id, ')', error);
         } else {
-            // alert('ลบข้อมูลการจองสำเร็จ!'); // OLD
-            showNotification('ลบข้อมูลการจองสำเร็จ!'); // NEW
+            showNotification('ลบข้อมูลการจองสำเร็จ!');
             hidePopup();
             fetchAndRenderData();
         }
@@ -415,10 +427,53 @@ window.deleteBooking = async function (id, title) {
 }
 
 // ======================================================
-// 7. ฟังก์ชันแสดง/ซ่อนฟอร์ม
+// 7. ฟังก์ชันแสดง/ซ่อนฟอร์ม และ การจัดการสี
 // ======================================================
 
-window.showFormPopup = function (id = '', catNames = '', roomType = ROOM_TYPES[0], startDate = '', endDate = '') {
+// *** ฟังก์ชันดึงสีและชื่อแมวที่ใช้แล้ว (ปรับปรุงการกรองสีเริ่มต้น) ***
+async function fetchExistingColors() {
+    // ดึงเฉพาะชื่อแมวและสีที่ถูกกำหนด (ไม่เป็น null)
+    const { data, error } = await supabase
+        .from('bookings')
+        .select('cat_names, color_hex')
+        .not('color_hex', 'is', null);
+
+    // ยังคงปล่อยให้ error.code 42703 ผ่านไปเพื่อให้โค้ดแสดงผลได้ แม้ว่าสีจะใช้งานไม่ได้
+    if (error) {
+        if (error.code !== '42501' && error.code !== '42703') {
+             console.error('Error fetching existing colors:', error);
+        }
+        return [];
+    }
+
+    // จัดกลุ่มโดยใช้สีเป็นคีย์ และรวมชื่อแมวจาก booking ที่มีสีเดียวกัน
+    const colorMap = new Map();
+    data.forEach(item => {
+        // *** เพิ่มการกรอง: ไม่รวมสีที่เป็น null, #000000 (สีดำ default จาก input), หรือสีฟ้า default ของระบบ
+        if (item.color_hex && item.color_hex.toUpperCase() !== '#000000' && item.color_hex.toUpperCase() !== '#38BDF8') { 
+            const hex = item.color_hex.toUpperCase();
+
+            // ใช้ชื่อแรกของแต่ละการจองเป็นตัวแทน (เช่น 'A, B' จะใช้แค่ 'A')
+            const currentNames = item.cat_names.split(',').map(n => n.trim())[0];
+
+            if (colorMap.has(hex)) {
+                // เพิ่มชื่อแมว (ถ้ายังไม่มีในรายการ)
+                const existingItem = colorMap.get(hex);
+                // ใช้ Set เพื่อรวมชื่อแรกของแต่ละ booking ที่ใช้สีเดียวกัน
+                const combinedNames = Array.from(new Set([...existingItem.names.split(', ').map(n=>n.trim()), currentNames])).join(', ');
+                colorMap.set(hex, { names: combinedNames, hex });
+            } else {
+                colorMap.set(hex, { names: currentNames, hex });
+            }
+        }
+    });
+
+    return Array.from(colorMap.values());
+}
+
+
+// *** อัปเดต: เพิ่ม colorHex เข้ามาในพารามิเตอร์ ***
+window.showFormPopup = async function (id = '', catNames = '', roomType = ROOM_TYPES[0], startDate = '', endDate = '', colorHex = '#38bdf8') {
     hidePopup();
 
     const popupTitle = id ? 'แก้ไขข้อมูลการจอง' : 'เพิ่มการจองใหม่';
@@ -427,6 +482,30 @@ window.showFormPopup = function (id = '', catNames = '', roomType = ROOM_TYPES[0
     const roomOptions = ROOM_TYPES.map(room =>
         `<option value="${room}" ${room === roomType ? 'selected' : ''}>${room}</option>`
     ).join('');
+
+    // 1. ดึงสีที่ใช้แล้ว (ฟังก์ชันนี้อาจล้มเหลวด้วย 42703 แต่เราปล่อยให้มันผ่านไป)
+    let existingColors = [];
+    try {
+        existingColors = await fetchExistingColors();
+    } catch(e) {
+        // จัดการกรณีที่ fetchExistingColors ล้มเหลวด้วย 42703 ในกรณีที่ไม่ได้ทำ Try/Catch ไว้ในนั้น
+        console.error("Could not fetch existing colors due to DB schema error (42703).");
+    }
+
+
+    // 2. สร้าง HTML สำหรับ Color Legend
+    const colorLegendHTML = existingColors.length > 0 ?
+        `<div class="color-legend-box">
+            <label style="font-weight:700; color:#0f172a;">สีที่ใช้แล้ว (ชื่อแมว/บ้าน):</label>
+            <div class="color-list">
+                ${existingColors.map(item => `
+                    <div class="color-item">
+                        <span class="color-swatch" style="background:${item.hex};"></span>
+                        <span class="color-name">${item.names}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>` : '<p style="color:#94a3b8; font-size:11px; margin-top:5px; margin-bottom:0;">ยังไม่มีการกำหนดสีพิเศษ</p>';
 
     const html = `
         <h3 style="margin-top:0; font-size:18px;">${popupTitle}</h3>
@@ -441,6 +520,15 @@ window.showFormPopup = function (id = '', catNames = '', roomType = ROOM_TYPES[0
                 ${roomOptions}
             </select>
 
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:15px; margin-top:12px;">
+                <div style="flex-grow:1;">
+                    <label for="colorHex">สีสำหรับปฏิทิน (เลือกได้):</label>
+                    <input type="color" id="colorHex" value="${colorHex}" style="width:100%; height:40px; padding:0; border:1px solid #ccc; cursor:pointer;">
+                </div>
+                <div style="flex-shrink:0; max-height:160px; overflow-y:auto;">
+                    ${colorLegendHTML}
+                </div>
+            </div>
             <label for="startDate">วันเช็คอิน (วันเข้าพัก):</label>
             <input type="date" id="startDate" value="${startDate}" required>
 
