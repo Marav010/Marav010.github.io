@@ -5,7 +5,7 @@ const SUPABASE_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM';
 
 // ใช้ชื่อ supabaseClient เพื่อไม่ให้ซ้ำกับตัวแปร 'supabase' ที่มาจาก Library
-let supabase;
+let supabaseClient;
 
 // ฟังก์ชันสำหรับสร้าง Client และเช็คการเชื่อมต่อ
 function initializeSupabase() {
@@ -719,4 +719,5 @@ function generateSummaryTable(events) {
 
 // 🟢 เริ่มต้น: ตรวจสอบสถานะการเข้าสู่ระบบเมื่อโหลดหน้า
 checkSession();
+
 
