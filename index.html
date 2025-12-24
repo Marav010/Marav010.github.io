@@ -1,31 +1,36 @@
 <!doctype html>
 <html lang="th">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ปฏิทินการจองห้องพัก — สรุปยอดปีใหม่</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/jpeg" href="Logo/JingJai_Cat_Hotel_final1.jpg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>  
   <div id="login-container" class="login-form-wrapper" style="display:none;">
     <div class="login-box">
       <h2>เข้าสู่ระบบ ปฏิทินจองห้องพัก</h2>
       <form id="login-form" onsubmit="handleLogin(event)">
-        <label for="email">อีเมล:</label>
+        <label for="email">อีเมล (Gmail/อื่นๆ):</label>
         <input type="email" id="email" required placeholder="example@email.com">
+
         <label for="password">รหัสผ่าน:</label>
         <input type="password" id="password" required placeholder="รหัสผ่าน">
+
         <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
       </form>
       <p id="auth-message" class="auth-message"></p>
     </div>
   </div>
-
   <div class="container" id="app-container" style="display:none;">
     <header>
       <div class="header-title-group">
-        <div class="logo">🐱</div> <div>
+        <img src="Logo/JingJai Cat Hotel final1.jpg" alt="JingjaiCatHotel">
+        <div>
           <h1>ปฏิทินการจองห้องพัก</h1>
           <p class="lead">ธันวาคม 2568 และ มกราคม 2569</p>
         </div>
@@ -35,43 +40,45 @@
         <button class="logout-btn" onclick="handleLogout()">ออกจากระบบ</button>
       </div>
     </header>
-
     <div class="cal-grid">
       <div class="cal" id="cal-dec">
         <div class="month-head">
-          <div class="month-title">ธันวาคม <span class="year-sub">2568 (2025)</span></div>
+          <div>
+            <div class="month-title">ธันวาคม <span class="year-sub">2568 (2025)</span></div>
+          </div>
         </div>
         <div class="weekdays" id="wd-dec"></div>
         <div class="days" id="days-dec"></div>
       </div>
       <div class="cal" id="cal-jan">
         <div class="month-head">
-          <div class="month-title">มกราคม <span class="year-sub">2569 (2026)</span></div>
+          <div>
+            <div class="month-title">มกราคม <span class="year-sub">2569 (2026)</span></div>
+          </div>
         </div>
         <div class="weekdays" id="wd-jan"></div>
         <div class="days" id="days-jan"></div>
       </div>
     </div>
-
     <div id="summary-area" class="summary-section">
       <h2 style="color:#f59e0b; text-align:center;">กำลังโหลดข้อมูล...</h2>
     </div>
-
     <footer style="margin-top:20px; color:#9ca3af; font-size:12px; text-align:center;">
       ระบบปฏิทินโรงแรมแมวจริงใจ
     </footer>
   </div>
-
   <div id="popupBox" class="popup-container" onclick="closePopup(event)">
     <div class="popup" id="popupContent"></div>
   </div>
+
   <div id="formPopupBox" class="popup-container">
     <div class="popup" id="formPopupContent"></div>
   </div>
+
   <div id="notificationBox" class="popup-container">
     <div class="popup" id="notificationContent" style="max-width:300px;"></div>
   </div>
-
   <script src="script.js"></script>
 </body>
+
 </html>
