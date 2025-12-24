@@ -3,12 +3,30 @@
 // ======================================================
 const SB_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co'; 
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM'; 
+let supabaseClient;
 
-// ป้องกันการประกาศตัวแปรซ้ำโดยใช้ window.sb
-if (!window.sb && window.supabase) {
-    window.sb = window.supabase.createClient(SB_URL, SB_KEY);
+// ตรวจสอบ Library และสร้าง Client
+if (typeof window.supabase === 'undefined') {
+    console.error("❌ ไม่สามารถโหลด Library Supabase ได้ กรุณาเช็คอินเทอร์เน็ตหรือลิงก์ใน index.html");
+} else {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
+// ฟังก์ชันเช็คการเชื่อมต่อ Database
+async function testConnection() {
+    try {
+        const { data, error } = await supabaseClient.from('bookings').select('id').limit(1);
+        if (error) throw error;
+        console.log("✅ Database Connected! เชื่อมต่อฐานข้อมูลสำเร็จ");
+    } catch (err) {
+        console.error("❌ Database Connection Failed: ", err.message);
+        // ถ้าขึ้น Invalid Refresh Token ให้สั่ง Logout เพื่อล้าง Session เก่า
+        if (err.message.includes("Refresh Token Not Found")) {
+            console.warn("Session หมดอายุ กำลังล้างข้อมูลการเข้าสู่ระบบ...");
+            await supabaseClient.auth.signOut();
+        }
+    }
+}
 const ROOM_INVENTORY = { 'สแตนดาร์ด': 7, 'ดีลักซ์': 2, 'ซูพีเรีย': 4, 'พรีเมี่ยม': 4, 'วีไอพี': 2, 'วีวีไอพี': 1 };
 const roomTypeMapping = { 'สแตนดาร์ด': 'standard', 'ดีลักซ์': 'deluxe', 'ซูพีเรีย': 'superior', 'พรีเมี่ยม': 'premium', 'วีไอพี': 'vip', 'วีวีไอพี': 'vvip' };
 
@@ -113,3 +131,4 @@ window.handleLogout = async () => {
 };
 
 checkSession();
+
