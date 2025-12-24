@@ -43,11 +43,18 @@ header {
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     overflow: hidden;
 }
-
 .logo img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
+    width: 100%;          /* ให้รูปกว้างเต็มกล่อง */
+    height: 100%;         /* ให้รูปสูงเต็มกล่อง */
+    object-fit: cover;    /* สำคัญ: ให้รูปพอดีกับพื้นที่โดยไม่เสียสัดส่วน (Crop ส่วนเกิน) */
+    display: block;
+}
+
+/* ปรับระยะห่างระหว่างกลุ่มหัวข้อ */
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 /* ** สไตล์สำหรับปุ่ม Header (ใหม่) ** */
@@ -641,4 +648,5 @@ tr:last-child td {
         margin: 10px;
     }
 }
+
 
