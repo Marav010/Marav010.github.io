@@ -30,8 +30,8 @@ header {
 
 /* --- Logo --- */
 .logo {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 8px;
     background: linear-gradient(135deg, var(--accent), #fb923c);
     display: flex;
@@ -641,6 +641,7 @@ tr:last-child td {
         margin: 10px;
     }
 }
+
 
 
 
