@@ -31,43 +31,44 @@
     <header>
       <div class="header-title-group">
         <div class="logo">
-          <img src="Logo\JingJai Cat Hotel final1.jpg" alt="JingjaiCatHotel">
+          <img src="Logo/JingJai Cat Hotel final1.jpg" alt="JingjaiCatHotel">
         </div>
-        <h1>ปฏิทินการจองห้องพัก</h1>
-        <p class="lead">ธันวาคม 2568 และ มกราคม 2569</p>
-      </div>
-  </div>
-  <div style="display:flex; gap:10px;">
-    <button class="add-booking-btn" onclick="showFormPopup()">+ เพิ่มการจองใหม่</button>
-    <button class="logout-btn" onclick="handleLogout()">ออกจากระบบ</button>
-  </div>
-  </header>
-  <div class="cal-grid">
-    <div class="cal" id="cal-dec">
-      <div class="month-head">
         <div>
-          <div class="month-title">ธันวาคม <span class="year-sub">2568 (2025)</span></div>
+          <h1>ปฏิทินการจองห้องพัก</h1>
+          <p class="lead">ธันวาคม 2568 และ มกราคม 2569</p>
         </div>
       </div>
-      <div class="weekdays" id="wd-dec"></div>
-      <div class="days" id="days-dec"></div>
-    </div>
-    <div class="cal" id="cal-jan">
-      <div class="month-head">
-        <div>
-          <div class="month-title">มกราคม <span class="year-sub">2569 (2026)</span></div>
-        </div>
+      <div style="display:flex; gap:10px;">
+        <button class="add-booking-btn" onclick="showFormPopup()">+ เพิ่มการจองใหม่</button>
+        <button class="logout-btn" onclick="handleLogout()">ออกจากระบบ</button>
       </div>
-      <div class="weekdays" id="wd-jan"></div>
-      <div class="days" id="days-jan"></div>
+    </header>
+    <div class="cal-grid">
+      <div class="cal" id="cal-dec">
+        <div class="month-head">
+          <div>
+            <div class="month-title">ธันวาคม <span class="year-sub">2568 (2025)</span></div>
+          </div>
+        </div>
+        <div class="weekdays" id="wd-dec"></div>
+        <div class="days" id="days-dec"></div>
+      </div>
+      <div class="cal" id="cal-jan">
+        <div class="month-head">
+          <div>
+            <div class="month-title">มกราคม <span class="year-sub">2569 (2026)</span></div>
+          </div>
+        </div>
+        <div class="weekdays" id="wd-jan"></div>
+        <div class="days" id="days-jan"></div>
+      </div>
     </div>
-  </div>
-  <div id="summary-area" class="summary-section">
-    <h2 style="color:#f59e0b; text-align:center;">กำลังโหลดข้อมูล...</h2>
-  </div>
-  <footer style="margin-top:20px; color:#9ca3af; font-size:12px; text-align:center;">
-    ระบบปฏิทินโรงแรมแมวจริงใจ
-  </footer>
+    <div id="summary-area" class="summary-section">
+      <h2 style="color:#f59e0b; text-align:center;">กำลังโหลดข้อมูล...</h2>
+    </div>
+    <footer style="margin-top:20px; color:#9ca3af; font-size:12px; text-align:center;">
+      ระบบปฏิทินโรงแรมแมวจริงใจ
+    </footer>
   </div>
   <div id="popupBox" class="popup-container" onclick="closePopup(event)">
     <div class="popup" id="popupContent"></div>
