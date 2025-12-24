@@ -43,11 +43,11 @@ header {
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     overflow: hidden;
 }
+
 .logo img {
-    width: 100%;          /* ให้รูปกว้างเต็มกล่อง */
-    height: 100%;         /* ให้รูปสูงเต็มกล่อง */
-    object-fit: cover;    /* สำคัญ: ให้รูปพอดีกับพื้นที่โดยไม่เสียสัดส่วน (Crop ส่วนเกิน) */
-    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* ** สไตล์สำหรับปุ่ม Header (ใหม่) ** */
@@ -641,7 +641,3 @@ tr:last-child td {
         margin: 10px;
     }
 }
-
-
-
-
