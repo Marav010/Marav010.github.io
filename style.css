@@ -50,13 +50,6 @@ header {
     display: block;
 }
 
-/* ปรับระยะห่างระหว่างกลุ่มหัวข้อ */
-.header-title-group {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
 /* ** สไตล์สำหรับปุ่ม Header (ใหม่) ** */
 .add-booking-btn {
     background: #10b981;
@@ -648,5 +641,6 @@ tr:last-child td {
         margin: 10px;
     }
 }
+
 
 
