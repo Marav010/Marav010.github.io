@@ -1,15 +1,17 @@
 // ======================================================
-// 🟢 1. การตั้งค่า Supabase
+// 🟢 1. การตั้งค่า Supabase (ใช้ var เพื่อป้องกันการ Error เมื่อโหลดซ้ำ)
 // ======================================================
-const SUPABASE_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM';
+var SUPABASE_URL = SUPABASE_URL || 'https://ngpsplbcdzjrmrrkkeqg.supabase.co'; 
+var SUPABASE_ANON_KEY = SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM'; 
 
-let supabase;
+// ตรวจสอบว่ามีตัวแปร supabase หรือยัง ถ้าไม่มีให้สร้างใหม่
+if (typeof supabase === 'undefined') {
+    var supabase;
+}
+
 const ROOM_TYPES = ['สแตนดาร์ด', 'ดีลักซ์', 'ซูพีเรีย', 'พรีเมี่ยม', 'วีไอพี', 'วีวีไอพี'];
 
-if (typeof window.supabase === 'undefined') {
-    console.error("Supabase client library is not loaded.");
-} else {
+if (typeof window.supabase !== 'undefined' && !supabase) {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
@@ -21,6 +23,23 @@ const ROOM_INVENTORY = {
 const roomTypeMapping = {
     'สแตนดาร์ด': 'standard', 'ดีลักซ์': 'deluxe', 'ซูพีเรีย': 'superior', 'พรีเมี่ยม': 'premium', 'วีไอพี': 'vip', 'วีวีไอพี': 'vvip'
 };
+
+// ======================================================
+// 🟢 ฟังก์ชันแสดง Toast Notification
+// ======================================================
+function showToast(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast-message toast-${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    const timer = setTimeout(() => { toast.remove(); }, duration);
+    toast.onclick = () => { clearTimeout(timer); toast.remove(); };
+}
 
 
 // ======================================================
