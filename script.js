@@ -5,28 +5,30 @@ const SUPABASE_URL = 'https://ngpsplbcdzjrmrrkkeqg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ncHNwbGJjZHpqcm1ycmtrZXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NDk5MDYsImV4cCI6MjA4MTEyNTkwNn0.mtPTH_cu9QqmpMLEK3u5hElNsmDqIxVWuBDd-J6sOrM';
 
 // ใช้ชื่อ supabaseClient เพื่อไม่ให้ซ้ำกับตัวแปร 'supabase' ที่มาจาก Library
-let supabaseClient;
+let supabase;
 
-if (typeof window.supabase === 'undefined') {
-    console.error("❌ ไม่สามารถโหลด Library Supabase ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต");
-} else {
-    // ประกาศตรงนี้เพื่อให้มั่นใจว่า URL และ KEY ถูกอ่านแล้ว
+// ฟังก์ชันสำหรับสร้าง Client และเช็คการเชื่อมต่อ
+function initializeSupabase() {
+    if (typeof window.supabase === 'undefined') {
+        console.error("❌ Library Supabase ไม่โหลด! กรุณาตรวจสอบอินเทอร์เน็ตหรือไฟล์ index.html");
+        return false;
+    }
+    
+    // สร้าง Client เก็บไว้ใน supabaseClient
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log("✅ Supabase Client Initialized");
+    return true;
 }
 
-// ฟังก์ชันตรวจสอบสถานะ Database
-async function checkDatabase() {
+// ฟังก์ชันเช็คว่า Database ตาราง bookings ใช้งานได้จริงไหม
+async function checkDatabaseHealth() {
+    if (!supabaseClient) return;
     try {
-        const { data, error } = await supabaseClient.from('bookings').select('id').limit(1);
+        const { error } = await supabaseClient.from('bookings').select('id').limit(1);
         if (error) throw error;
-        console.log("✅ Database Status: เชื่อมต่อสำเร็จ!");
+        console.log("✅ Database Connection: ตาราง bookings พร้อมใช้งาน");
     } catch (err) {
-        console.error("❌ Database Status: เชื่อมต่อล้มเหลว -", err.message);
-        // หากเจอ Error เกี่ยวกับ Token หมดอายุ ให้ทำการ Logout อัตโนมัติ
-        if (err.message.includes("Refresh Token")) {
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        }
+        console.error("❌ Database Connection Error:", err.message);
     }
 }
 
@@ -88,47 +90,56 @@ window.hideNotification = function () {
 // 🟢 2. ฟังก์ชันตรวจสอบสถานะและการจัดการหน้า (Auth Handler)
 // ======================================================
 
-function showApp(show) {
-    const app = document.getElementById('app-container');
-    const login = document.getElementById('login-container');
-    if (app) app.style.display = show ? 'block' : 'none';
-    if (login) login.style.display = show ? 'none' : 'flex';
+async function startApp() {
+    // 1. เริ่มต้นสร้าง Client ก่อนเป็นอันดับแรก
+    const isReady = initializeSupabase();
+    if (!isReady) return;
+
+    // 2. เช็ค Session ปัจจุบัน
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    // 3. ตั้งค่า Listeners (แก้จุดที่เกิด Error onAuthStateChange)
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        console.log("Auth Event:", event);
+        handleAuthState(session);
+    });
+
+    handleAuthState(session);
 }
 
-function updateAuthMessage(message, isError = false) {
-    const msgEl = document.getElementById('auth-message');
-    if (msgEl) {
-        msgEl.textContent = message;
-        msgEl.style.color = isError ? '#ef4444' : '#10b981';
+function handleAuthState(session) {
+    const isLoggedIn = !!session;
+    
+    // จัดการการแสดงผลหน้าจอ
+    const loginUI = document.getElementById('login-container');
+    const appUI = document.getElementById('app-container');
+    
+    if (loginUI) loginUI.style.display = isLoggedIn ? 'none' : 'flex';
+    if (appUI) appUI.style.display = isLoggedIn ? 'block' : 'none';
+
+    if (isLoggedIn) {
+        checkDatabaseHealth();
+        if (typeof fetchAndRenderData === 'function') fetchAndRenderData();
     }
 }
 
-async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        showApp(true);
-        fetchAndRenderData();
-    } else {
-        showApp(false);
+// ฟังก์ชัน Login สำหรับปุ่มกดยืนยัน
+window.handleLogin = async function (e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        alert("เข้าสู่ระบบไม่สำเร็จ: " + error.message);
     }
-}
+};
 
-// ตั้งค่า listener สำหรับการเปลี่ยนแปลงสถานะ 
-supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event);
-    if (session) {
-        showApp(true);
-        fetchAndRenderData();
-    } else {
-        showApp(false);
-        const summary = document.getElementById('summary-area');
-        if (summary) summary.innerHTML = `<h2 style="color:#f59e0b; text-align:center;">กรุณาเข้าสู่ระบบเพื่อดูข้อมูล</h2>`;
-        const daysDec = document.getElementById('days-dec');
-        if (daysDec) daysDec.innerHTML = '';
-        const daysJan = document.getElementById('days-jan');
-        if (daysJan) daysJan.innerHTML = '';
-    }
-});
+// ฟังก์ชัน Logout
+window.handleLogout = async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+};
 
 // ======================================================
 // 🟢 3. ฟังก์ชันการเข้าสู่ระบบ (Login)
@@ -708,3 +719,4 @@ function generateSummaryTable(events) {
 
 // 🟢 เริ่มต้น: ตรวจสอบสถานะการเข้าสู่ระบบเมื่อโหลดหน้า
 checkSession();
+
