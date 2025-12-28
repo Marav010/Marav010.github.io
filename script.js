@@ -641,21 +641,41 @@ function generateSummaryTable(events) {
     const notCrossYear = [];
     const occupiedCounts = {};
 
-    const nyeDate = new Date(2025, 11, 31);
-    const nyeStart = new Date(nyeDate.getFullYear(), nyeDate.getMonth(), nyeDate.getDate()).getTime();
+    let totalAllRevenue = 0;
+    let totalAllCats = 0;
+    let totalAllHouses = 0;
+
+    const ROOM_PRICES = {
+        'สแตนดาร์ด': 300, 'ดีลักซ์': 350, 'ซูพีเรีย': 350,
+        'พรีเมี่ยม': 400, 'วีไอพี': 500, 'วีวีไอพี': 600
+    };
+    const ROOM_TOTAL = {
+        'สแตนดาร์ด': 7, 'ดีลักซ์': 2, 'ซูพีเรีย': 4,
+        'พรีเมี่ยม': 4, 'วีไอพี': 2, 'วีวีไอพี': 1
+    };
+
+    const nyeDateStart = new Date(2025, 11, 31).getTime();
 
     events.forEach(ev => {
         const match = ev.title.match(/(.*)\s*\((.*?)\)$/);
         const names = match ? match[1].trim() : ev.title;
         const roomType = match ? match[2].trim() : 'ไม่ระบุ';
 
+        const startDate = new Date(ev.start);
+        const endDate = new Date(ev.end);
+        const nights = Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24));
+        const totalPrice = nights * (ROOM_PRICES[roomType] || 0);
         const catCount = names.split(',').length;
 
-        const item = { names, roomType, catCount, start: ev.start, end: ev.end, originalTitle: ev.title };
+        const item = { names, roomType, catCount, start: ev.start, end: ev.end, nights, totalPrice };
 
-        const startDateOnlyTime = new Date(ev.start.getFullYear(), ev.start.getMonth(), ev.start.getDate()).getTime();
+        // ยอดรวมสะสมทั้งหมด (ทั้ง 2 กลุ่ม)
+        totalAllRevenue += totalPrice;
+        totalAllCats += catCount;
+        totalAllHouses += 1;
 
-        if (startDateOnlyTime <= nyeStart && ev.end.getTime() > nyeStart) {
+        const bookingStart = new Date(ev.start.getFullYear(), ev.start.getMonth(), ev.start.getDate()).getTime();
+        if (bookingStart <= nyeDateStart && ev.end.getTime() > nyeDateStart) {
             occupiedCounts[roomType] = (occupiedCounts[roomType] || 0) + 1;
         }
 
@@ -666,57 +686,90 @@ function generateSummaryTable(events) {
         }
     });
 
-    const createBookingTableHTML = (title, data, badgeClass) => {
-        let totalCats = 0;
+    const createTableHTML = (title, data) => {
+        let totalCats = 0, totalRev = 0;
         let rows = data.map(d => {
-            totalCats += d.catCount;
-            return `<tr>
-                                <td>${d.names}</td>
-                                <td>${d.roomType}</td>
-                                <td>${formatDate(d.start)} - ${formatDate(d.end)}</td>
-                                <td style="text-align:center;">1</td> <td style="text-align:center;">${d.catCount}</td>
-                            </tr>`;
+            totalCats += d.catCount; totalRev += d.totalPrice;
+            return `<tr><td>${d.names}</td><td>${d.roomType}</td><td style="text-align:center;">${d.nights} คืน</td><td style="text-align:right;">${d.totalPrice.toLocaleString()} ฿</td></tr>`;
         }).join('');
 
-        if (data.length === 0) rows = `<tr><td colspan="5" style="text-align:center; color:#999;">ไม่มีข้อมูล</td></tr>`;
-
         return `
-                    <div class="summary-title">${title} <span class="badge ${badgeClass}">${data.length} รายการ</span></div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th width="28%">ชื่อน้องแมว</th>
-                                    <th width="18%">ประเภทห้อง</th>
-                                    <th width="28%">วันที่เข้า-ออก</th>
-                                    <th width="13%" style="text-align:center;">จำนวนบ้าน (Booking)</th>
-                                    <th width="13%" style="text-align:center;">จำนวนแมว</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rows}
-                                <tr class="total-row">
-                                    <td colspan="3" style="text-align:right;">รวม</td>
-                                    <td style="text-align:center;">${data.length} บ้าน</td> <td style="text-align:center;">${totalCats} ตัว</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+            <div class="stats-grid">
+                <div class="stat-card" style="border-bottom:4px solid #f59e0b;">
+                    <div class="stat-label">บ้านพัก</div><div class="stat-value" style="color:#f59e0b;">${data.length}</div>
+                </div>
+                <div class="stat-card" style="border-bottom:4px solid #10b981;">
+                    <div class="stat-label">แมว</div><div class="stat-value" style="color:#10b981;">${totalCats}</div>
+                </div>
+                <div class="stat-card" style="border-bottom:4px solid #3b82f6;">
+                    <div class="stat-label">รายได้กลุ่มนี้</div><div class="stat-value" style="color:#3b82f6;">${totalRev.toLocaleString()}</div>
+                </div>
+            </div>
+            <div class="summary-title">${title}</div>
+            <div class="table-container"><table><thead><tr><th>น้องแมว</th><th>ห้อง</th><th style="text-align:center;">ระยะเวลา</th><th style="text-align:right;">รวมเงิน</th></tr></thead><tbody>${rows}</tbody></table></div>`;
     };
 
-    const bookingSummaryHTML = `
-                <h2 style="margin-top:0; border-bottom:1px solid #ddd; padding-bottom:12px;">📊 สรุปยอดการจองช่วงปีใหม่</h2>
-                ${createBookingTableHTML('🎆 ลูกค้าที่พักข้ามปี (31 ธ.ค. - 1 ม.ค.)', crossYear, 'bg-green')}
-                ${createBookingTableHTML('🏠 ลูกค้าที่ไม่พักข้ามปี', notCrossYear, 'bg-gray')}
-            `;
+    // การ์ดสรุปยอดรวมทั้งหมด (Grand Total)
+    const grandTotalHTML = `
+        <div class="grand-total-container">
+            <div class="grand-total-label">💰 รายได้รวมทั้งหมด (ทุกกลุ่ม)</div>
+            <div class="grand-total-value">${totalAllRevenue.toLocaleString()} ฿</div>
+            <div class="grand-total-stats">
+                <span>🏠 รวมทั้งหมด: <strong>${totalAllHouses}</strong> บ้าน</span>
+                <span>🐈 แมวรวมทั้งหมด: <strong>${totalAllCats}</strong> ตัว</span>
+            </div>
+        </div>
+    `;
 
-    const availabilityHTML = generateAvailabilityTable(occupiedCounts);
+    const availabilityHTML = `
+        <div class="availability-container">
+            <div class="availability-header">
+                <h2>🏨 สถานะห้องว่างคืนเคาท์ดาวน์</h2>
+                <p>อ้างอิงข้อมูลการจองวันที่ 31 ธ.ค. 2568</p>
+            </div>
+            <div class="availability-grid">
+                ${Object.keys(ROOM_TOTAL).map(type => {
+        const used = occupiedCounts[type] || 0;
+        const total = ROOM_TOTAL[type];
+        const available = total - used;
+        const isFull = available <= 0;
+        const color = isFull ? '#ef4444' : (available <= 2 ? '#f59e0b' : '#10b981');
+        return `
+                        <div class="room-card ${isFull ? 'full' : ''}">
+                            <div class="room-info-top">
+                                <span class="room-name">${type}</span>
+                                <span class="room-status-text" style="color:${color}">
+                                    ${isFull ? 'เต็ม' : available + ' <small style="font-size:14px; color:#9ca3af; font-weight:normal;">ว่าง</small>'}
+                                </span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width:${(used / total) * 100}%; background:${color};"></div>
+                            </div>
+                            <div class="room-details-bottom">
+                                <span>จองแล้ว ${used} ห้อง</span>
+                                <span>ทั้งหมด ${total} ห้อง</span>
+                            </div>
+                        </div>`;
+    }).join('')}
+            </div>
+        </div>
+    `;
 
-    document.getElementById('summary-area').innerHTML = bookingSummaryHTML + availabilityHTML;
+    document.getElementById('summary-area').innerHTML = `
+        <h1 class="report-title">📋 รายงานสรุปภาพรวมปีใหม่</h1>
+        ${grandTotalHTML}
+        ${createTableHTML('🎆 ลูกค้าที่พักข้ามปี (31 ธ.ค. - 1 ม.ค.)', crossYear)}
+        <div style="margin-top:40px;"></div>
+        ${createTableHTML('🏠 ลูกค้าที่ไม่พักข้ามปี', notCrossYear)}
+        ${availabilityHTML}
+    `;
 }
 
 
 // 🟢 เริ่มต้น: ตรวจสอบสถานะการเข้าสู่ระบบเมื่อโหลดหน้า
 checkSession();
+
+// 🟢 เริ่มต้น: ตรวจสอบสถานะการเข้าสู่ระบบเมื่อโหลดหน้า
+checkSession();
+
 
