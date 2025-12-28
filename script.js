@@ -11,12 +11,6 @@ if (typeof window.supabase === 'undefined') {
 } else {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
-
-// ** ห้องพักทั้งหมด **
-const ROOM_INVENTORY = {
-    'สแตนดาร์ด': 7, 'ดีลักซ์': 2, 'ซูพีเรีย': 4, 'พรีเมี่ยม': 4, 'วีไอพี': 2, 'วีวีไอพี': 1
-};
-
 const roomTypeMapping = {
     'สแตนดาร์ด': 'standard', 'ดีลักซ์': 'deluxe', 'ซูพีเรีย': 'superior', 'พรีเมี่ยม': 'premium', 'วีไอพี': 'vip', 'วีวีไอพี': 'vvip'
 };
@@ -771,5 +765,6 @@ checkSession();
 
 // 🟢 เริ่มต้น: ตรวจสอบสถานะการเข้าสู่ระบบเมื่อโหลดหน้า
 checkSession();
+
 
 
