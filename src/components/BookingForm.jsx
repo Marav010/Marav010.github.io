@@ -171,25 +171,21 @@ export default function BookingForm({ onSaved, initialDate }) {
             ))}
           </div>
 
-          {/* วันที่ - แบบ Compact สำหรับมือถือ */}
-          <div className="flex flex-row gap-2">
-            <div className="flex-1 min-w-0 space-y-1">
-              <label className="text-[9px] font-bold text-[#a1887f] uppercase ml-2 tracking-tight">วันที่เข้า</label>
+          {/* วันที่ */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-[#a1887f] uppercase ml-3 tracking-widest">วันที่เข้าพัก</label>
               <input
-                type="date" 
-                value={formData.start_date} 
-                required
-                className="w-full p-2.5 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] shadow-sm text-xs"
+                type="date" value={formData.start_date} required
+                className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] shadow-sm"
                 onChange={e => setFormData({ ...formData, start_date: e.target.value })}
               />
             </div>
-            <div className="flex-1 min-w-0 space-y-1">
-              <label className="text-[9px] font-bold text-[#a1887f] uppercase ml-2 tracking-tight">วันที่ออก</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-[#a1887f] uppercase ml-3 tracking-widest">วันที่ออก</label>
               <input
-                type="date" 
-                value={formData.end_date} 
-                required
-                className="w-full p-2.5 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] shadow-sm text-xs"
+                type="date" value={formData.end_date} required
+                className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] shadow-sm"
                 onChange={e => setFormData({ ...formData, end_date: e.target.value })}
               />
             </div>
