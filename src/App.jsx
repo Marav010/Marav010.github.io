@@ -44,7 +44,7 @@ function App() {
         <form onSubmit={handleSimpleLogin} className="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm border border-[#DBD0C5] relative z-10">
           <div className="flex flex-col items-center mb-8">
              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#C39A7A] mb-4 shadow-md">
-                <img src="/Logo/JingJai Cat Hotel final1.jpg" alt="Logo" className="w-full h-full object-cover" />
+                <img src="/Logo/JingJai-Cat-Hotel-final1.jpg" alt="Logo" className="w-full h-full object-cover" />
              </div>
              <h1 className="text-xl font-black text-[#372C2E] uppercase tracking-tighter text-center">
                 Jingjai Cat Hotel <br/>
