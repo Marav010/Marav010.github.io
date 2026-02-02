@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* ใช้ Font ที่อ่านง่ายและรองรับภาษาไทย */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;600;700&display=swap');
+
+:root {
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  /* Palette สีตามรูปภาพที่คุณส่งมา */
+  --color-dark-wood: #372C2E;    /* น้ำตาลเข้มเกือบดำ */
+  --color-bronze: #885E43;       /* น้ำตาลทองแดง */
+  --color-caramel: #DE9E48;      /* ส้มอิฐ/คาราเมล */
+  --color-latte: #C39A7A;        /* น้ำตาลนม */
+  --color-cream: #FDFBFA;        /* ขาวครีมสว่าง */
+  --color-beige-border: #DBD0C5;  /* เทาเบจสำหรับเส้นขอบ */
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-cream);
+  color: var(--color-dark-wood);
+  /* ลบ display: block !important เพื่อรักษาโครงสร้าง Flex ของ Sidebar */
+}
+
+/* ปรับแต่ง Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-latte);
+  border-radius: 10px;
+}
+
+/* --- ปรับแต่งสี FullCalendar (Luxury Brown) --- */
+.fc { 
+  --fc-border-color: var(--color-beige-border); 
+  --fc-button-bg-color: var(--color-bronze); 
+  --fc-button-border-color: var(--color-bronze); 
+  --fc-button-hover-bg-color: var(--color-dark-wood); 
+  --fc-today-bg-color: #F9F5F2; /* สีพื้นหลังวันปัจจุบัน */
+  background: white;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px rgba(55, 44, 46, 0.05);
+}
+
+/* หัวข้อปฏิทิน */
+.fc .fc-toolbar-title { 
+  font-size: 1.2rem; 
+  font-weight: 800; 
+  color: var(--color-dark-wood); 
+}
+
+/* เส้นตาราง */
+.fc-theme-standard td, .fc-theme-standard th { 
+  border: 1px solid var(--color-beige-border); 
+}
+
+/* เมื่อเอาเมาส์วางบนวันที่ */
+.fc-daygrid-day:hover { 
+  background-color: #FDF8F5; 
+  cursor: pointer; 
+}
+
+/* แถบกิจกรรมการจอง */
+.fc-event { 
+  border-radius: 6px; 
+  padding: 4px 6px; 
+  font-size: 0.75rem; 
+  font-weight: 600; 
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(136, 94, 67, 0.2);
+}
+
+/* --- ปรับแต่งปุ่มและ UI Elements --- */
+.fc .fc-button-primary {
+  border-radius: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+  border: none;
+}
+/* --- FullCalendar Custom Styles --- */
+
+/* ปรับแต่งปุ่ม "+ ดูเพิ่มเติม" (More Link) */
+.fc-daygrid-more-link {
+  background-color: #FDF8F5 !important;
+  color: #885E43 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+  margin-top: 2px !important;
+  display: block !important;
+  text-align: center !important;
+  border: 1px solid #efebe9 !important;
+  transition: all 0.2s ease;
+}
+
+.fc-daygrid-more-link:hover {
+  background-color: #885E43 !important;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+/* ปรับแต่งแถบสีการจอง (Event Bar) */
+.fc-event {
+  border-radius: 6px !important;
+  margin: 1px 4px !important;
+  padding: 2px 6px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+/* ปรับแต่งหน้าต่าง Popover ที่เด้งขึ้นมาเวลาคลิก More */
+.fc-popover {
+  border-radius: 20px !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1) !important;
+  border: 1px solid #DBD0C5 !important;
+  overflow: hidden !important;
+}
+
+.fc-popover-header {
+  background: #372C2E !important;
+  color: white !important;
+  padding: 12px 16px !important;
+  font-weight: bold !important;
+}
+
+.fc-popover-body {
+  padding: 10px !important;
+  background-color: white !important;
+}
+
+/* ลบเส้นขอบที่เกินความจำเป็น */
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: #efebe9 !important;
+}
+/* สไตล์โลโก้ (จากที่คุณต้องการเปลี่ยนแทน Vite) */
+.logo {
+  border: 2px solid var(--color-beige-border);
+  background-color: white;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* ปรับสีตัวหนังสือใน Sidebar */
+aside h1, aside span, nav span {
+  color: var(--color-dark-wood);
+}
