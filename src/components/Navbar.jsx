@@ -17,7 +17,7 @@ export default function Navbar({ activeTab, setActiveTab, onLogout }) {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-[#DBD0C5] bg-white shadow-sm flex items-center justify-center">
               <img 
-                src="/Logo/JingJai Cat Hotel final1.jpg" 
+                src="/Logo/JingJai-Cat-Hotel-final1.jpg" 
                 alt="JingjaiCatHotel" 
                 className="w-full h-full object-cover"
               />
