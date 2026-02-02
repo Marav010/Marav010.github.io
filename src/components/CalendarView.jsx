@@ -123,6 +123,13 @@ export default function CalendarView({ onDateClick }) {
           events={events}
           eventDisplay="block"
           displayEventTime={false}
+          // --- เพิ่มส่วนนี้เข้าไปครับ ---
+          selectable={true} // เปิดให้เลือกช่องวันที่ได้
+          dateClick={(info) => {
+            // เมื่อคลิกที่ช่องวันที่ (ว่างๆ)
+            onDateClick(info.dateStr);
+          }}
+          // --------------------------
           dayMaxEvents={2}
           moreLinkContent={(args) => `+ ดูอีก ${args.num} ตัว`}
           headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
