@@ -144,9 +144,9 @@ export default function CustomerDatabase() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `customer-photos/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('customer-images').upload(filePath, file);
       if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const { data: { publicUrl } } = supabase.storage.from('customer-images').getPublicUrl(filePath);
       setEditingCustomer(prev => ({ ...prev, image: publicUrl }));
     } catch (error) {
       alert('Error uploading image!');
