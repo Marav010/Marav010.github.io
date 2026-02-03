@@ -41,9 +41,9 @@ export default function CustomerDatabase() {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
       if (!acc[name]) {
         acc[name] = {
-          name, phone: b.phone || '-', source: b.source || 'Line',
+          name, phone: b.phone || '', source: b.source || 'Line',
           source_id: b.source_id || '', stayCount: 0, totalSpent: 0,
-          cameraId: b.camera_id || '-', eating_habit: b.eating_habit || '-',
+          cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
           note: b.note || '-', image: b.customer_image || '', 
           catNames: new Set(),
           history: [] // เก็บประวัติการเข้าพักแยกเป็นรายครั้ง
