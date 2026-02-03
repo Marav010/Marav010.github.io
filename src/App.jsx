@@ -5,6 +5,7 @@ import BookingForm from './components/BookingForm';
 import CalendarView from './components/CalendarView';
 import HistoryTable from './components/HistoryTable';
 import ReportSummary from './components/ReportSummary';
+import CustomerDatabase from './components/CustomerDatabase'; 
 
 function App() {
   const [session, setSession] = useState(null);
@@ -37,7 +38,6 @@ function App() {
   if (!session) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F5F2F0] p-4 relative overflow-hidden">
-        {/* ตกแต่งพื้นหลังเล็กน้อย */}
         <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#DE9E48] opacity-10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#885E43] opacity-10 rounded-full blur-3xl"></div>
 
@@ -94,11 +94,14 @@ function App() {
             />
           )}
           {activeTab === 'history' && <HistoryTable />}
+          
+          {/* --- เพิ่มเงื่อนไข Render สำหรับหน้าฐานข้อมูลลูกค้าตรงนี้ครับ --- */}
+          {activeTab === 'customers' && <CustomerDatabase />}
+          
           {activeTab === 'report' && <ReportSummary />}
         </div>
       </main>
 
-      {/* Footer เล็กๆ เพื่อความสวยงาม */}
       <footer className="pb-8 text-center text-[#A1887F] text-xs font-bold uppercase tracking-widest opacity-50">
         Jingjai Cat Hotel — Premium Management System
       </footer>
