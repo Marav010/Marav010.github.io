@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { 
   User, Phone, MessageCircle, Camera, Search, X, Plus, Cat, Save, 
   Facebook, Upload, Loader2, Edit3, Trash2, Utensils, FileText,
-  ChevronLeft, ChevronRight, Calendar, DoorOpen, CreditCard, Clock, ChevronRightCircle
+  ChevronLeft, ChevronRight, Calendar, DoorOpen, CreditCard, Clock, History
 } from 'lucide-react';
 
 export default function CustomerDatabase() {
@@ -16,10 +16,9 @@ export default function CustomerDatabase() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; 
 
-  // Modal States
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal แก้ไข
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [historyModal, setHistoryModal] = useState(null); // Modal ดูประวัติ (เก็บ Object ลูกค้า)
+  const [historyModal, setHistoryModal] = useState(null);
   
   const [editingCustomer, setEditingCustomer] = useState({
     name: '', phone: '', source: 'Line', source_id: '', cameraId: '-', 
@@ -35,7 +34,6 @@ export default function CustomerDatabase() {
     setLoading(false);
   };
 
-  // รวมข้อมูลลูกค้าและประวัติเข้าพัก
   const customerStats = useMemo(() => {
     const stats = bookings.reduce((acc, b) => {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
@@ -46,6 +44,7 @@ export default function CustomerDatabase() {
           cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
           note: b.note || '-', image: b.customer_image || '', 
           catNames: new Set(),
+          lastStay: { start: b.start_date, end: b.end_date }, // เก็บวันเข้าพักล่าสุด
           history: [] 
         };
       }
@@ -99,11 +98,29 @@ export default function CustomerDatabase() {
     fetchData();
   };
 
+  const handleFileUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (!file) return;
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `profiles/${fileName}`;
+      const { error: uploadError } = await supabase.storage.from('customer-images').upload(filePath, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('customer-images').getPublicUrl(filePath);
+      setEditingCustomer({ ...editingCustomer, image: publicUrl });
+    } catch (error) {
+      alert('อัปโหลดรูปไม่สำเร็จ: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) return <div className="h-screen flex items-center justify-center text-[#885E43] font-bold"><Loader2 className="animate-spin mr-2"/> กำลังโหลดข้อมูล...</div>;
 
   return (
     <div className="space-y-6 py-4 pb-20 px-2">
-      {/* Search Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
@@ -115,15 +132,13 @@ export default function CustomerDatabase() {
         </div>
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentData.map((customer, idx) => (
           <div 
             key={idx} 
             onClick={() => setHistoryModal(customer)}
-            className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden group"
+            className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden"
           >
-            {/* ข้อมูลหลักหน้าการ์ด */}
             <div className="flex gap-4">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] shrink-0">
                 {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32}/></div>}
@@ -137,10 +152,14 @@ export default function CustomerDatabase() {
                   <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md"><Phone size={10} className="inline mr-1"/>{customer.phone}</span>
                   <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md"><Cat size={10} className="inline mr-1"/>{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
                 </div>
+                {/* แก้ไขหน้าการ์ด: แสดงวันเข้าพักล่าสุด */}
+                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-[#A1887F]">
+                  <Calendar size={12} className="text-[#885E43]"/>
+                  <span>ล่าสุด: {customer.lastStay.start} <span className="text-[#885E43]">ถึง</span> {customer.lastStay.end}</span>
+                </div>
               </div>
             </div>
 
-            {/* ข้อมูลการกิน & หมายเหตุ (โชว์ที่หน้าการ์ด) */}
             <div className="mt-4 space-y-2">
               <div className="bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]/50">
                 <div className="flex items-center gap-2 text-[#885E43] font-bold text-[10px] mb-1 uppercase"><Utensils size={12}/> ข้อมูลการกิน</div>
@@ -152,7 +171,6 @@ export default function CustomerDatabase() {
               </div>
             </div>
 
-            {/* แถบสถิติด้านล่าง */}
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-[#FDFBFA]">
                <div className="text-center flex-1"><p className="text-[8px] font-bold text-[#A1887F] uppercase">ยอดรวม</p><p className="text-sm font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
                <div className="text-center flex-1 border-x border-[#FDFBFA]"><p className="text-[8px] font-bold text-[#A1887F] uppercase">พักแล้ว</p><p className="text-sm font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
@@ -162,78 +180,58 @@ export default function CustomerDatabase() {
         ))}
       </div>
 
-     {/* --- Modal ดูประวัติการเข้าพัก --- */}
-{historyModal && (
-  <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-    <div className="bg-[#white] w-full max-w-2xl h-[85vh] md:h-auto md:max-h-[85vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden">
-      <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#DE9E48]/20 flex items-center justify-center border border-[#DE9E48]/30">
-            <History size={24} className="text-[#DE9E48]"/>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">{historyModal.name}</h3>
-            <p className="text-xs text-gray-400">ประวัติเข้าพัก {historyModal.stayCount} ครั้ง</p>
+      {historyModal && (
+        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
+          <div className="bg-white w-full max-w-2xl h-[85vh] md:h-auto md:max-h-[85vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden">
+            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#DE9E48]/20 flex items-center justify-center border border-[#DE9E48]/30">
+                  <History size={24} className="text-[#DE9E48]"/>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{historyModal.name}</h3>
+                  <p className="text-xs text-gray-400">ประวัติเข้าพัก {historyModal.stayCount} ครั้ง</p>
+                </div>
+              </div>
+              <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28}/></button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-4 font-sans">
+              {historyModal.history.map((h, i) => (
+                <div key={i} className="bg-white p-5 rounded-3xl border border-[#efebe9] shadow-sm">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-start">
+                    <div className="flex flex-col col-span-2 md:col-span-1">
+                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">วันที่เข้าพัก</span>
+                      <div className="flex items-start gap-2 text-[13px] font-black text-[#372C2E]">
+                         <Calendar size={14} className="text-[#885E43] mt-0.5" />
+                         <span>{h.start_date} <span className="text-[#885E43]">ถึง</span> {h.end_date}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">ประเภทห้อง</span>
+                      <div className="text-blue-600 font-bold text-[13px] flex items-center gap-1.5"><DoorOpen size={14}/> {h.room_type}</div>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">น้องแมว</span>
+                      <div className="text-[#DE9E48] font-bold text-[13px] flex items-center gap-1.5"><Cat size={14}/> {h.cat_names}</div>
+                    </div>
+                    <div className="flex flex-col text-right">
+                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">ค่าที่พัก</span>
+                      <div className="text-lg font-black text-[#885E43]">฿{h.total_price?.toLocaleString()}</div>
+                    </div>
+                  </div>
+                  {h.note && (
+                    <div className="mt-3 pt-3 border-t border-dashed border-gray-100 text-[11px] text-[#A1887F] flex gap-2">
+                      <FileText size={12} className="shrink-0"/> <span className="italic">หมายเหตุการจอง: {h.note}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28}/></button>
-      </div>
-      
-      <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-4">
-        {historyModal.history.map((h, i) => (
-          <div key={i} className="bg-white p-5 rounded-3xl border border-[#efebe9] shadow-sm">
-            <div className="grid grid-cols-4 gap-4 items-start">
-              
-              {/* ส่วนวันที่เข้าพัก (ที่แก้ไข) */}
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[#A1887F] mb-1">วันที่เข้าพัก</span>
-                <div className="flex items-start gap-2">
-                   <Calendar size={14} className="text-[#885E43] mt-0.5 shrink-0" />
-                   <span className="text-[13px] font-black text-[#372C2E] leading-relaxed">
-                     {h.start_date} <span className="text-[#885E43] font-bold">ถึง</span> {h.end_date}
-                   </span>
-                </div>
-              </div>
+      )}
 
-              {/* ประเภทห้อง */}
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[#A1887F] mb-1">ประเภทห้อง</span>
-                <div className="flex items-center gap-1.5 text-blue-600 font-bold text-[13px]">
-                   <DoorOpen size={14}/> {h.room_type}
-                </div>
-              </div>
-
-              {/* น้องแมว */}
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-[#A1887F] mb-1">น้องแมว</span>
-                <div className="flex items-center gap-1.5 text-[#DE9E48] font-bold text-[13px]">
-                   <Cat size={14}/> {h.cat_names}
-                </div>
-              </div>
-
-              {/* ค่าที่พัก */}
-              <div className="flex flex-col text-right">
-                <span className="text-[11px] font-bold text-[#A1887F] mb-1">ค่าที่พัก</span>
-                <div className="text-lg font-black text-[#885E43]">
-                   ฿{h.total_price?.toLocaleString()}
-                </div>
-              </div>
-
-            </div>
-
-            {h.note && (
-              <div className="mt-3 pt-3 border-t border-dashed border-gray-100 text-[11px] text-[#A1887F] flex gap-2">
-                <FileText size={12} className="shrink-0"/> <span className="italic">หมายเหตุ: {h.note}</span>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
-
-      {/* --- Modal เพิ่ม/แก้ไขลูกค้า (เหมือนเดิม) --- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl">
@@ -259,6 +257,16 @@ export default function CustomerDatabase() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8 py-4">
+          <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="p-2 rounded-xl border bg-white disabled:opacity-30 text-[#885E43]"><ChevronLeft size={20} /></button>
+          {[...Array(totalPages)].map((_, i) => (
+            <button key={i} onClick={() => setCurrentPage(i + 1)} className={`w-10 h-10 rounded-xl font-bold ${currentPage === i + 1 ? 'bg-[#885E43] text-white' : 'bg-white border text-[#885E43]'}`}>{i + 1}</button>
+          ))}
+          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="p-2 rounded-xl border bg-white disabled:opacity-30 text-[#885E43]"><ChevronRight size={20} /></button>
         </div>
       )}
     </div>
