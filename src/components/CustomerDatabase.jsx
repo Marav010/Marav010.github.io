@@ -44,7 +44,7 @@ export default function CustomerDatabase() {
           cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
           note: b.note || '-', image: b.customer_image || '', 
           catNames: new Set(),
-          lastStay: { start: b.start_date, end: b.end_date }, // เก็บวันเข้าพักล่าสุด
+          lastStay: { start: b.start_date, end: b.end_date }, 
           history: [] 
         };
       }
@@ -121,6 +121,7 @@ export default function CustomerDatabase() {
 
   return (
     <div className="space-y-6 py-4 pb-20 px-2">
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
@@ -132,6 +133,7 @@ export default function CustomerDatabase() {
         </div>
       </div>
 
+      {/* Grid Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentData.map((customer, idx) => (
           <div 
@@ -149,12 +151,12 @@ export default function CustomerDatabase() {
                   <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg"><Edit3 size={18}/></button>
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-1">
-                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md"><Phone size={10} className="inline mr-1"/>{customer.phone}</span>
-                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md"><Cat size={10} className="inline mr-1"/>{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
+                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md flex items-center gap-1"><Phone size={10}/>{customer.phone}</span>
+                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md flex items-center gap-1"><Cat size={10}/>{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
                 </div>
-                {/* แก้ไขหน้าการ์ด: แสดงวันเข้าพักล่าสุด */}
-                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-[#A1887F]">
-                  <Calendar size={12} className="text-[#885E43]"/>
+                {/* แก้ไขวันที่ล่าสุดหน้าการ์ด */}
+                <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-[#A1887F]">
+                  <Calendar size={11} className="text-[#885E43]"/>
                   <span>ล่าสุด: {customer.lastStay.start} <span className="text-[#885E43]">ถึง</span> {customer.lastStay.end}</span>
                 </div>
               </div>
@@ -163,11 +165,11 @@ export default function CustomerDatabase() {
             <div className="mt-4 space-y-2">
               <div className="bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]/50">
                 <div className="flex items-center gap-2 text-[#885E43] font-bold text-[10px] mb-1 uppercase"><Utensils size={12}/> ข้อมูลการกิน</div>
-                <p className="text-xs text-[#372C2E] line-clamp-2">{customer.eating_habit || '-'}</p>
+                <p className="text-xs text-[#372C2E] line-clamp-2 font-medium">{customer.eating_habit || '-'}</p>
               </div>
               <div className="bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]/50">
                 <div className="flex items-center gap-2 text-[#885E43] font-bold text-[10px] mb-1 uppercase"><FileText size={12}/> หมายเหตุ</div>
-                <p className="text-xs text-[#372C2E] line-clamp-2">{customer.note || '-'}</p>
+                <p className="text-xs text-[#372C2E] line-clamp-2 font-medium">{customer.note || '-'}</p>
               </div>
             </div>
 
@@ -180,49 +182,56 @@ export default function CustomerDatabase() {
         ))}
       </div>
 
+      {/* History Modal */}
       {historyModal && (
         <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-          <div className="bg-white w-full max-w-2xl h-[85vh] md:h-auto md:max-h-[85vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto md:max-h-[90vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden">
             <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#DE9E48]/20 flex items-center justify-center border border-[#DE9E48]/30">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20">
                   <History size={24} className="text-[#DE9E48]"/>
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{historyModal.name}</h3>
-                  <p className="text-xs text-gray-400">ประวัติเข้าพัก {historyModal.stayCount} ครั้ง</p>
+                  <h3 className="font-bold text-lg leading-tight">{historyModal.name}</h3>
+                  <p className="text-xs text-[#DE9E48] font-bold uppercase tracking-wider">ประวัติการเข้าพักทั้งหมด</p>
                 </div>
               </div>
               <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28}/></button>
             </div>
             
-            <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-4 font-sans">
+            <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-4">
               {historyModal.history.map((h, i) => (
-                <div key={i} className="bg-white p-5 rounded-3xl border border-[#efebe9] shadow-sm">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-start">
-                    <div className="flex flex-col col-span-2 md:col-span-1">
-                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">วันที่เข้าพัก</span>
-                      <div className="flex items-start gap-2 text-[13px] font-black text-[#372C2E]">
-                         <Calendar size={14} className="text-[#885E43] mt-0.5" />
+                <div key={i} className="bg-white p-5 rounded-[1.5rem] border border-[#efebe9] shadow-sm hover:border-[#DE9E48]/30 transition-colors">
+                  <div className="grid grid-cols-4 gap-4 items-center">
+                    
+                    {/* ส่วนวันที่ (ใช้คำว่า ถึง) */}
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-black text-[#A1887F] mb-1.5 uppercase tracking-tighter">วันที่เข้าพัก</span>
+                      <div className="flex items-center gap-2 text-[12px] font-black text-[#372C2E] whitespace-nowrap">
+                         <Calendar size={14} className="text-[#885E43] shrink-0" />
                          <span>{h.start_date} <span className="text-[#885E43]">ถึง</span> {h.end_date}</span>
                       </div>
                     </div>
+
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">ประเภทห้อง</span>
-                      <div className="text-blue-600 font-bold text-[13px] flex items-center gap-1.5"><DoorOpen size={14}/> {h.room_type}</div>
+                      <span className="text-[10px] font-black text-[#A1887F] mb-1.5 uppercase tracking-tighter">ประเภทห้อง</span>
+                      <div className="text-blue-600 font-black text-[13px] flex items-center gap-2"><DoorOpen size={14} className="shrink-0"/> {h.room_type}</div>
                     </div>
+
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">น้องแมว</span>
-                      <div className="text-[#DE9E48] font-bold text-[13px] flex items-center gap-1.5"><Cat size={14}/> {h.cat_names}</div>
+                      <span className="text-[10px] font-black text-[#A1887F] mb-1.5 uppercase tracking-tighter">น้องแมว</span>
+                      <div className="text-[#DE9E48] font-black text-[13px] flex items-center gap-2 truncate"><Cat size={14} className="shrink-0"/> {h.cat_names}</div>
                     </div>
+
                     <div className="flex flex-col text-right">
-                      <span className="text-[11px] font-bold text-[#A1887F] mb-1">ค่าที่พัก</span>
+                      <span className="text-[10px] font-black text-[#A1887F] mb-1.5 uppercase tracking-tighter">ค่าที่พัก</span>
                       <div className="text-lg font-black text-[#885E43]">฿{h.total_price?.toLocaleString()}</div>
                     </div>
+
                   </div>
                   {h.note && (
                     <div className="mt-3 pt-3 border-t border-dashed border-gray-100 text-[11px] text-[#A1887F] flex gap-2">
-                      <FileText size={12} className="shrink-0"/> <span className="italic">หมายเหตุการจอง: {h.note}</span>
+                      <FileText size={12} className="shrink-0"/> <span className="font-medium">หมายเหตุ: {h.note}</span>
                     </div>
                   )}
                 </div>
@@ -232,6 +241,7 @@ export default function CustomerDatabase() {
         </div>
       )}
 
+      {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl">
@@ -249,17 +259,18 @@ export default function CustomerDatabase() {
               </div>
               <div className="space-y-3">
                 <input placeholder="ชื่อลูกค้า" className="w-full p-3 bg-[#FDFBFA] border rounded-xl font-bold" value={editingCustomer.name} onChange={e => setEditingCustomer({...editingCustomer, name: e.target.value})} disabled={modalMode === 'edit'} />
-                <input placeholder="เบอร์โทร" className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} />
+                <input placeholder="เบอร์โทร" className="w-full p-3 bg-[#FDFBFA] border rounded-xl font-bold" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} />
                 <input placeholder="ไอดีกล้อง" className="w-full p-3 bg-blue-50 border-blue-100 border rounded-xl font-bold text-blue-600" value={editingCustomer.cameraId} onChange={e => setEditingCustomer({...editingCustomer, cameraId: e.target.value})} />
-                <textarea placeholder="ข้อมูลการกิน" rows="2" className="w-full p-3 bg-[#FDFBFA] border rounded-xl text-sm" value={editingCustomer.eating_habit} onChange={e => setEditingCustomer({...editingCustomer, eating_habit: e.target.value})} />
-                <textarea placeholder="หมายเหตุ" rows="2" className="w-full p-3 bg-[#FDFBFA] border rounded-xl text-sm" value={editingCustomer.note} onChange={e => setEditingCustomer({...editingCustomer, note: e.target.value})} />
-                <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-2xl font-black shadow-lg hover:bg-[#5D4037]">บันทึกข้อมูล</button>
+                <textarea placeholder="ข้อมูลการกิน" rows="2" className="w-full p-3 bg-[#FDFBFA] border rounded-xl text-sm font-medium" value={editingCustomer.eating_habit} onChange={e => setEditingCustomer({...editingCustomer, eating_habit: e.target.value})} />
+                <textarea placeholder="หมายเหตุ" rows="2" className="w-full p-3 bg-[#FDFBFA] border rounded-xl text-sm font-medium" value={editingCustomer.note} onChange={e => setEditingCustomer({...editingCustomer, note: e.target.value})} />
+                <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-2xl font-black shadow-lg hover:bg-[#5D4037] transition-all">บันทึกข้อมูล</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8 py-4">
           <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="p-2 rounded-xl border bg-white disabled:opacity-30 text-[#885E43]"><ChevronLeft size={20} /></button>
