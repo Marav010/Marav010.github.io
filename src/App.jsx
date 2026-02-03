@@ -6,11 +6,16 @@ import CalendarView from './components/CalendarView';
 import HistoryTable from './components/HistoryTable';
 import ReportSummary from './components/ReportSummary';
 import CustomerDatabase from './components/CustomerDatabase'; 
+// นำเข้า AlertCircle สำหรับแสดงไอคอนใน Modal
+import { AlertCircle, X } from 'lucide-react'; 
 
 function App() {
   const [session, setSession] = useState(null);
   const [activeTab, setActiveTab] = useState('calendar');
   const [preSelectedDate, setPreSelectedDate] = useState('');
+  
+  // สร้าง State สำหรับเก็บข้อความ Error เพื่อเปิด Modal
+  const [loginError, setLoginError] = useState(null); 
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -27,17 +32,21 @@ function App() {
     const email = e.target.email.value;
     const password = e.target.password.value;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert("❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง: " + error.message);
+    
+    if (error) {
+      // แทนที่จะ alert() ปกติ เรามา set loginError แทน
+      setLoginError("อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง");
+    }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
-  // --- หน้า Login สไตล์พรีเมียม ---
   if (!session) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F5F2F0] p-4 relative overflow-hidden">
+        {/* Background Decorations */}
         <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-[#DE9E48] opacity-10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#885E43] opacity-10 rounded-full blur-3xl"></div>
 
@@ -70,20 +79,47 @@ function App() {
           </div>
           <p className="text-center text-[#A1887F] text-[10px] mt-8 font-medium">© 2024 Jingjai Cat Hotel. All rights reserved.</p>
         </form>
+
+        {/* --- สวนของ Login Error Modal (Alert สวยๆ) --- */}
+        {loginError && (
+          <div className="fixed inset-0 z-[1200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner relative">
+                  <AlertCircle size={40} />
+                  {/* ปุ่มกากบาทมุมขวาบนของไอคอนเพื่อให้ปิดได้ง่าย */}
+                  <button 
+                    onClick={() => setLoginError(null)}
+                    className="absolute -top-1 -right-1 bg-white text-gray-400 rounded-full p-1 shadow-md hover:text-gray-600"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+                <h3 className="text-xl font-black text-[#372C2E] mb-2">เข้าสู่ระบบไม่สำเร็จ</h3>
+                <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8 px-4">
+                  {loginError}
+                </p>
+                <button 
+                  onClick={() => setLoginError(null)} 
+                  className="w-full py-4 bg-[#372C2E] text-white rounded-2xl font-black shadow-lg shadow-[#372C2E]/20 hover:bg-[#5D4037] transition-all active:scale-95"
+                >
+                  ลองใหม่อีกครั้ง
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  // --- หน้าหลักของระบบ ---
+  // --- หน้าหลักของระบบ (Return ตามเดิม) ---
   return (
     <div className="min-h-screen bg-[#F5F2F0]">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
-      
       <main className="max-w-7xl mx-auto p-4 md:p-8">
         <div className="bg-white rounded-[3rem] shadow-xl shadow-[#372C2E]/5 border border-[#DBD0C5] p-4 md:p-10 min-h-[700px]">
-          {activeTab === 'calendar' && (
-            <CalendarView onDateClick={handleDateClick} />
-          )}
+          {activeTab === 'calendar' && <CalendarView onDateClick={handleDateClick} />}
           {activeTab === 'booking' && (
             <BookingForm 
               initialDate={preSelectedDate} 
@@ -94,16 +130,12 @@ function App() {
             />
           )}
           {activeTab === 'history' && <HistoryTable />}
-          
-          {/* --- เพิ่มเงื่อนไข Render สำหรับหน้าฐานข้อมูลลูกค้าตรงนี้ครับ --- */}
           {activeTab === 'customers' && <CustomerDatabase />}
-          
           {activeTab === 'report' && <ReportSummary />}
         </div>
       </main>
-
       <footer className="pb-8 text-center text-[#A1887F] text-xs font-bold uppercase tracking-widest opacity-50">
-        Jingjai Cat Hotel — Premium Management System
+        Jingjai Cat Hotel — Management System
       </footer>
     </div>
   );
