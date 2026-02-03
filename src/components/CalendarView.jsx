@@ -17,10 +17,10 @@ export default function CalendarView({ onDateClick }) {
 
   // 1. กำหนดจำนวนห้องทั้งหมดแต่ละประเภท
   const ROOM_CONFIG = {
-    'สแตนดาร์ด': { total: 10, color: '#C39A7A' },
-    'ดีลักซ์': { total: 5, color: '#ad6ea8' },
-    'ซูพีเรีย': { total: 5, color: '#eea5a5' },
-    'พรีเมี่ยม': { total: 3, color: '#368daf' },
+    'สแตนดาร์ด': { total: 7, color: '#C39A7A' },
+    'ดีลักซ์': { total: 2, color: '#ad6ea8' },
+    'ซูพีเรีย': { total: 4, color: '#eea5a5' },
+    'พรีเมี่ยม': { total: 4, color: '#368daf' },
     'วีไอพี': { total: 2, color: '#30532d' },
     'วีวีไอพี': { total: 1, color: '#372C2E' }
   };
