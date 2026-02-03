@@ -41,9 +41,9 @@ export default function CustomerDatabase() {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
       if (!acc[name]) {
         acc[name] = {
-          name, phone: b.phone || '-', source: b.source || 'Line',
+          name, phone: b.phone || '', source: b.source || 'Line',
           source_id: b.source_id || '', stayCount: 0, totalSpent: 0,
-          cameraId: b.camera_id || '-', eating_habit: b.eating_habit || '-',
+          cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
           note: b.note || '-', image: b.customer_image || '', 
           catNames: new Set(),
           history: [] 
@@ -107,7 +107,7 @@ export default function CustomerDatabase() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
-          <div><h2 className="text-2xl font-black text-[#372C2E]">ฐานข้อมูลลูกค้า</h2><p className="text-xs text-[#A1887F] font-bold">แตะการ์ดเพื่อดูประวัติการเข้าพัก</p></div>
+          <div><h2 className="text-2xl font-black text-[#372C2E]">ประวัติข้อมูลลูกค้า</h2><p className="text-xs text-[#A1887F] font-bold">ข้อมูลการเข้าพักและรายละเอียดลูกค้า</p></div>
         </div>
         <div className="flex gap-2 w-full md:w-auto">
           <input type="text" placeholder="ค้นหาชื่อลูกค้า/ชื่อแมว..." className="px-4 py-2.5 w-full md:w-64 bg-white border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43] font-bold text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
@@ -185,7 +185,7 @@ export default function CustomerDatabase() {
                   <div className="flex justify-between items-start border-b border-[#FDFBFA] pb-3 mb-3">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-[#A1887F] uppercase">ระยะเวลาพัก</span>
-                      <span className="text-sm font-black text-[#885E43] flex items-center gap-2"><Calendar size={14}/> {h.start_date} → {h.end_date}</span>
+                      <span className="text-sm font-black text-[#885E43] flex items-center gap-2"><Calendar size={14}/> {h.start_date}ถึง{h.end_date}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-[10px] font-bold text-[#A1887F] uppercase">ค่าบริการ</span>
