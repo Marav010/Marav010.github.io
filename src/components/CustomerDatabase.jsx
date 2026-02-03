@@ -120,7 +120,7 @@ export default function CustomerDatabase() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
         <div className="flex items-center gap-4">
           <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
-          <div><h2 className="text-2xl font-black text-[#372C2E]">ฐานข้อมูลลูกค้า</h2><p className="text-xs text-[#A1887F] font-bold">จัดการโปรไฟล์และไอดีกล้อง</p></div>
+          <div><h2 className="text-2xl font-black text-[#372C2E]">ข้อมูลลูกค้า</h2><p className="text-xs text-[#A1887F] font-bold">จัดการโปรไฟล์และข้อมูลลูกค้า</p></div>
         </div>
         <div className="flex w-full md:w-auto gap-2">
           <input type="text" placeholder="ค้นหา..." className="pl-4 pr-4 py-2.5 bg-white border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43] font-bold text-sm w-full md:w-64" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
