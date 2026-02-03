@@ -6,12 +6,18 @@
 :root {
   font-family: 'IBM Plex Sans Thai', sans-serif;
   /* Palette สีตามรูปภาพที่คุณส่งมา */
-  --color-dark-wood: #372C2E;    /* น้ำตาลเข้มเกือบดำ */
-  --color-bronze: #885E43;       /* น้ำตาลทองแดง */
-  --color-caramel: #DE9E48;      /* ส้มอิฐ/คาราเมล */
-  --color-latte: #C39A7A;        /* น้ำตาลนม */
-  --color-cream: #FDFBFA;        /* ขาวครีมสว่าง */
-  --color-beige-border: #DBD0C5;  /* เทาเบจสำหรับเส้นขอบ */
+  --color-dark-wood: #372C2E;
+  /* น้ำตาลเข้มเกือบดำ */
+  --color-bronze: #885E43;
+  /* น้ำตาลทองแดง */
+  --color-caramel: #DE9E48;
+  /* ส้มอิฐ/คาราเมล */
+  --color-latte: #C39A7A;
+  /* น้ำตาลนม */
+  --color-cream: #FDFBFA;
+  /* ขาวครีมสว่าง */
+  --color-beige-border: #DBD0C5;
+  /* เทาเบจสำหรับเส้นขอบ */
 }
 
 body {
@@ -25,18 +31,20 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-latte);
   border-radius: 10px;
 }
 
 /* --- ปรับแต่งสี FullCalendar (Luxury Brown) --- */
-.fc { 
-  --fc-border-color: var(--color-beige-border); 
-  --fc-button-bg-color: var(--color-bronze); 
-  --fc-button-border-color: var(--color-bronze); 
-  --fc-button-hover-bg-color: var(--color-dark-wood); 
-  --fc-today-bg-color: #F9F5F2; /* สีพื้นหลังวันปัจจุบัน */
+.fc {
+  --fc-border-color: var(--color-beige-border);
+  --fc-button-bg-color: var(--color-bronze);
+  --fc-button-border-color: var(--color-bronze);
+  --fc-button-hover-bg-color: var(--color-dark-wood);
+  --fc-today-bg-color: #F9F5F2;
+  /* สีพื้นหลังวันปัจจุบัน */
   background: white;
   padding: 1rem;
   border-radius: 1.5rem;
@@ -44,29 +52,30 @@ body {
 }
 
 /* หัวข้อปฏิทิน */
-.fc .fc-toolbar-title { 
-  font-size: 1.2rem; 
-  font-weight: 800; 
-  color: var(--color-dark-wood); 
+.fc .fc-toolbar-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-dark-wood);
 }
 
 /* เส้นตาราง */
-.fc-theme-standard td, .fc-theme-standard th { 
-  border: 1px solid var(--color-beige-border); 
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border: 1px solid var(--color-beige-border);
 }
 
 /* เมื่อเอาเมาส์วางบนวันที่ */
-.fc-daygrid-day:hover { 
-  background-color: #FDF8F5; 
-  cursor: pointer; 
+.fc-daygrid-day:hover {
+  background-color: #FDF8F5;
+  cursor: pointer;
 }
 
 /* แถบกิจกรรมการจอง */
-.fc-event { 
-  border-radius: 6px; 
-  padding: 4px 6px; 
-  font-size: 0.75rem; 
-  font-weight: 600; 
+.fc-event {
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
   border: none !important;
   box-shadow: 0 2px 5px rgba(136, 94, 67, 0.2);
 }
@@ -78,6 +87,7 @@ body {
   text-transform: capitalize;
   border: none;
 }
+
 /* --- FullCalendar Custom Styles --- */
 
 /* ปรับแต่งปุ่ม "+ ดูเพิ่มเติม" (More Link) */
@@ -133,9 +143,11 @@ body {
 }
 
 /* ลบเส้นขอบที่เกินความจำเป็น */
-.fc-theme-standard td, .fc-theme-standard th {
+.fc-theme-standard td,
+.fc-theme-standard th {
   border-color: #efebe9 !important;
 }
+
 /* สไตล์โลโก้ (จากที่คุณต้องการเปลี่ยนแทน Vite) */
 .logo {
   border: 2px solid var(--color-beige-border);
@@ -149,6 +161,28 @@ body {
 }
 
 /* ปรับสีตัวหนังสือใน Sidebar */
-aside h1, aside span, nav span {
+aside h1,
+aside span,
+nav span {
   color: var(--color-dark-wood);
+}
+
+.fc {
+  max-width: 100% !important;
+}
+
+.fc-event {
+  border-radius: 6px !important;
+  border: none !important;
+  margin-bottom: 1px !important;
+  padding: 2px 4px !important;
+  cursor: pointer;
+}
+
+.fc-daygrid-event-h-harness {
+  margin-bottom: 2px !important;
+}
+
+.fc-scroller {
+  overflow: visible !important;
 }
