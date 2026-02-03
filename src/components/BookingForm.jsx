@@ -1,20 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2, Info } from 'lucide-react';
+import { ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2 } from 'lucide-react';
 
 export default function BookingForm({ onSaved, initialDate }) {
   const [loading, setLoading] = useState(false);
-  const [roomUsage, setRoomUsage] = useState({}); // เก็บจำนวนห้องที่ถูกจองแล้ว
-
-  // 1. กำหนดจำนวนห้องทั้งหมดที่โรงแรมมี
-  const TOTAL_ROOMS = {
-    'สแตนดาร์ด': 10,
-    'ดีลักซ์': 5,
-    'ซูพีเรีย': 5,
-    'พรีเมี่ยม': 3,
-    'วีไอพี': 2,
-    'วีวีไอพี': 1
-  };
 
   const ROOM_PRICES = {
     'สแตนดาร์ด': 300,
@@ -31,37 +20,6 @@ export default function BookingForm({ onSaved, initialDate }) {
     end_date: '',
     cats: [{ cat_name: '', room_type: 'สแตนดาร์ด' }]
   });
-
-  // 2. ฟังก์ชันดึงข้อมูลว่าในวันที่เลือก มีคนจองไปกี่ห้องแล้ว
-  const fetchRoomUsage = async (start, end) => {
-    if (!start || !end) return;
-    
-    const { data, error } = await supabase
-      .from('bookings')
-      .select('room_type')
-      .lte('start_date', end) // วันเริ่มจองเดิม ต้องไม่เกินวันออกใหม่
-      .gte('end_date', start); // วันออกเดิม ต้องไม่ก่อนวันเข้าใหม่
-
-    if (error) {
-      console.error("Error fetching usage:", error);
-      return;
-    }
-
-    // นับจำนวนการจองแยกตามประเภทห้อง
-    const usage = data.reduce((acc, curr) => {
-      acc[curr.room_type] = (acc[curr.room_type] || 0) + 1;
-      return acc;
-    }, {});
-    
-    setRoomUsage(usage);
-  };
-
-  // ดึงข้อมูลใหม่ทุกครั้งที่วันที่เปลี่ยน
-  useEffect(() => {
-    if (formData.start_date && formData.end_date) {
-      fetchRoomUsage(formData.start_date, formData.end_date);
-    }
-  }, [formData.start_date, formData.end_date]);
 
   const addCatField = () => {
     setFormData({
@@ -95,21 +53,13 @@ export default function BookingForm({ onSaved, initialDate }) {
       total += (ROOM_PRICES[cat.room_type] || 0) * nights;
     });
     return { nights, total };
-  }, [formData, formData.cats]);
+  }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (bookingSummary.nights <= 0) return alert("❌ กรุณาเลือกวันที่เข้าพักและวันออกให้ถูกต้อง");
-    
-    // ตรวจสอบอีกครั้งว่ามีห้องเต็มในนาทีสุดท้ายหรือไม่
-    for (const cat of formData.cats) {
-      const used = roomUsage[cat.room_type] || 0;
-      if (used >= TOTAL_ROOMS[cat.room_type]) {
-        return alert(`❌ ขออภัย ห้องประเภท ${cat.room_type} เต็มแล้วในช่วงวันที่นี้`);
-      }
-    }
-
     setLoading(true);
+
     const bookingsToInsert = formData.cats.map(cat => ({
       customer_name: formData.customer_name,
       cat_names: cat.cat_name,
@@ -135,6 +85,7 @@ export default function BookingForm({ onSaved, initialDate }) {
       </button>
 
       <div className="bg-white rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-[#efebe9]">
+        {/* Header */}
         <div className="flex items-center gap-4 mb-10 border-b border-[#f5f2f0] pb-6">
           <div className="bg-[#FDF8F5] p-3.5 rounded-2xl text-[#885E43] border border-[#efebe9] shadow-sm">
             <Cat size={32} />
@@ -146,28 +97,40 @@ export default function BookingForm({ onSaved, initialDate }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* ชื่อเจ้าของ */}
           <div className="space-y-3">
-            <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">ชื่อเจ้าของแมว</label>
+            <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
+              ชื่อเจ้าของแมว
+            </label>
             <input
               placeholder="ระบุชื่อ-นามสกุล" required
-              className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none transition-all font-bold text-[#372C2E] shadow-sm"
+              className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none transition-all font-bold text-[#372C2E] shadow-sm placeholder-[#d7ccc8]"
               value={formData.customer_name}
               onChange={e => setFormData({ ...formData, customer_name: e.target.value })}
             />
           </div>
 
+          {/* รายการน้องแมว */}
           <div className="space-y-4">
             <div className="flex justify-between items-end px-1">
-              <label className="text-xs font-black text-[#885E43] uppercase tracking-widest">รายละเอียดน้องแมว</label>
-              <button type="button" onClick={addCatField} className="text-xs bg-[#885E43] text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5d4037] shadow-md">
-                <Plus size={14} /> เพิ่มแมว
+              <label className="text-xs font-black text-[#885E43] uppercase tracking-widest">
+                รายละเอียดน้องแมว
+              </label>
+              <button
+                type="button" onClick={addCatField}
+                className="text-[10px] md:text-xs bg-[#885E43] text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5d4037] transition-all active:scale-95 shadow-md"
+              >
+                <Plus size={14} /> เพิ่มแมวอีกตัว
               </button>
             </div>
 
             {formData.cats.map((cat, index) => (
-              <div key={index} className="p-5 bg-[#FDFBFA] rounded-[1.5rem] border border-[#efebe9] relative group">
+              <div key={index} className="p-5 bg-[#FDFBFA] rounded-[1.5rem] border border-[#efebe9] relative group animate-in fade-in zoom-in-95 duration-300">
                 {formData.cats.length > 1 && (
-                  <button type="button" onClick={() => removeCatField(index)} className="absolute -top-2 -right-2 bg-white text-red-400 p-2 rounded-full shadow-md border border-red-50">
+                  <button
+                    type="button" onClick={() => removeCatField(index)}
+                    className="absolute -top-2 -right-2 bg-white text-red-400 hover:text-red-600 p-2 rounded-full shadow-md border border-red-50 transition-all hover:scale-110 z-10"
+                  >
                     <Trash2 size={16} />
                   </button>
                 )}
@@ -190,18 +153,9 @@ export default function BookingForm({ onSaved, initialDate }) {
                         value={cat.room_type}
                         onChange={e => updateCatData(index, 'room_type', e.target.value)}
                       >
-                        {Object.keys(ROOM_PRICES).map(type => {
-                          const used = roomUsage[type] || 0;
-                          const total = TOTAL_ROOMS[type];
-                          const available = total - used;
-                          const isFull = available <= 0;
-                          
-                          return (
-                            <option key={type} value={type} disabled={isFull}>
-                              {type} {isFull ? '(เต็มแล้ว)' : `(ว่าง ${available}/${total})`} - ฿{ROOM_PRICES[type]}
-                            </option>
-                          );
-                        })}
+                        {Object.keys(ROOM_PRICES).map(type => (
+                          <option key={type} value={type}>{type} (฿{ROOM_PRICES[type]})</option>
+                        ))}
                       </select>
                       <ChevronDown size={14} className="absolute right-3 top-3.5 text-[#a1887f] pointer-events-none" />
                     </div>
@@ -211,31 +165,31 @@ export default function BookingForm({ onSaved, initialDate }) {
             ))}
           </div>
 
+          {/* วันที่ */}
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่เข้า</label>
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
+                วันที่เข้า
+              </label>
               <input
                 type="date" value={formData.start_date} required
-                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm"
+                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
                 onChange={e => setFormData({ ...formData, start_date: e.target.value })}
               />
             </div>
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่ออก</label>
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
+                วันที่ออก
+              </label>
               <input
                 type="date" value={formData.end_date} required
-                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm"
+                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
                 onChange={e => setFormData({ ...formData, end_date: e.target.value })}
               />
             </div>
           </div>
 
-          {!formData.start_date || !formData.end_date ? (
-            <div className="flex items-center gap-2 p-4 bg-amber-50 rounded-2xl border border-amber-100 text-amber-700 text-xs font-medium">
-              <Info size={16} /> เลือกวันที่เพื่อตรวจสอบสถานะห้องว่าง
-            </div>
-          ) : null}
-
+          {/* สรุปราคา */}
           <div className="bg-[#372C2E] rounded-[2rem] p-6 text-white flex justify-between items-center shadow-xl border border-[#5d4037]">
             <div>
               <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ยอดรวมทั้งหมด</p>
@@ -249,7 +203,7 @@ export default function BookingForm({ onSaved, initialDate }) {
 
           <button
             disabled={loading}
-            className="w-full bg-[#885E43] text-white font-black py-5 rounded-[1.5rem] hover:bg-[#5d4037] flex items-center justify-center gap-3 shadow-lg disabled:bg-gray-300 transition-all text-lg"
+            className="w-full bg-[#885E43] text-white font-black py-5 rounded-[1.5rem] hover:bg-[#5d4037] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#885E43]/20 disabled:bg-gray-300 active:scale-[0.98] text-lg"
           >
             {loading ? 'กำลังบันทึก...' : <><Banknote size={24} /> ยืนยันการจอง</>}
           </button>
