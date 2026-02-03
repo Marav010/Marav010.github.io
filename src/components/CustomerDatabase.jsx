@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   User, Phone, Plus, Cat, Upload, Loader2, Edit3, Trash2, Utensils, FileText,
-  Calendar, DoorOpen, Clock, History, X, AlertTriangle, Save, Moon
+  Calendar, DoorOpen, Clock, History, X, AlertTriangle, Save, Moon, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 export default function CustomerDatabase() {
@@ -13,7 +13,7 @@ export default function CustomerDatabase() {
   const fileInputRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
@@ -27,6 +27,11 @@ export default function CustomerDatabase() {
 
   useEffect(() => { fetchData(); }, []);
 
+  // เมื่อมีการค้นหา ให้กลับไปหน้า 1 เสมอ
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const fetchData = async () => {
     setLoading(true);
     const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
@@ -34,7 +39,6 @@ export default function CustomerDatabase() {
     setLoading(false);
   };
 
-  // --- ฟังก์ชันคำนวณจำนวนคืน ---
   const calculateNights = (start, end) => {
     if (!start || !end) return 0;
     const startDate = new Date(start);
@@ -48,11 +52,7 @@ export default function CustomerDatabase() {
     if (!deleteTarget) return;
     try {
       setLoading(true);
-      const { error } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('customer_name', deleteTarget);
-
+      const { error } = await supabase.from('bookings').delete().eq('customer_name', deleteTarget);
       if (error) throw error;
       setDeleteTarget(null);
       fetchData();
@@ -68,9 +68,9 @@ export default function CustomerDatabase() {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
       if (!acc[name]) {
         acc[name] = {
-          name, phone: b.phone || '-', source: b.source || 'Line',
+          name, phone: b.phone || '', source: b.source || 'Line',
           source_id: b.source_id || '', stayCount: 0, totalSpent: 0,
-          cameraId: b.camera_id || '-', eating_habit: b.eating_habit || '-',
+          cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
           note: b.note || '-', image: b.customer_image || '',
           catNames: new Set(),
           lastStay: { start: b.start_date, end: b.end_date },
@@ -78,9 +78,8 @@ export default function CustomerDatabase() {
         };
       }
       acc[name].stayCount += 1;
-      acc[name].totalSpent += (b.total_price || 0);
+      acc[name].totalSpent += (Number(b.total_price) || 0);
       acc[name].history.push(b);
-
       if (b.cat_names) {
         b.cat_names.split(',').forEach(n => {
           const trimmedName = n.trim();
@@ -106,6 +105,8 @@ export default function CustomerDatabase() {
     );
   }, [customerStats, searchTerm]);
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const currentData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleSave = async () => {
@@ -121,12 +122,12 @@ export default function CustomerDatabase() {
       if (modalMode === 'edit') {
         await supabase.from('bookings').update(payload).eq('customer_name', editingCustomer.name);
       } else {
-        await supabase.from('bookings').insert([{ 
-          ...payload, 
-          cat_names: 'ยังไม่มีข้อมูลแมว', 
-          start_date: new Date().toISOString().split('T')[0], 
-          end_date: new Date().toISOString().split('T')[0], 
-          room_type: 'สแตนดาร์ด' 
+        await supabase.from('bookings').insert([{
+          ...payload,
+          cat_names: 'ยังไม่มีข้อมูลแมว',
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: new Date().toISOString().split('T')[0],
+          room_type: 'สแตนดาร์ด'
         }]);
       }
       setIsModalOpen(false);
@@ -158,7 +159,7 @@ export default function CustomerDatabase() {
   if (loading && !deleteTarget && !isModalOpen) return <div className="h-screen flex items-center justify-center text-[#885E43] font-bold"><Loader2 className="animate-spin mr-2" /> กำลังโหลดข้อมูล...</div>;
 
   return (
-    <div className="space-y-6 py-4 pb-20 px-2">
+    <div className="space-y-6 py-4 pb-20 px-2 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-4">
@@ -214,86 +215,146 @@ export default function CustomerDatabase() {
         ))}
       </div>
 
+      {/* --- Pagination UI --- */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8 py-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            className="p-2 rounded-xl bg-white border border-[#efebe9] text-[#885E43] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#FDF8F5] transition-all"
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          <div className="flex items-center gap-1.5">
+            {[...Array(totalPages)].map((_, i) => {
+              const pageNum = i + 1;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${currentPage === pageNum
+                      ? 'bg-[#372C2E] text-[#DE9E48] shadow-md scale-110'
+                      : 'bg-white border border-[#efebe9] text-[#A1887F] hover:bg-[#FDF8F5]'
+                    }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            className="p-2 rounded-xl bg-white border border-[#efebe9] text-[#885E43] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#FDF8F5] transition-all"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {historyModal && (
+        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto md:max-h-[90vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0 border-b border-[#DE9E48]/20">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-[#DE9E48]">
+                  {historyModal.image ? <img src={historyModal.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#DE9E48]/20 flex items-center justify-center text-[#DE9E48]"><User size={24} /></div>}
+                </div>
+                <div><h3 className="font-bold text-xl leading-tight">{historyModal.name}</h3><p className="text-xs text-[#DE9E48] font-bold uppercase tracking-wider">ประวัติการเข้าพักทั้งหมด</p></div>
+              </div>
+              <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28} /></button>
+            </div>
+
+            <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded-3xl border border-[#efebe9] shadow-sm">
+                  <div className="flex items-center gap-2 text-[#885E43] font-bold text-[10px] mb-2 uppercase tracking-wide"><Utensils size={14} /> ข้อมูลการกิน</div>
+                  <p className="text-sm text-[#372C2E] font-medium leading-relaxed">{historyModal.eating_habit || '-'}</p>
+                </div>
+                <div className="bg-white p-4 rounded-3xl border border-[#efebe9] shadow-sm">
+                  <div className="flex items-center gap-2 text-[#DE9E48] font-bold text-[10px] mb-2 uppercase tracking-wide"><FileText size={14} /> หมายเหตุ</div>
+                  <p className="text-sm text-[#372C2E] font-medium leading-relaxed">{historyModal.note || '-'}</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 font-black text-[#372C2E] text-lg px-1"><Clock size={20} className="text-[#885E43]" /> รายการเข้าพักรายครั้ง</div>
+                <div className="space-y-3">
+                  {historyModal.history.map((h, i) => (
+                    <div key={i} className="bg-white p-5 rounded-[2rem] border border-[#efebe9] shadow-sm hover:shadow-md transition-all group">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-center">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">วันที่เข้าพัก</span>
+                          <div className="text-[11px] font-black text-[#372C2E] flex items-center gap-1.5">
+                            <Calendar size={12} className="text-[#885E43]" />
+                            <span>{h.start_date} ถึง {h.end_date}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">จำนวนคืน</span>
+                          <div className="text-indigo-600 font-bold text-[12px]">{calculateNights(h.start_date, h.end_date)} คืน</div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">ประเภทห้อง</span>
+                          <div className="text-blue-600 font-bold text-[12px]">{h.room_type}</div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">น้องแมว</span>
+                          <div className="text-[#DE9E48] font-bold text-[12px] truncate"> {h.cat_names}</div>
+                        </div>
+                        <div className="flex flex-col md:text-right">
+                          <span className="text-[9px] font-bold text-[#885E43] mb-1 uppercase tracking-wider">ราคาประเมิน</span>
+                          <div className="text-base font-black text-[#885E43]">฿{(h.total_price || 0).toLocaleString()}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit/Add Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-md my-8 rounded-[2rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="bg-[#372C2E] p-5 text-white flex justify-between items-center">
               <h3 className="font-bold">{modalMode === 'edit' ? 'แก้ไขข้อมูล' : 'เพิ่มลูกค้าใหม่'}</h3>
-              <button onClick={() => setIsModalOpen(false)} className="hover:bg-white/10 p-1 rounded-full transition-colors"><X size={20}/></button>
+              <button onClick={() => setIsModalOpen(false)} className="hover:bg-white/10 p-1 rounded-full transition-colors"><X size={20} /></button>
             </div>
             <div className="p-6 space-y-4">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-20 h-20 rounded-3xl bg-gray-50 border-2 border-dashed border-[#885E43]/20 overflow-hidden relative cursor-pointer group" onClick={() => fileInputRef.current.click()}>
-                  {editingCustomer.image ? <img src={editingCustomer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 group-hover:text-[#885E43] transition-colors"><Upload size={18}/><span className="text-[8px] font-bold mt-1 uppercase">รูปโปรไฟล์</span></div>}
+                  {editingCustomer.image ? <img src={editingCustomer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 group-hover:text-[#885E43] transition-colors"><Upload size={18} /><span className="text-[8px] font-bold mt-1 uppercase">รูปโปรไฟล์</span></div>}
                   {uploading && <div className="absolute inset-0 bg-black/40 flex items-center justify-center"><Loader2 className="animate-spin text-white" /></div>}
                 </div>
                 <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleFileUpload} />
               </div>
               <div className="space-y-3">
-                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ชื่อลูกค้า</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl font-bold focus:border-[#885E43] outline-none transition-all" disabled={modalMode === 'edit'} value={editingCustomer.name} onChange={e => setEditingCustomer({...editingCustomer, name: e.target.value})} /></div>
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ชื่อลูกค้า</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl font-bold focus:border-[#885E43] outline-none transition-all" disabled={modalMode === 'edit'} value={editingCustomer.name} onChange={e => setEditingCustomer({ ...editingCustomer, name: e.target.value })} /></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">เบอร์โทร</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43]" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} /></div>
-                  <div><label className="text-[10px] font-bold text-blue-600 uppercase ml-1 font-black">ไอดีกล้อง</label><input className="w-full p-2.5 bg-blue-50 border border-blue-200 rounded-xl font-bold text-blue-600 outline-none focus:border-blue-400" value={editingCustomer.cameraId} onChange={e => setEditingCustomer({...editingCustomer, cameraId: e.target.value})} /></div>
+                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">เบอร์โทร</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43]" value={editingCustomer.phone} onChange={e => setEditingCustomer({ ...editingCustomer, phone: e.target.value })} /></div>
+                  <div><label className="text-[10px] font-bold text-blue-600 uppercase ml-1 font-black">ไอดีกล้อง</label><input className="w-full p-2.5 bg-blue-50 border border-blue-200 rounded-xl font-bold text-blue-600 outline-none focus:border-blue-400" value={editingCustomer.cameraId} onChange={e => setEditingCustomer({ ...editingCustomer, cameraId: e.target.value })} /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ช่องทาง</label><select className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43]" value={editingCustomer.source} onChange={e => setEditingCustomer({...editingCustomer, source: e.target.value})}><option value="Line">Line</option><option value="Facebook">Facebook</option></select></div>
-                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ไอดี {editingCustomer.source}</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43]" value={editingCustomer.source_id} onChange={e => setEditingCustomer({...editingCustomer, source_id: e.target.value})} /></div>
+                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ช่องทาง</label><select className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43]" value={editingCustomer.source} onChange={e => setEditingCustomer({ ...editingCustomer, source: e.target.value })}><option value="Line">Line</option><option value="Facebook">Facebook</option></select></div>
+                  <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">ไอดี {editingCustomer.source}</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43]" value={editingCustomer.source_id} onChange={e => setEditingCustomer({ ...editingCustomer, source_id: e.target.value })} /></div>
                 </div>
-                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">การกิน</label><textarea className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43] resize-none" rows="2" value={editingCustomer.eating_habit} onChange={e => setEditingCustomer({...editingCustomer, eating_habit: e.target.value})}></textarea></div>
-                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">หมายเหตุ</label><textarea className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43] resize-none" rows="2" value={editingCustomer.note} onChange={e => setEditingCustomer({...editingCustomer, note: e.target.value})}></textarea></div>
-                <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-xl font-bold flex items-center justify-center gap-2 mt-2 shadow-lg hover:bg-[#5D4037] transition-all active:scale-95 shadow-[#885E43]/20"><Save size={18}/> บันทึกข้อมูลทั้งหมด</button>
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">การกิน</label><textarea className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43] resize-none" rows="2" value={editingCustomer.eating_habit} onChange={e => setEditingCustomer({ ...editingCustomer, eating_habit: e.target.value })}></textarea></div>
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase ml-1">หมายเหตุ</label><textarea className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl text-sm outline-none focus:border-[#885E43] resize-none" rows="2" value={editingCustomer.note} onChange={e => setEditingCustomer({ ...editingCustomer, note: e.target.value })}></textarea></div>
+                <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-xl font-bold flex items-center justify-center gap-2 mt-2 shadow-lg hover:bg-[#5D4037] transition-all active:scale-95 shadow-[#885E43]/20"><Save size={18} /> บันทึกข้อมูลทั้งหมด</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* History Modal */}
-      {historyModal && (
-        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-          <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto md:max-h-[90vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
-            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-[#DE9E48]">
-                  {historyModal.image ? <img src={historyModal.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#DE9E48]/20 flex items-center justify-center text-[#DE9E48]"><User size={24} /></div>}
-                </div>
-                <div><h3 className="font-bold text-xl leading-tight">{historyModal.name}</h3><p className="text-xs text-[#DE9E48] font-bold uppercase tracking-wider">ข้อมูลและรายละเอียดลูกค้า</p></div>
-              </div>
-              <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28} /></button>
-            </div>
-            <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white p-4 rounded-3xl border border-[#efebe9] shadow-sm">
-                  <div className="flex items-center gap-2 text-[#885E43] font-bold text-xs mb-2 uppercase tracking-wide"><Utensils size={14} /> ข้อมูลการกิน</div>
-                  <p className="text-sm text-[#372C2E] font-medium leading-relaxed">{historyModal.eating_habit || '-'}</p>
-                </div>
-                <div className="bg-white p-4 rounded-3xl border border-[#efebe9] shadow-sm">
-                  <div className="flex items-center gap-2 text-[#DE9E48] font-bold text-xs mb-2 uppercase tracking-wide"><FileText size={14} /> หมายเหตุถาวร</div>
-                  <p className="text-sm text-[#372C2E] font-medium leading-relaxed">{historyModal.note || '-'}</p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 font-black text-[#372C2E] text-lg px-1"><Clock size={20} className="text-[#885E43]" /> รายการเข้าพัก</div>
-                {historyModal.history.map((h, i) => (
-                  <div key={i} className="bg-white p-5 rounded-[2rem] border border-[#efebe9] shadow-sm hover:shadow-md transition-all">
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-center">
-                      <div className="flex flex-col"><span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">วันที่เข้าพัก</span><div className="flex items-center gap-2 text-[11px] font-black text-[#372C2E]"><Calendar size={12} className="text-[#885E43]" /><span>{h.start_date} ถึง {h.end_date}</span></div></div>
-                      {/* ส่วนที่เพิ่มจำนวนคืนในประวัติ */}
-                      <div className="flex flex-col"><span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">จำนวน</span><div className="text-indigo-600 font-bold text-[12px] flex items-center gap-1">{calculateNights(h.start_date, h.end_date)} คืน</div></div>
-                      <div className="flex flex-col"><span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">ห้อง</span><div className="text-blue-600 font-bold text-[12px]">{h.room_type}</div></div>
-                      <div className="flex flex-col"><span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">น้องแมว</span><div className="text-[#DE9E48] font-bold text-[12px] truncate">{h.cat_names}</div></div>
-                      <div className="flex flex-col md:text-right"><span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">ยอดรวม</span><div className="text-base font-black text-[#885E43]">฿{h.total_price?.toLocaleString()}</div></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-     {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal (คงเดิม) */}
       {deleteTarget && (
         <div className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
