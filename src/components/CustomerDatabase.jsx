@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { 
   User, Phone, MessageCircle, History, Camera, 
   FileText, Search, ChevronLeft, ChevronRight, 
-  Award, Edit3, Trash2, X, Check, Plus, Cat
+  Award, Edit3, Trash2, X, Plus, Cat, Save
 } from 'lucide-react';
 
 export default function CustomerDatabase() {
@@ -13,9 +13,12 @@ export default function CustomerDatabase() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // State สำหรับการแก้ไข
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingCustomer, setEditingCustomer] = useState(null);
+  // States สำหรับ Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('add'); // 'add' หรือ 'edit'
+  const [editingCustomer, setEditingCustomer] = useState({
+    name: '', phone: '', source: 'Line', cameraId: '-', note: '-', image: ''
+  });
 
   useEffect(() => { fetchData(); }, []);
 
@@ -25,7 +28,6 @@ export default function CustomerDatabase() {
     setLoading(false);
   };
 
-  // --- สรุปข้อมูลรายลูกค้า ---
   const customerStats = useMemo(() => {
     const stats = bookings.reduce((acc, b) => {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
@@ -39,8 +41,7 @@ export default function CustomerDatabase() {
           cameraId: b.camera_id || '-',
           note: b.note || '-',
           image: b.customer_image || '',
-          catNames: new Set(), // ใช้ Set กันชื่อแมวซ้ำ
-          lastRoom: b.room_type,
+          catNames: new Set(),
         };
       }
       acc[name].stayCount += 1;
@@ -51,28 +52,47 @@ export default function CustomerDatabase() {
     return Object.values(stats).map(item => ({ ...item, catNames: Array.from(item.catNames).join(', ') }));
   }, [bookings]);
 
-  // ฟังก์ชันลบ (ลบทุก Booking ของลูกค้านี้)
-  const handleDeleteCustomer = async (name) => {
-    if (!confirm(`ยืนยันการลบข้อมูลทั้งหมดของตัวคุณ ${name}? (ประวัติการจองทั้งหมดจะถูกลบ)`)) return;
+  // ฟังก์ชันลบ
+  const handleDelete = async (name) => {
+    if (!confirm(`ยืนยันการลบข้อมูลคุณ ${name}? ประวัติการจองทั้งหมดจะหายไป`)) return;
     const { error } = await supabase.from('bookings').delete().eq('customer_name', name);
     if (!error) fetchData();
   };
 
-  // ฟังก์ชันอัปเดต
-  const handleUpdateCustomer = async () => {
-    const { error } = await supabase.from('bookings')
-      .update({ 
-        phone: editingCustomer.phone,
-        source: editingCustomer.source,
-        camera_id: editingCustomer.cameraId,
-        note: editingCustomer.note,
-        customer_image: editingCustomer.image
-      })
-      .eq('customer_name', editingCustomer.name);
+  // ฟังก์ชันบันทึก (ทั้งเพิ่มและแก้ไข)
+  const handleSave = async () => {
+    if (!editingCustomer.name) return alert('กรุณาระบุชื่อลูกค้า');
+    
+    const payload = {
+      customer_name: editingCustomer.name,
+      phone: editingCustomer.phone,
+      source: editingCustomer.source,
+      camera_id: editingCustomer.cameraId,
+      note: editingCustomer.note,
+      customer_image: editingCustomer.image
+    };
+
+    let error;
+    if (modalMode === 'edit') {
+      const { error: err } = await supabase.from('bookings').update(payload).eq('customer_name', editingCustomer.name);
+      error = err;
+    } else {
+      // สำหรับการเพิ่มใหม่ (จำลองการสร้าง Booking เปล่าๆ เพื่อเก็บประวัติลูกค้า)
+      const { error: err } = await supabase.from('bookings').insert([{ 
+        ...payload, 
+        cat_names: 'ยังไม่มีข้อมูลแมว',
+        start_date: new Date().toISOString().split('T')[0],
+        end_date: new Date().toISOString().split('T')[0],
+        room_type: 'สแตนดาร์ด'
+      }]);
+      error = err;
+    }
 
     if (!error) {
-      setIsEditModalOpen(false);
+      setIsModalOpen(false);
       fetchData();
+    } else {
+      alert("เกิดข้อผิดพลาด: " + error.message);
     }
   };
 
@@ -82,114 +102,115 @@ export default function CustomerDatabase() {
   if (loading) return <div className="p-20 text-center font-bold text-[#885E43]">กำลังโหลด...</div>;
 
   return (
-    <div className="space-y-6 py-6 animate-in fade-in duration-500">
+    <div className="space-y-6 py-4">
       
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-4">
-        <div>
-          <h2 className="text-3xl font-black text-[#372C2E] flex items-center gap-3">
-            <User className="text-[#DE9E48]" size={32} /> ฐานข้อมูลลูกค้า
-          </h2>
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
+        <div className="flex items-center gap-4">
+          <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg">
+            <User size={28} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-[#372C2E]">ฐานข้อมูลลูกค้า</h2>
+            <p className="text-xs text-[#A1887F] font-bold">จัดการประวัติและข้อมูลติดต่อ</p>
+          </div>
         </div>
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-3.5 text-[#A1887F]" size={20} />
-          <input 
-            type="text" placeholder="ค้นหาชื่อ หรือเบอร์โทร..."
-            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-[#efebe9] rounded-2xl outline-none focus:border-[#885E43] font-bold"
-            value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-          />
+
+        <div className="flex w-full md:w-auto gap-2">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-4 top-3 text-[#A1887F]" size={18} />
+            <input 
+              type="text" placeholder="ค้นหาชื่อ/เบอร์..."
+              className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43] font-bold text-sm"
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button 
+            onClick={() => { setModalMode('add'); setEditingCustomer({ name: '', phone: '', source: 'Line', cameraId: '-', note: '-', image: '' }); setIsModalOpen(true); }}
+            className="bg-[#885E43] text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5D4037] shadow-lg shadow-[#885E43]/20 transition-all text-sm whitespace-nowrap"
+          >
+            <Plus size={18} /> <span className="hidden sm:inline">เพิ่มลูกค้า</span>
+          </button>
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Grid ของการ์ดลูกค้า */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentData.map((customer, idx) => (
-          <div key={idx} className="bg-white rounded-[2.5rem] p-6 border border-[#efebe9] shadow-sm relative group overflow-hidden">
-            
-            <div className="flex gap-5">
-              {/* รูปภาพลูกค้า */}
-              <div className="relative">
-                <div className="w-24 h-24 rounded-3xl overflow-hidden border-4 border-[#FDF8F5] shadow-inner bg-[#FDF8F5] flex items-center justify-center">
-                  {customer.image ? (
-                    <img src={customer.image} alt="profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <User size={40} className="text-[#DBD0C5]" />
-                  )}
-                </div>
-                {customer.stayCount > 3 && <div className="absolute -top-2 -right-2 bg-[#DE9E48] p-1.5 rounded-full text-white shadow-lg"><Award size={14}/></div>}
+          <div key={idx} className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+            <div className="flex gap-4">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] flex-shrink-0 border border-[#efebe9]">
+                {customer.image ? (
+                  <img src={customer.image} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32}/></div>
+                )}
               </div>
-
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <h3 className="text-xl font-black text-[#372C2E]">{customer.name}</h3>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => { setEditingCustomer(customer); setIsEditModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-xl"><Edit3 size={16}/></button>
-                    <button onClick={() => handleDeleteCustomer(customer.name)} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><Trash2 size={16}/></button>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-black text-[#372C2E] truncate pr-2">{customer.name}</h3>
+                  <div className="flex gap-1">
+                    <button onClick={() => { setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit3 size={16}/></button>
+                    <button onClick={() => handleDelete(customer.name)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16}/></button>
                   </div>
                 </div>
-                
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="text-[10px] font-bold bg-green-50 text-green-600 px-2 py-1 rounded-lg flex items-center gap-1"><Phone size={10}/> {customer.phone}</span>
-                  <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-lg flex items-center gap-1"><MessageCircle size={10}/> {customer.source}</span>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  <span className="text-[9px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md border border-[#efebe9] flex items-center gap-1"><Phone size={10}/>{customer.phone}</span>
+                  <span className="text-[9px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md border border-[#efebe9] flex items-center gap-1"><MessageCircle size={10}/>{customer.source}</span>
                 </div>
-
-                {/* ชื่อแมว */}
-                <div className="mt-3 flex items-start gap-2 bg-[#FDF8F5] p-2 rounded-xl border border-[#efebe9]/50">
-                  <Cat size={14} className="text-[#DE9E48] mt-0.5" />
-                  <span className="text-xs font-bold text-[#885E43]">
-                    <span className="text-[#A1887F]">แมวในปกครอง: </span>{customer.catNames || 'ไม่มีข้อมูล'}
-                  </span>
+                <div className="mt-2 text-[10px] text-[#A1887F] font-bold flex items-center gap-1 truncate italic">
+                  <Cat size={12} className="text-[#DE9E48]" /> {customer.catNames || 'ไม่มีข้อมูลแมว'}
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-[#FDFBFA]">
-              <div className="text-center">
-                <p className="text-[9px] font-bold text-[#A1887F] uppercase">เข้าพักทั้งหมด</p>
-                <p className="text-sm font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p>
-              </div>
-              <div className="text-center border-x border-[#FDFBFA]">
-                <p className="text-[9px] font-bold text-[#A1887F] uppercase">ยอดสะสม</p>
-                <p className="text-sm font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-[9px] font-bold text-[#A1887F] uppercase">ไอดีกล้อง</p>
-                <p className="text-sm font-black text-[#372C2E]">{customer.cameraId}</p>
-              </div>
+            
+            <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-[#FDFBFA] text-center">
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ยอดสะสม</p><p className="text-xs font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">เข้าพัก</p><p className="text-xs font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ไอดีกล้อง</p><p className="text-xs font-black text-[#372C2E]">{customer.cameraId}</p></div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Edit Modal */}
-      {isEditModalOpen && editingCustomer && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95">
-            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center">
-              <h3 className="font-bold">แก้ไขข้อมูลคุณ {editingCustomer.name}</h3>
-              <button onClick={() => setIsEditModalOpen(false)}><X/></button>
+      {/* Modal เพิ่ม/แก้ไข (ตัวเดียวใช้คุ้ม) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden">
+            <div className="bg-[#372C2E] p-5 text-white flex justify-between items-center">
+              <h3 className="font-bold flex items-center gap-2">
+                {modalMode === 'edit' ? <Edit3 size={18}/> : <Plus size={18}/>}
+                {modalMode === 'edit' ? `แก้ไขข้อมูล: ${editingCustomer.name}` : 'เพิ่มลูกค้าใหม่'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="hover:rotate-90 transition-all"><X size={20}/></button>
             </div>
-            <div className="p-8 space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-[#A1887F] uppercase">URL รูปภาพลูกค้า</label>
-                <input className="w-full p-3 bg-[#FDFBFA] border rounded-xl outline-none focus:border-[#885E43]" 
-                  value={editingCustomer.image} onChange={e => setEditingCustomer({...editingCustomer, image: e.target.value})} placeholder="https://..." />
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-[#A1887F] uppercase block mb-1">ชื่อลูกค้า (ใช้เป็นรหัสหลัก)</label>
+                <input className="w-full p-3 bg-[#FDFBFA] border rounded-xl font-bold" disabled={modalMode === 'edit'}
+                  value={editingCustomer.name} onChange={e => setEditingCustomer({...editingCustomer, name: e.target.value})} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A1887F] uppercase">เบอร์โทร</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold text-[#A1887F] uppercase block mb-1">เบอร์โทร</label>
                   <input className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A1887F] uppercase">ไอดีกล้อง</label>
-                  <input className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.cameraId} onChange={e => setEditingCustomer({...editingCustomer, cameraId: e.target.value})} />
+                <div>
+                  <label className="text-[10px] font-bold text-[#A1887F] uppercase block mb-1">ติดต่อทาง</label>
+                  <select className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.source} onChange={e => setEditingCustomer({...editingCustomer, source: e.target.value})}>
+                    <option value="Line">Line</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="TikTok">TikTok / อื่นๆ</option>
+                  </select>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-[#A1887F] uppercase">หมายเหตุ</label>
-                <textarea className="w-full p-3 bg-[#FDFBFA] border rounded-xl h-20" value={editingCustomer.note} onChange={e => setEditingCustomer({...editingCustomer, note: e.target.value})} />
+              <div>
+                <label className="text-[10px] font-bold text-[#A1887F] uppercase block mb-1">ไอดีกล้อง / หมายเหตุ</label>
+                <input className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.cameraId} onChange={e => setEditingCustomer({...editingCustomer, cameraId: e.target.value})} placeholder="Camera ID..." />
               </div>
-              <button onClick={handleUpdateCustomer} className="w-full py-4 bg-[#885E43] text-white rounded-2xl font-bold shadow-lg shadow-[#885E43]/20">บันทึกการเปลี่ยนแปลง</button>
+              <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-xl font-bold flex items-center justify-center gap-2">
+                <Save size={18}/> บันทึกข้อมูล
+              </button>
             </div>
           </div>
         </div>
