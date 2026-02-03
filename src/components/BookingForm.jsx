@@ -1,9 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2 } from 'lucide-react';
+import { 
+  ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2, 
+  CheckCircle2, AlertCircle, XCircle 
+} from 'lucide-react';
 
 export default function BookingForm({ onSaved, initialDate }) {
   const [loading, setLoading] = useState(false);
+  // เพิ่ม State สำหรับจัดการ Alert Modal
+  const [alertConfig, setAlertConfig] = useState({
+    isOpen: false,
+    type: 'success', // 'success' | 'error' | 'warning'
+    title: '',
+    message: ''
+  });
 
   const ROOM_PRICES = {
     'สแตนดาร์ด': 300,
@@ -20,6 +30,19 @@ export default function BookingForm({ onSaved, initialDate }) {
     end_date: '',
     cats: [{ cat_name: '', room_type: 'สแตนดาร์ด' }]
   });
+
+  // ฟังก์ชันแสดง Alert
+  const showAlert = (type, title, message) => {
+    setAlertConfig({ isOpen: true, type, title, message });
+  };
+
+  // ฟังก์ชันปิด Alert และดำเนินการต่อ
+  const closeAlert = () => {
+    setAlertConfig({ ...alertConfig, isOpen: false });
+    if (alertConfig.type === 'success') {
+      onSaved();
+    }
+  };
 
   const addCatField = () => {
     setFormData({
@@ -57,7 +80,9 @@ export default function BookingForm({ onSaved, initialDate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (bookingSummary.nights <= 0) return alert("❌ กรุณาเลือกวันที่เข้าพักและวันออกให้ถูกต้อง");
+    if (bookingSummary.nights <= 0) {
+      return showAlert('warning', 'วันที่ไม่ถูกต้อง', 'กรุณาเลือกวันที่เข้าพักและวันออกให้ถูกต้อง');
+    }
     setLoading(true);
 
     const bookingsToInsert = formData.cats.map(cat => ({
@@ -70,10 +95,11 @@ export default function BookingForm({ onSaved, initialDate }) {
     }));
 
     const { error } = await supabase.from('bookings').insert(bookingsToInsert);
-    if (error) alert("เกิดข้อผิดพลาด: " + error.message);
-    else {
-      alert("บันทึกการจองสำเร็จ! 🎉");
-      onSaved();
+    
+    if (error) {
+      showAlert('error', 'เกิดข้อผิดพลาด', error.message);
+    } else {
+      showAlert('success', 'บันทึกสำเร็จ!', 'ระบบได้ทำการบันทึกข้อมูลการจองเรียบร้อยแล้ว 🎉');
     }
     setLoading(false);
   };
@@ -85,7 +111,7 @@ export default function BookingForm({ onSaved, initialDate }) {
       </button>
 
       <div className="bg-white rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-[#efebe9]">
-        {/* Header */}
+        {/* Header Content (คงเดิม) */}
         <div className="flex items-center gap-4 mb-10 border-b border-[#f5f2f0] pb-6">
           <div className="bg-[#FDF8F5] p-3.5 rounded-2xl text-[#885E43] border border-[#efebe9] shadow-sm">
             <Cat size={32} />
@@ -97,44 +123,32 @@ export default function BookingForm({ onSaved, initialDate }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* ชื่อเจ้าของ */}
+          {/* Owner Name Input (คงเดิม) */}
           <div className="space-y-3">
-            <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-              ชื่อเจ้าของแมว
-            </label>
+            <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">ชื่อเจ้าของแมว</label>
             <input
               placeholder="ระบุชื่อ-นามสกุล" required
-              className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none transition-all font-bold text-[#372C2E] shadow-sm placeholder-[#d7ccc8]"
+              className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none transition-all font-bold text-[#372C2E] shadow-sm"
               value={formData.customer_name}
               onChange={e => setFormData({ ...formData, customer_name: e.target.value })}
             />
           </div>
 
-          {/* รายการน้องแมว */}
+          {/* Cat Details (คงเดิม) */}
           <div className="space-y-4">
             <div className="flex justify-between items-end px-1">
-              <label className="text-xs font-black text-[#885E43] uppercase tracking-widest">
-                รายละเอียดน้องแมว
-              </label>
-              <button
-                type="button" onClick={addCatField}
-                className="text-[10px] md:text-xs bg-[#885E43] text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5d4037] transition-all active:scale-95 shadow-md"
-              >
+              <label className="text-xs font-black text-[#885E43] uppercase tracking-widest">รายละเอียดน้องแมว</label>
+              <button type="button" onClick={addCatField} className="text-[10px] md:text-xs bg-[#885E43] text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5d4037] shadow-md transition-all active:scale-95">
                 <Plus size={14} /> เพิ่มแมวอีกตัว
               </button>
             </div>
-
             {formData.cats.map((cat, index) => (
               <div key={index} className="p-5 bg-[#FDFBFA] rounded-[1.5rem] border border-[#efebe9] relative group animate-in fade-in zoom-in-95 duration-300">
                 {formData.cats.length > 1 && (
-                  <button
-                    type="button" onClick={() => removeCatField(index)}
-                    className="absolute -top-2 -right-2 bg-white text-red-400 hover:text-red-600 p-2 rounded-full shadow-md border border-red-50 transition-all hover:scale-110 z-10"
-                  >
+                  <button type="button" onClick={() => removeCatField(index)} className="absolute -top-2 -right-2 bg-white text-red-400 hover:text-red-600 p-2 rounded-full shadow-md border border-red-50 transition-all hover:scale-110 z-10">
                     <Trash2 size={16} />
                   </button>
                 )}
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="block text-[10px] font-bold text-[#a1887f] uppercase ml-1">ชื่อน้องแมว</label>
@@ -148,11 +162,8 @@ export default function BookingForm({ onSaved, initialDate }) {
                   <div className="space-y-2">
                     <label className="block text-[10px] font-bold text-[#a1887f] uppercase ml-1">ประเภทห้องพัก</label>
                     <div className="relative">
-                      <select 
-                        className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none text-sm font-bold text-[#372C2E] appearance-none cursor-pointer"
-                        value={cat.room_type}
-                        onChange={e => updateCatData(index, 'room_type', e.target.value)}
-                      >
+                      <select className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none text-sm font-bold text-[#372C2E] appearance-none cursor-pointer"
+                        value={cat.room_type} onChange={e => updateCatData(index, 'room_type', e.target.value)}>
                         {Object.keys(ROOM_PRICES).map(type => (
                           <option key={type} value={type}>{type} (฿{ROOM_PRICES[type]})</option>
                         ))}
@@ -165,31 +176,21 @@ export default function BookingForm({ onSaved, initialDate }) {
             ))}
           </div>
 
-          {/* วันที่ */}
+          {/* Dates (คงเดิม) */}
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                วันที่เข้า
-              </label>
-              <input
-                type="date" value={formData.start_date} required
-                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
-                onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-              />
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่เข้า</label>
+              <input type="date" value={formData.start_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
+                onChange={e => setFormData({ ...formData, start_date: e.target.value })} />
             </div>
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                วันที่ออก
-              </label>
-              <input
-                type="date" value={formData.end_date} required
-                className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
-                onChange={e => setFormData({ ...formData, end_date: e.target.value })}
-              />
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่ออก</label>
+              <input type="date" value={formData.end_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
+                onChange={e => setFormData({ ...formData, end_date: e.target.value })} />
             </div>
           </div>
 
-          {/* สรุปราคา */}
+          {/* สรุปราคา (คงเดิม) */}
           <div className="bg-[#372C2E] rounded-[2rem] p-6 text-white flex justify-between items-center shadow-xl border border-[#5d4037]">
             <div>
               <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ยอดรวมทั้งหมด</p>
@@ -201,14 +202,47 @@ export default function BookingForm({ onSaved, initialDate }) {
             </div>
           </div>
 
-          <button
-            disabled={loading}
-            className="w-full bg-[#885E43] text-white font-black py-5 rounded-[1.5rem] hover:bg-[#5d4037] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#885E43]/20 disabled:bg-gray-300 active:scale-[0.98] text-lg"
-          >
+          <button disabled={loading} className="w-full bg-[#885E43] text-white font-black py-5 rounded-[1.5rem] hover:bg-[#5d4037] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#885E43]/20 disabled:bg-gray-300 active:scale-[0.98] text-lg">
             {loading ? 'กำลังบันทึก...' : <><Banknote size={24} /> ยืนยันการจอง</>}
           </button>
         </form>
       </div>
+
+      {/* --- Custom Alert Modal --- */}
+      {alertConfig.isOpen && (
+        <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
+            <div className="p-8 text-center">
+              {/* Icon Based on Type */}
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ${
+                alertConfig.type === 'success' ? 'bg-green-50 text-green-500' : 
+                alertConfig.type === 'error' ? 'bg-red-50 text-red-500' : 
+                'bg-amber-50 text-amber-500'
+              }`}>
+                {alertConfig.type === 'success' && <CheckCircle2 size={40} />}
+                {alertConfig.type === 'error' && <XCircle size={40} />}
+                {alertConfig.type === 'warning' && <AlertCircle size={40} />}
+              </div>
+
+              <h3 className="text-xl font-black text-[#372C2E] mb-2">{alertConfig.title}</h3>
+              <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8 px-2">
+                {alertConfig.message}
+              </p>
+
+              <button
+                onClick={closeAlert}
+                className={`w-full py-4 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 ${
+                  alertConfig.type === 'success' ? 'bg-[#885E43] shadow-[#885E43]/20' : 
+                  alertConfig.type === 'error' ? 'bg-red-500 shadow-red-200' : 
+                  'bg-amber-500 shadow-amber-200'
+                }`}
+              >
+                ตกลง
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
