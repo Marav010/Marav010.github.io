@@ -136,7 +136,7 @@ export default function CustomerDatabase() {
           <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
           <div>
             <h2 className="text-2xl font-black text-[#372C2E]">ข้อมูลลูกค้า</h2>
-            <p className="text-xs text-[#A1887F] font-bold">ค้นหาด้วย ชื่อคน / เบอร์ / ชื่อแมว</p>
+            <p className="text-xs text-[#A1887F] font-bold">ข้อมูลการเข้าพักและรายละเอียดลูกค้า</p>
           </div>
         </div>
         <div className="flex gap-2 w-full md:w-auto">
