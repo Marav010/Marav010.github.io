@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { 
-  Trash2, Search, Edit3, X, Check, FileText, 
-  ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Calendar 
+import {
+  Trash2, Search, Edit3, X, Check, FileText,
+  ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Calendar,
+  ArrowUpDown 
 } from 'lucide-react';
 
 export default function HistoryTable() {
   const [bookings, setBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
-  
-  // --- เดือน/ปี Filter States ---
-  const [selectedMonth, setSelectedMonth] = useState("all"); // เริ่มต้นที่แสดงทั้งหมด
-  const [selectedYear, setSelectedYear] = useState("all");  // เริ่มต้นที่แสดงทั้งหมด
-
+  const [selectedMonth, setSelectedMonth] = useState("all");
+  const [selectedYear, setSelectedYear] = useState("all");
+  const [sortOrder, setSortOrder] = useState('newest');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [alertConfig, setAlertConfig] = useState({
     isOpen: false,
@@ -23,7 +22,7 @@ export default function HistoryTable() {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; 
+  const itemsPerPage = 10;
 
   const [editForm, setEditForm] = useState({
     customer_name: '',
@@ -34,13 +33,21 @@ export default function HistoryTable() {
     end_date: ''
   });
 
+  // --- แก้ไข: ฟังก์ชันช่วยจัดรูปแบบวันที่จาก ค.ศ. เป็น พ.ศ. (DD/MM/YYYY+543) ---
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return "-";
+    const [year, month, day] = dateStr.split("-");
+    const thaiYear = parseInt(year) + 543; // แปลงปีเป็น พ.ศ.
+    return `${day}/${month}/${thaiYear}`;
+  };
+
   const fetchBookings = async () => {
     const { data } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
     setBookings(data || []);
   };
 
-  useEffect(() => { 
-    fetchBookings(); 
+  useEffect(() => {
+    fetchBookings();
   }, []);
 
   const showAlert = (type, title, message) => {
@@ -59,7 +66,7 @@ export default function HistoryTable() {
 
   const startEdit = (booking) => {
     setEditingId(booking.id);
-    setEditForm({ 
+    setEditForm({
       customer_name: booking.customer_name || "",
       cat_names: booking.cat_names || "",
       room_type: booking.room_type || "สแตนดาร์ด",
@@ -71,33 +78,25 @@ export default function HistoryTable() {
 
   const calculateTotalPrice = (start, end, roomType) => {
     if (!start || !end) return 0;
-    
-    // 1. คำนวณจำนวนคืน
     const startDate = new Date(start);
     const endDate = new Date(end);
     const diffTime = endDate - startDate;
     const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const totalNights = nights > 0 ? nights : 0;
 
-    // 2. กำหนดราคาต่อคืน (ปรับเปลี่ยนราคาได้ที่นี่)
     const roomPrices = {
-      'สแตนดาร์ด': 350,
-      'ดีลักซ์': 450,
-      'ซูพีเรีย': 550,
-      'พรีเมี่ยม': 700,
-      'วีไอพี': 1000,
-      'วีวีไอพี': 1500
+      'สแตนดาร์ด': 300, 'ดีลักซ์': 350, 'ซูพีเรีย': 350,
+      'พรีเมี่ยม': 400, 'วีไอพี': 500, 'วีวีไอพี': 600
     };
 
-    const pricePerNight = roomPrices[roomType] || 350;
+    const pricePerNight = roomPrices[roomType] || 300;
     return totalNights * pricePerNight;
   };
 
   const handleUpdate = async (id) => {
-    // คำนวณราคาใหม่ก่อนส่งไป Save
     const newTotalPrice = calculateTotalPrice(
-      editForm.start_date, 
-      editForm.end_date, 
+      editForm.start_date,
+      editForm.end_date,
       editForm.room_type
     );
 
@@ -106,9 +105,9 @@ export default function HistoryTable() {
       cat_names: editForm.cat_names,
       room_type: editForm.room_type,
       note: editForm.note,
-      start_date: editForm.start_date,
-      end_date: editForm.end_date,
-      total_price: newTotalPrice // อัปเดตราคาที่คำนวณใหม่ลง DB
+      start_date: editForm.start_date, // บันทึกเป็น ค.ศ. เสมอ
+      end_date: editForm.end_date,     // บันทึกเป็น ค.ศ. เสมอ
+      total_price: newTotalPrice
     }).eq('id', id);
 
     if (error) {
@@ -118,21 +117,25 @@ export default function HistoryTable() {
       fetchBookings();
       showAlert('success', 'บันทึกเรียบร้อย', `แก้ไขข้อมูลและปรับปรุงราคาเป็น ฿${newTotalPrice.toLocaleString()} แล้ว ✨`);
     }
-    };
+  };
 
-  // กรองข้อมูลตามคำค้นหา + เดือน + ปี
-  const filtered = bookings.filter(b => {
-    const bDate = new Date(b.start_date);
-    const matchMonth = selectedMonth === "all" ? true : (bDate.getMonth() + 1) === parseInt(selectedMonth);
-    const matchYear = selectedYear === "all" ? true : bDate.getFullYear() === parseInt(selectedYear);
-    
-    const search = searchTerm.toLowerCase();
-    const matchSearch = (b.customer_name || "").toLowerCase().includes(search) || 
-                        (b.cat_names || "").toLowerCase().includes(search) || 
-                        (b.note || "").toLowerCase().includes(search);
-    
-    return matchMonth && matchYear && matchSearch;
-  });
+  // กรองข้อมูล + เรียงลำดับ
+  const filtered = bookings
+    .filter(b => {
+      const bDate = new Date(b.start_date);
+      const matchMonth = selectedMonth === "all" ? true : (bDate.getMonth() + 1) === parseInt(selectedMonth);
+      const matchYear = selectedYear === "all" ? true : bDate.getFullYear() === parseInt(selectedYear);
+      const search = searchTerm.toLowerCase();
+      const matchSearch = (b.customer_name || "").toLowerCase().includes(search) ||
+        (b.cat_names || "").toLowerCase().includes(search) ||
+        (b.note || "").toLowerCase().includes(search);
+      return matchMonth && matchYear && matchSearch;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.start_date);
+      const dateB = new Date(b.start_date);
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -146,12 +149,20 @@ export default function HistoryTable() {
       {/* Header & Search/Filters */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
         <h2 className="text-2xl font-black text-[#372C2E] tracking-tight text-center md:text-left">จัดการประวัติการเข้าพัก</h2>
-        
+
         <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
+          <button
+            onClick={() => setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest')}
+            className={`flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold transition-all hover:border-[#885E43] shadow-sm ${sortOrder === 'newest' ? 'text-[#885E43]' : 'text-[#A1887F]'}`}
+          >
+            <ArrowUpDown size={16} />
+            {sortOrder === 'newest' ? 'ใหม่สุด' : 'เก่าสุด'}
+          </button>
+
           {/* Month Filter */}
           <div className="relative">
-            <select 
-              value={selectedMonth} 
+            <select
+              value={selectedMonth}
               onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
               className="pl-3 pr-8 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold text-[#885E43] outline-none focus:border-[#885E43] appearance-none cursor-pointer shadow-sm"
             >
@@ -163,21 +174,20 @@ export default function HistoryTable() {
             <Calendar size={14} className="absolute right-2.5 top-3 text-[#A1887F] pointer-events-none" />
           </div>
 
-          {/* Year Filter */}
-          <select 
-            value={selectedYear} 
+          {/* Year Filter (แสดงเป็น พ.ศ. ใน UI แต่ค่าเป็น ค.ศ.) */}
+          <select
+            value={selectedYear}
             onChange={(e) => { setSelectedYear(e.target.value); setCurrentPage(1); }}
             className="pl-3 pr-3 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold text-[#885E43] outline-none focus:border-[#885E43] shadow-sm cursor-pointer"
           >
             <option value="all">ทุกปี</option>
-            {[2024, 2025, 2026, 2027, 2028].map(y => <option key={y} value={y}>{y}</option>)}
+            {[2024, 2025, 2026, 2027, 2028].map(y => <option key={y} value={y}>พ.ศ. {y + 543}</option>)}
           </select>
 
-          {/* Search Box */}
           <div className="relative w-full md:w-64">
             <Search className="absolute left-4 top-3 text-[#A1887F]" size={16} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="ค้นหาชื่อ, น้องแมว..."
               className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl shadow-sm outline-none focus:border-[#885E43] text-sm font-bold text-[#372C2E]"
               value={searchTerm}
@@ -187,7 +197,7 @@ export default function HistoryTable() {
         </div>
       </div>
 
-      {/* Table Container */}
+      {/* Table */}
       <div className="bg-white rounded-[2rem] border border-[#efebe9] overflow-hidden shadow-md">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -196,7 +206,7 @@ export default function HistoryTable() {
                 <th className="px-6 py-5">ข้อมูลลูกค้าและน้องแมว</th>
                 <th className="px-6 py-5">ประเภทห้อง</th>
                 <th className="px-6 py-5">หมายเหตุ</th>
-                <th className="px-6 py-5">ช่วงเวลาเข้าพัก</th>
+                <th className="px-6 py-5">ช่วงเวลาเข้าพัก (พ.ศ.)</th>
                 <th className="px-6 py-5 text-center">จัดการ</th>
               </tr>
             </thead>
@@ -206,8 +216,8 @@ export default function HistoryTable() {
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <div className="space-y-2 max-w-[180px]">
-                        <input className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-sm font-bold text-[#372C2E]" value={editForm.customer_name} onChange={e => setEditForm({...editForm, customer_name: e.target.value})} />
-                        <input className="w-full p-2 bg-white border-2 border-[#DE9E48] rounded-lg text-sm text-[#885E43] font-bold" value={editForm.cat_names} onChange={e => setEditForm({...editForm, cat_names: e.target.value})} />
+                        <input className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-sm font-bold text-[#372C2E]" value={editForm.customer_name} onChange={e => setEditForm({ ...editForm, customer_name: e.target.value })} />
+                        <input className="w-full p-2 bg-white border-2 border-[#DE9E48] rounded-lg text-sm text-[#885E43] font-bold" value={editForm.cat_names} onChange={e => setEditForm({ ...editForm, cat_names: e.target.value })} />
                       </div>
                     ) : (
                       <>
@@ -219,7 +229,7 @@ export default function HistoryTable() {
 
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
-                      <select className="p-2 w-full border-2 border-[#C39A7A] rounded-lg text-xs font-bold bg-white text-[#372C2E]" value={editForm.room_type} onChange={e => setEditForm({...editForm, room_type: e.target.value})}>
+                      <select className="p-2 w-full border-2 border-[#C39A7A] rounded-lg text-xs font-bold bg-white text-[#372C2E]" value={editForm.room_type} onChange={e => setEditForm({ ...editForm, room_type: e.target.value })}>
                         {['สแตนดาร์ด', 'ดีลักซ์', 'ซูพีเรีย', 'พรีเมี่ยม', 'วีไอพี', 'วีวีไอพี'].map(type => (
                           <option key={type} value={type}>{type}</option>
                         ))}
@@ -231,7 +241,7 @@ export default function HistoryTable() {
 
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
-                      <textarea className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-xs outline-none min-h-[80px] font-medium text-[#372C2E]" value={editForm.note} onChange={e => setEditForm({...editForm, note: e.target.value})} />
+                      <textarea className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-xs outline-none min-h-[80px] font-medium text-[#372C2E]" value={editForm.note} onChange={e => setEditForm({ ...editForm, note: e.target.value })} />
                     ) : (
                       <div className="max-w-[200px] max-h-[60px] overflow-y-auto pr-2 text-xs text-[#A1887F] italic leading-relaxed">
                         {b.note ? <span className="flex items-start gap-1"><FileText size={12} className="mt-0.5 flex-shrink-0 text-[#DE9E48]" />{b.note}</span> : '-'}
@@ -242,13 +252,13 @@ export default function HistoryTable() {
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <div className="space-y-2">
-                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.start_date} onChange={e => setEditForm({...editForm, start_date: e.target.value})} />
-                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.end_date} onChange={e => setEditForm({...editForm, end_date: e.target.value})} />
+                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
+                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.end_date} onChange={e => setEditForm({ ...editForm, end_date: e.target.value })} />
                       </div>
                     ) : (
                       <>
-                        <div className="text-sm font-black text-[#5D4037]">{b.start_date}</div>
-                        <div className="text-[10px] text-[#A1887F] font-bold uppercase tracking-tight">ถึง {b.end_date}</div>
+                        <div className="text-sm font-black text-[#5D4037]">{formatDateDisplay(b.start_date)}</div>
+                        <div className="text-[10px] text-[#A1887F] font-bold uppercase tracking-tight">ถึง {formatDateDisplay(b.end_date)}</div>
                       </>
                     )}
                   </td>
@@ -273,7 +283,7 @@ export default function HistoryTable() {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination & Empty State */}
         {filtered.length === 0 ? (
           <div className="p-20 text-center bg-[#FDFBFA]">
@@ -296,7 +306,7 @@ export default function HistoryTable() {
         )}
       </div>
 
-      {/* --- Modals (Delete & Alert) --- */}
+      {/* --- Modals --- */}
       {deleteTarget && (
         <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
