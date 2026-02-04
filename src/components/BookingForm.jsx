@@ -7,10 +7,9 @@ import {
 
 export default function BookingForm({ onSaved, initialDate }) {
   const [loading, setLoading] = useState(false);
-  // เพิ่ม State สำหรับจัดการ Alert Modal
   const [alertConfig, setAlertConfig] = useState({
     isOpen: false,
-    type: 'success', // 'success' | 'error' | 'warning'
+    type: 'success',
     title: '',
     message: ''
   });
@@ -31,12 +30,17 @@ export default function BookingForm({ onSaved, initialDate }) {
     cats: [{ cat_name: '', room_type: 'สแตนดาร์ด' }]
   });
 
-  // ฟังก์ชันแสดง Alert
+  // --- ฟังก์ชันสำหรับ "แสดงผล" เป็น พ.ศ. บนหน้าจอเท่านั้น ---
+  const toThaiDisplay = (dateStr) => {
+    if (!dateStr) return 'ระบุวันที่';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${parseInt(y) + 543}`;
+  };
+
   const showAlert = (type, title, message) => {
     setAlertConfig({ isOpen: true, type, title, message });
   };
 
-  // ฟังก์ชันปิด Alert และดำเนินการต่อ
   const closeAlert = () => {
     setAlertConfig({ ...alertConfig, isOpen: false });
     if (alertConfig.type === 'success') {
@@ -63,34 +67,44 @@ export default function BookingForm({ onSaved, initialDate }) {
     setFormData({ ...formData, cats: newCats });
   };
 
+  // --- คำนวณจำนวนคืนโดยใช้ ค.ศ. (แม่นยำ 100%) ---
   const bookingSummary = useMemo(() => {
     if (!formData.start_date || !formData.end_date) return { nights: 0, total: 0 };
+    
     const start = new Date(formData.start_date);
     const end = new Date(formData.end_date);
-    const diffTime = end - start;
-    const nights = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-    if (nights <= 0) return { nights: 0, total: 0 };
+    
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const diffTime = end.getTime() - start.getTime();
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const validNights = nights > 0 ? nights : 0;
 
     let total = 0;
     formData.cats.forEach(cat => {
-      total += (ROOM_PRICES[cat.room_type] || 0) * nights;
+      total += (ROOM_PRICES[cat.room_type] || 0) * validNights;
     });
-    return { nights, total };
+    
+    return { nights: validNights, total };
   }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (bookingSummary.nights <= 0) {
-      return showAlert('warning', 'วันที่ไม่ถูกต้อง', 'กรุณาเลือกวันที่เข้าพักและวันออกให้ถูกต้อง');
+      return showAlert('warning', 'วันที่ไม่ถูกต้อง', 'วันออกต้องหลังจากวันเข้าพักอย่างน้อย 1 คืน');
     }
+    
     setLoading(true);
 
+    // บันทึกลง Supabase เป็น ค.ศ. (formData.start_date เก็บค่า YYYY-MM-DD อยู่แล้ว)
     const bookingsToInsert = formData.cats.map(cat => ({
       customer_name: formData.customer_name,
       cat_names: cat.cat_name,
       room_type: cat.room_type,
-      start_date: formData.start_date,
-      end_date: formData.end_date,
+      start_date: formData.start_date, 
+      end_date: formData.end_date,     
       total_price: (ROOM_PRICES[cat.room_type] || 0) * bookingSummary.nights
     }));
 
@@ -99,7 +113,7 @@ export default function BookingForm({ onSaved, initialDate }) {
     if (error) {
       showAlert('error', 'เกิดข้อผิดพลาด', error.message);
     } else {
-      showAlert('success', 'บันทึกสำเร็จ!', 'ระบบได้ทำการบันทึกข้อมูลการจองเรียบร้อยแล้ว 🎉');
+      showAlert('success', 'บันทึกสำเร็จ!', 'ระบบได้ทำการบันทึกข้อมูลเรียบร้อยแล้ว 🎉');
     }
     setLoading(false);
   };
@@ -111,7 +125,6 @@ export default function BookingForm({ onSaved, initialDate }) {
       </button>
 
       <div className="bg-white rounded-[2.5rem] p-6 md:p-10 shadow-xl border border-[#efebe9]">
-        {/* Header Content (คงเดิม) */}
         <div className="flex items-center gap-4 mb-10 border-b border-[#f5f2f0] pb-6">
           <div className="bg-[#FDF8F5] p-3.5 rounded-2xl text-[#885E43] border border-[#efebe9] shadow-sm">
             <Cat size={32} />
@@ -123,7 +136,7 @@ export default function BookingForm({ onSaved, initialDate }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Owner Name Input (คงเดิม) */}
+          {/* ชื่อเจ้าของ */}
           <div className="space-y-3">
             <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">ชื่อเจ้าของแมว</label>
             <input
@@ -134,7 +147,7 @@ export default function BookingForm({ onSaved, initialDate }) {
             />
           </div>
 
-          {/* Cat Details (คงเดิม) */}
+          {/* รายละเอียดน้องแมว */}
           <div className="space-y-4">
             <div className="flex justify-between items-end px-1">
               <label className="text-xs font-black text-[#885E43] uppercase tracking-widest">รายละเอียดน้องแมว</label>
@@ -176,29 +189,35 @@ export default function BookingForm({ onSaved, initialDate }) {
             ))}
           </div>
 
-          {/* Dates (คงเดิม) */}
+          {/* วันที่ (แสดง พ.ศ. ให้ผู้ใช้เห็นเป็น Label กำกับ) */}
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่เข้า</label>
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
+                วันที่เข้า ({toThaiDisplay(formData.start_date)})
+              </label>
               <input type="date" value={formData.start_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
                 onChange={e => setFormData({ ...formData, start_date: e.target.value })} />
             </div>
             <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">วันที่ออก</label>
+              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
+                วันที่ออก ({toThaiDisplay(formData.end_date)})
+              </label>
               <input type="date" value={formData.end_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
                 onChange={e => setFormData({ ...formData, end_date: e.target.value })} />
             </div>
           </div>
 
-          {/* สรุปราคา (คงเดิม) */}
-          <div className="bg-[#372C2E] rounded-[2rem] p-6 text-white flex justify-between items-center shadow-xl border border-[#5d4037]">
-            <div>
-              <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ยอดรวมทั้งหมด</p>
-              <h3 className="text-2xl md:text-3xl font-black text-[#DE9E48]">฿{bookingSummary.total.toLocaleString()}</h3>
-            </div>
-            <div className="text-right border-l border-[#5d4037] pl-6">
-              <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ระยะเวลา</p>
-              <h3 className="text-lg md:text-xl font-bold">{bookingSummary.nights} คืน</h3>
+          {/* สรุปราคา */}
+          <div className="bg-[#372C2E] rounded-[2rem] p-6 text-white shadow-xl border border-[#5d4037]">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ยอดรวมทั้งหมด</p>
+                <h3 className="text-2xl md:text-3xl font-black text-[#DE9E48]">฿{bookingSummary.total.toLocaleString()}</h3>
+              </div>
+              <div className="text-right border-l border-[#5d4037] pl-6">
+                <p className="text-[#a1887f] text-[10px] font-bold uppercase tracking-widest mb-1">ระยะเวลา</p>
+                <h3 className="text-lg md:text-xl font-bold">{bookingSummary.nights} คืน</h3>
+              </div>
             </div>
           </div>
 
@@ -208,12 +227,11 @@ export default function BookingForm({ onSaved, initialDate }) {
         </form>
       </div>
 
-      {/* --- Custom Alert Modal --- */}
+      {/* --- Alert Modal --- */}
       {alertConfig.isOpen && (
         <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
             <div className="p-8 text-center">
-              {/* Icon Based on Type */}
               <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ${
                 alertConfig.type === 'success' ? 'bg-green-50 text-green-500' : 
                 alertConfig.type === 'error' ? 'bg-red-50 text-red-500' : 
@@ -223,22 +241,13 @@ export default function BookingForm({ onSaved, initialDate }) {
                 {alertConfig.type === 'error' && <XCircle size={40} />}
                 {alertConfig.type === 'warning' && <AlertCircle size={40} />}
               </div>
-
               <h3 className="text-xl font-black text-[#372C2E] mb-2">{alertConfig.title}</h3>
-              <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8 px-2">
-                {alertConfig.message}
-              </p>
-
-              <button
-                onClick={closeAlert}
-                className={`w-full py-4 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 ${
-                  alertConfig.type === 'success' ? 'bg-[#885E43] shadow-[#885E43]/20' : 
-                  alertConfig.type === 'error' ? 'bg-red-500 shadow-red-200' : 
-                  'bg-amber-500 shadow-amber-200'
-                }`}
-              >
-                ตกลง
-              </button>
+              <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8 px-2">{alertConfig.message}</p>
+              <button onClick={closeAlert} className={`w-full py-4 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 ${
+                alertConfig.type === 'success' ? 'bg-[#885E43] shadow-[#885E43]/20' : 
+                alertConfig.type === 'error' ? 'bg-red-500 shadow-red-200' : 
+                'bg-amber-500 shadow-amber-200'
+              }`}>ตกลง</button>
             </div>
           </div>
         </div>
