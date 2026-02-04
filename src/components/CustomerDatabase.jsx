@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   User, Phone, Plus, Cat, Upload, Loader2, Edit3, Trash2, Utensils, FileText,
-  Calendar, DoorOpen, Clock, History, X, AlertTriangle, Save, Moon, ChevronLeft, ChevronRight
+  Calendar, DoorOpen, Clock, History, X, AlertTriangle, Save, Moon, ChevronLeft, ChevronRight,
+  MessageCircle, Facebook // นำเข้าไอคอนเพิ่มเติม
 } from 'lucide-react';
 
 export default function CustomerDatabase() {
@@ -27,7 +28,6 @@ export default function CustomerDatabase() {
 
   useEffect(() => { fetchData(); }, []);
 
-  // เมื่อมีการค้นหา ให้กลับไปหน้า 1 เสมอ
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -63,38 +63,25 @@ export default function CustomerDatabase() {
     }
   };
 
-    const customerStats = useMemo(() => {
+  const customerStats = useMemo(() => {
     const stats = bookings.reduce((acc, b) => {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
-      
-      // สร้าง Unique Key สำหรับการเข้าพักแต่ละรอบ (ชื่อ + วันเริ่ม + วันจบ)
-      // หากมาพร้อมกันหลายตัว/หลายห้อง แต่เป็นวันเดียวกัน จะถือว่าเป็น Key เดียวกัน
       const stayKey = `${name}-${b.start_date}-${b.end_date}`;
 
       if (!acc[name]) {
         acc[name] = {
-          name, 
-          phone: b.phone || '', 
-          source: b.source || 'Line',
-          source_id: b.source_id || '', 
-          totalSpent: 0,
-          cameraId: b.camera_id || '', 
-          eating_habit: b.eating_habit || '-',
-          note: b.note || '-', 
-          image: b.customer_image || '',
+          name, phone: b.phone || '', source: b.source || 'Line',
+          source_id: b.source_id || '', totalSpent: 0,
+          cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
+          note: b.note || '-', image: b.customer_image || '',
           catNames: new Set(),
           history: [],
-          stayKeys: new Set(), // เก็บ Key ของแต่ละรอบการเข้าพัก
+          stayKeys: new Set(),
         };
       }
-
-      // นับยอดรวมเงินตามปกติ (ทุกห้อง)
       acc[name].totalSpent += (Number(b.total_price) || 0);
       acc[name].history.push(b);
-      
-      // เพิ่ม Stay Key เข้าไปใน Set (Set จะไม่เก็บค่าซ้ำ)
       acc[name].stayKeys.add(stayKey);
-
       if (b.cat_names) {
         b.cat_names.split(',').forEach(n => {
           const trimmedName = n.trim();
@@ -106,13 +93,11 @@ export default function CustomerDatabase() {
 
     return Object.values(stats).map(item => ({
       ...item,
-      // จำนวนครั้งที่พัก = จำนวน Unique Keys ที่อยู่ใน Set
-      stayCount: item.stayKeys.size, 
+      stayCount: item.stayKeys.size,
       catNamesDisplay: Array.from(item.catNames).join(', '),
       catNamesSearch: Array.from(item.catNames).join(' ').toLowerCase()
     }));
   }, [bookings]);
-
 
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -123,7 +108,6 @@ export default function CustomerDatabase() {
     );
   }, [customerStats, searchTerm]);
 
-  // Pagination Logic
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const currentData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -198,14 +182,24 @@ export default function CustomerDatabase() {
             onClick={() => setHistoryModal(customer)}
             className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden group"
           >
+            {/* ป้ายบอกช่องทาง (Badge) */}
+            <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5 shadow-sm border-l border-b border-[#efebe9]/50 transition-colors ${
+              customer.source === 'Line' 
+                ? 'bg-green-50 text-green-600 border-green-100' 
+                : 'bg-blue-50 text-blue-600 border-blue-100'
+            }`}>
+              {customer.source === 'Line' ? <MessageCircle size={12} fill="currentColor" className="opacity-20" /> : <Facebook size={12} fill="currentColor" className="opacity-20" />}
+              {customer.source}
+            </div>
+
             <div className="flex gap-4">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] shrink-0 shadow-inner">
                 {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32} /></div>}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-black text-[#372C2E] text-lg truncate">{customer.name}</h3>
-                  <div className="flex gap-1 shrink-0">
+                  <h3 className="font-black text-[#372C2E] text-lg truncate pr-16">{customer.name}</h3>
+                  <div className="flex gap-1 shrink-0 absolute right-4 bottom-24">
                     <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg transition-colors"><Edit3 size={18} /></button>
                     <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer.name); }} className="p-2 text-[#885E43] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
                   </div>
@@ -243,25 +237,20 @@ export default function CustomerDatabase() {
           >
             <ChevronLeft size={20} />
           </button>
-
           <div className="flex items-center gap-1.5">
-            {[...Array(totalPages)].map((_, i) => {
-              const pageNum = i + 1;
-              return (
+            {[...Array(totalPages)].map((_, i) => (
                 <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${currentPage === pageNum
+                  key={i+1}
+                  onClick={() => setCurrentPage(i+1)}
+                  className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${currentPage === i+1
                       ? 'bg-[#372C2E] text-[#DE9E48] shadow-md scale-110'
                       : 'bg-white border border-[#efebe9] text-[#A1887F] hover:bg-[#FDF8F5]'
                     }`}
                 >
-                  {pageNum}
+                  {i+1}
                 </button>
-              );
-            })}
+            ))}
           </div>
-
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
@@ -276,14 +265,17 @@ export default function CustomerDatabase() {
       {historyModal && (
         <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto md:max-h-[90vh] rounded-t-[2.5rem] md:rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
-            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0 border-b border-[#DE9E48]/20">
+            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center shrink-0 border-b border-[#DE9E48]/20 relative">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-[#DE9E48]">
                   {historyModal.image ? <img src={historyModal.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#DE9E48]/20 flex items-center justify-center text-[#DE9E48]"><User size={24} /></div>}
                 </div>
                 <div><h3 className="font-bold text-xl leading-tight">{historyModal.name}</h3><p className="text-xs text-[#DE9E48] font-bold uppercase tracking-wider">ประวัติการเข้าพักทั้งหมด</p></div>
               </div>
-              <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28} /></button>
+              <div className="flex items-center gap-3">
+                 <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${historyModal.source === 'Line' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{historyModal.source}</span>
+                 <button onClick={() => setHistoryModal(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={28} /></button>
+              </div>
             </div>
 
             <div className="p-6 overflow-y-auto bg-[#FDFBFA] space-y-6">
@@ -306,10 +298,7 @@ export default function CustomerDatabase() {
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-center">
                         <div className="flex flex-col">
                           <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">วันที่เข้าพัก</span>
-                          <div className="text-[11px] font-black text-[#372C2E] flex items-center gap-1.5">
-                            <Calendar size={12} className="text-[#885E43]" />
-                            <span>{h.start_date} ถึง {h.end_date}</span>
-                          </div>
+                          <div className="text-[11px] font-black text-[#372C2E] flex items-center gap-1.5"><Calendar size={12} className="text-[#885E43]" /><span>{h.start_date} ถึง {h.end_date}</span></div>
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[9px] font-bold text-[#A1887F] mb-1 uppercase tracking-wider">จำนวนคืน</span>
@@ -372,10 +361,10 @@ export default function CustomerDatabase() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal (คงเดิม) */}
+      {/* Delete Confirmation Modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-[1100] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
+          <div className="bg-white w-full max-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
             <div className="p-8 text-center">
               <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <AlertTriangle size={40} />
