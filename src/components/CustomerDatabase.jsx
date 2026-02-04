@@ -63,23 +63,38 @@ export default function CustomerDatabase() {
     }
   };
 
-  const customerStats = useMemo(() => {
+    const customerStats = useMemo(() => {
     const stats = bookings.reduce((acc, b) => {
       const name = b.customer_name || 'ไม่ระบุชื่อ';
+      
+      // สร้าง Unique Key สำหรับการเข้าพักแต่ละรอบ (ชื่อ + วันเริ่ม + วันจบ)
+      // หากมาพร้อมกันหลายตัว/หลายห้อง แต่เป็นวันเดียวกัน จะถือว่าเป็น Key เดียวกัน
+      const stayKey = `${name}-${b.start_date}-${b.end_date}`;
+
       if (!acc[name]) {
         acc[name] = {
-          name, phone: b.phone || '', source: b.source || 'Line',
-          source_id: b.source_id || '', stayCount: 0, totalSpent: 0,
-          cameraId: b.camera_id || '', eating_habit: b.eating_habit || '-',
-          note: b.note || '-', image: b.customer_image || '',
+          name, 
+          phone: b.phone || '', 
+          source: b.source || 'Line',
+          source_id: b.source_id || '', 
+          totalSpent: 0,
+          cameraId: b.camera_id || '', 
+          eating_habit: b.eating_habit || '-',
+          note: b.note || '-', 
+          image: b.customer_image || '',
           catNames: new Set(),
-          lastStay: { start: b.start_date, end: b.end_date },
-          history: []
+          history: [],
+          stayKeys: new Set(), // เก็บ Key ของแต่ละรอบการเข้าพัก
         };
       }
-      acc[name].stayCount += 1;
+
+      // นับยอดรวมเงินตามปกติ (ทุกห้อง)
       acc[name].totalSpent += (Number(b.total_price) || 0);
       acc[name].history.push(b);
+      
+      // เพิ่ม Stay Key เข้าไปใน Set (Set จะไม่เก็บค่าซ้ำ)
+      acc[name].stayKeys.add(stayKey);
+
       if (b.cat_names) {
         b.cat_names.split(',').forEach(n => {
           const trimmedName = n.trim();
@@ -91,10 +106,13 @@ export default function CustomerDatabase() {
 
     return Object.values(stats).map(item => ({
       ...item,
+      // จำนวนครั้งที่พัก = จำนวน Unique Keys ที่อยู่ใน Set
+      stayCount: item.stayKeys.size, 
       catNamesDisplay: Array.from(item.catNames).join(', '),
       catNamesSearch: Array.from(item.catNames).join(' ').toLowerCase()
     }));
   }, [bookings]);
+
 
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase();
