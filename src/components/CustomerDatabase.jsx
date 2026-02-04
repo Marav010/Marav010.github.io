@@ -174,7 +174,7 @@ export default function CustomerDatabase() {
         </div>
       </div>
 
-      {/* Grid */}
+  {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentData.map((customer, idx) => (
           <div
@@ -182,29 +182,34 @@ export default function CustomerDatabase() {
             onClick={() => setHistoryModal(customer)}
             className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden group"
           >
-            {/* ป้ายบอกช่องทาง (Badge) */}
-            <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5 shadow-sm border-l border-b border-[#efebe9]/50 transition-colors ${
-              customer.source === 'Line' 
-                ? 'bg-green-50 text-green-600 border-green-100' 
-                : 'bg-blue-50 text-blue-600 border-blue-100'
-            }`}>
-              {customer.source === 'Line' ? <MessageCircle size={12} fill="currentColor" className="opacity-20" /> : <Facebook size={12} fill="currentColor" className="opacity-20" />}
-              {customer.source}
-            </div>
-
             <div className="flex gap-4">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] shrink-0 shadow-inner">
                 {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32} /></div>}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-black text-[#372C2E] text-lg truncate pr-16">{customer.name}</h3>
-                  <div className="flex gap-1 shrink-0 absolute right-4 bottom-24">
+                  <div className="flex flex-col">
+                    <h3 className="font-black text-[#372C2E] text-lg truncate">{customer.name}</h3>
+                    {/* Badge ช่องทางแบบเดิมที่เคยมี */}
+                    <div className="flex mt-0.5">
+                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm border ${
+                        customer.source === 'Line' 
+                          ? 'bg-green-50 text-green-600 border-green-100' 
+                          : 'bg-blue-50 text-blue-600 border-blue-100'
+                      }`}>
+                        {customer.source === 'Line' ? <MessageCircle size={10} fill="currentColor" className="opacity-40" /> : <Facebook size={10} fill="currentColor" className="opacity-40" />}
+                        {customer.source}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-1 shrink-0">
                     <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg transition-colors"><Edit3 size={18} /></button>
                     <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer.name); }} className="p-2 text-[#885E43] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5 mt-1">
+                
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md"><Phone size={10} className="inline mr-1" />{customer.phone}</span>
                   <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md"><Cat size={10} className="inline mr-1" />{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
                 </div>
