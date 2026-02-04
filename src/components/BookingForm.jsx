@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
-import { 
-  ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2, 
-  CheckCircle2, AlertCircle, XCircle 
+import {
+  ChevronDown, ArrowLeft, Banknote, Cat, Plus, Trash2,
+  CheckCircle2, AlertCircle, XCircle
 } from 'lucide-react';
 
 export default function BookingForm({ onSaved, initialDate }) {
@@ -29,14 +29,7 @@ export default function BookingForm({ onSaved, initialDate }) {
     end_date: '',
     cats: [{ cat_name: '', room_type: 'สแตนดาร์ด' }]
   });
-
-  // --- ฟังก์ชันสำหรับ "แสดงผล" เป็น พ.ศ. บนหน้าจอเท่านั้น ---
-  const toThaiDisplay = (dateStr) => {
-    if (!dateStr) return 'ระบุวันที่';
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${parseInt(y) + 543}`;
-  };
-
+ 
   const showAlert = (type, title, message) => {
     setAlertConfig({ isOpen: true, type, title, message });
   };
@@ -70,10 +63,10 @@ export default function BookingForm({ onSaved, initialDate }) {
   // --- คำนวณจำนวนคืนโดยใช้ ค.ศ. (แม่นยำ 100%) ---
   const bookingSummary = useMemo(() => {
     if (!formData.start_date || !formData.end_date) return { nights: 0, total: 0 };
-    
+
     const start = new Date(formData.start_date);
     const end = new Date(formData.end_date);
-    
+
     start.setHours(0, 0, 0, 0);
     end.setHours(0, 0, 0, 0);
 
@@ -85,17 +78,17 @@ export default function BookingForm({ onSaved, initialDate }) {
     formData.cats.forEach(cat => {
       total += (ROOM_PRICES[cat.room_type] || 0) * validNights;
     });
-    
+
     return { nights: validNights, total };
   }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (bookingSummary.nights <= 0) {
       return showAlert('warning', 'วันที่ไม่ถูกต้อง', 'วันออกต้องหลังจากวันเข้าพักอย่างน้อย 1 คืน');
     }
-    
+
     setLoading(true);
 
     // บันทึกลง Supabase เป็น ค.ศ. (formData.start_date เก็บค่า YYYY-MM-DD อยู่แล้ว)
@@ -103,13 +96,13 @@ export default function BookingForm({ onSaved, initialDate }) {
       customer_name: formData.customer_name,
       cat_names: cat.cat_name,
       room_type: cat.room_type,
-      start_date: formData.start_date, 
-      end_date: formData.end_date,     
+      start_date: formData.start_date,
+      end_date: formData.end_date,
       total_price: (ROOM_PRICES[cat.room_type] || 0) * bookingSummary.nights
     }));
 
     const { error } = await supabase.from('bookings').insert(bookingsToInsert);
-    
+
     if (error) {
       showAlert('error', 'เกิดข้อผิดพลาด', error.message);
     } else {
@@ -188,25 +181,42 @@ export default function BookingForm({ onSaved, initialDate }) {
               </div>
             ))}
           </div>
-
-          {/* วันที่ (แสดง พ.ศ. ให้ผู้ใช้เห็นเป็น Label กำกับ) */}
-          <div className="grid grid-cols-2 gap-4 pt-2">
-            <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                วันที่เข้า ({toThaiDisplay(formData.start_date)})
+          {/* วันที่เข้าและออก - แบบเอา พ.ศ. ออก */}
+          <div className="flex flex-col gap-5 pt-2">
+            {/* กล่องวันที่เข้า */}
+            <div className="w-full space-y-2">
+              <label className="block px-1">
+                <span className="text-[11px] font-black text-[#885E43] uppercase tracking-wider">วันที่เข้า</span>
               </label>
-              <input type="date" value={formData.start_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
-                onChange={e => setFormData({ ...formData, start_date: e.target.value })} />
+              <div className="relative w-full">
+                <input
+                  type="date"
+                  value={formData.start_date}
+                  required
+                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all min-h-[58px]"
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                  onChange={e => setFormData({ ...formData, start_date: e.target.value })}
+                />
+              </div>
             </div>
-            <div className="space-y-3">
-              <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                วันที่ออก ({toThaiDisplay(formData.end_date)})
+
+            {/* กล่องวันที่ออก */}
+            <div className="w-full space-y-2">
+              <label className="block px-1">
+                <span className="text-[11px] font-black text-[#885E43] uppercase tracking-wider">วันที่ออก</span>
               </label>
-              <input type="date" value={formData.end_date} required className="w-full p-3 bg-[#FDFBFA] rounded-xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-xs md:text-sm shadow-sm"
-                onChange={e => setFormData({ ...formData, end_date: e.target.value })} />
+              <div className="relative w-full">
+                <input
+                  type="date"
+                  value={formData.end_date}
+                  required
+                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all min-h-[58px]"
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                  onChange={e => setFormData({ ...formData, end_date: e.target.value })}
+                />
+              </div>
             </div>
           </div>
-
           {/* สรุปราคา */}
           <div className="bg-[#372C2E] rounded-[2rem] p-6 text-white shadow-xl border border-[#5d4037]">
             <div className="flex justify-between items-center">
@@ -232,22 +242,20 @@ export default function BookingForm({ onSaved, initialDate }) {
         <div className="fixed inset-0 z-[2000] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
             <div className="p-8 text-center">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ${
-                alertConfig.type === 'success' ? 'bg-green-50 text-green-500' : 
-                alertConfig.type === 'error' ? 'bg-red-50 text-red-500' : 
-                'bg-amber-50 text-amber-500'
-              }`}>
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner ${alertConfig.type === 'success' ? 'bg-green-50 text-green-500' :
+                alertConfig.type === 'error' ? 'bg-red-50 text-red-500' :
+                  'bg-amber-50 text-amber-500'
+                }`}>
                 {alertConfig.type === 'success' && <CheckCircle2 size={40} />}
                 {alertConfig.type === 'error' && <XCircle size={40} />}
                 {alertConfig.type === 'warning' && <AlertCircle size={40} />}
               </div>
               <h3 className="text-xl font-black text-[#372C2E] mb-2">{alertConfig.title}</h3>
               <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8 px-2">{alertConfig.message}</p>
-              <button onClick={closeAlert} className={`w-full py-4 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 ${
-                alertConfig.type === 'success' ? 'bg-[#885E43] shadow-[#885E43]/20' : 
-                alertConfig.type === 'error' ? 'bg-red-500 shadow-red-200' : 
-                'bg-amber-500 shadow-amber-200'
-              }`}>ตกลง</button>
+              <button onClick={closeAlert} className={`w-full py-4 rounded-2xl font-black text-white shadow-lg transition-all active:scale-95 ${alertConfig.type === 'success' ? 'bg-[#885E43] shadow-[#885E43]/20' :
+                alertConfig.type === 'error' ? 'bg-red-500 shadow-red-200' :
+                  'bg-amber-500 shadow-amber-200'
+                }`}>ตกลง</button>
             </div>
           </div>
         </div>
