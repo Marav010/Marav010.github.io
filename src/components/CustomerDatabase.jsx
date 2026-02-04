@@ -279,52 +279,72 @@ export default function CustomerDatabase() {
         </div>
       </div>
 
-     {/* Grid Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {currentData.map((customer, idx) => (
-          <div key={idx} className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all relative flex flex-col min-h-[250px]">
-             {/* ส่วนเนื้อหา (เหมือนเดิม) */}
-             <div className="flex gap-4">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] flex-shrink-0">
-                {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32}/></div>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-black text-[#372C2E] truncate pr-2">{customer.name}</h3>
-                  <div className="flex gap-1">
-                    <button onClick={() => { setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit3 size={16}/></button>
-                    <button onClick={() => { if(confirm('ลบลูกค้านี้?')) supabase.from('bookings').delete().eq('customer_name', customer.name).then(fetchData); }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16}/></button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  <span className="text-[9px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md flex items-center gap-1"><Phone size={10}/>{customer.phone}</span>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 ${customer.source === 'Line' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
-                    {customer.source === 'Line' ? <MessageCircle size={10}/> : <Facebook size={10}/>} {customer.source_id || '-'}
-                  </span>
-                </div>
-                <div className="mt-2 text-[10px] text-[#A1887F] font-bold flex items-center gap-1 truncate italic"><Cat size={12} className="text-[#DE9E48]" /> {customer.catNames || 'ไม่มีข้อมูลแมว'}</div>
+ // ส่วนของ Grid แสดงผลที่ปรับปรุงใหม่
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {currentData.map((customer, idx) => (
+    <div key={idx} className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all relative flex flex-col min-h-[250px] cursor-pointer" onClick={() => setHistoryModal(customer)}>
+      
+      <div className="flex gap-4">
+        {/* รูปโปรไฟล์ */}
+        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] flex-shrink-0 shadow-inner">
+          {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32}/></div>}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-black text-[#372C2E] text-lg truncate pr-2">{customer.name}</h3>
+              
+              {/* --- ส่วนที่เพิ่มกลับมา: Badge ช่องทางติดต่อแบบดั้งเดิม --- */}
+              <div className="flex mt-1">
+                <span className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter shadow-sm border ${
+                  customer.source === 'Line' 
+                    ? 'bg-green-50 text-green-600 border-green-100' 
+                    : 'bg-blue-50 text-blue-600 border-blue-100'
+                }`}>
+                  {customer.source === 'Line' ? <MessageCircle size={10} fill="currentColor" className="opacity-40" /> : <Facebook size={10} fill="currentColor" className="opacity-40" />}
+                  {customer.source_id || customer.source}
+                </span>
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-[#FDFBFA] rounded-xl border border-[#efebe9]/50 flex-1 space-y-2">
-              <div className="flex items-start gap-2">
-                <Utensils size={12} className="text-[#DE9E48] mt-0.5 flex-shrink-0" />
-                <p className="text-[10px] text-[#372C2E] line-clamp-2"><span className="font-bold text-[#885E43]">การกิน:</span> {customer.eating_habit || '-'}</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <FileText size={12} className="text-[#DE9E48] mt-0.5 flex-shrink-0" />
-                <p className="text-[10px] text-[#372C2E] line-clamp-2"><span className="font-bold text-[#885E43]">หมายเหตุ:</span> {customer.note || '-'}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-[#FDFBFA] text-center">
-               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ไอดีกล้อง</p><p className="text-xs font-black text-blue-600">{customer.cameraId}</p></div>
-               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ยอดสะสม</p><p className="text-xs font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
-               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">เข้าพัก</p><p className="text-xs font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
+            {/* ปุ่มจัดการ */}
+            <div className="flex gap-1 shrink-0">
+              <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg transition-colors"><Edit3 size={18}/></button>
+              <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer.name); }} className="p-2 text-[#885E43] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18}/></button>
             </div>
           </div>
-        ))}
+
+          {/* ข้อมูลเบอร์โทรและชื่อแมว */}
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md flex items-center gap-1"><Phone size={10}/>{customer.phone}</span>
+            <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md flex items-center gap-1"><Cat size={10}/>{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
+          </div>
+        </div>
       </div>
+
+      {/* รายละเอียดการกิน/หมายเหตุ */}
+      <div className="mt-4 p-3 bg-[#FDFBFA] rounded-xl border border-[#efebe9]/50 flex-1 space-y-2">
+        <div className="flex items-start gap-2">
+          <Utensils size={12} className="text-[#DE9E48] mt-0.5 flex-shrink-0" />
+          <p className="text-[10px] text-[#372C2E] line-clamp-2 leading-relaxed"><span className="font-bold text-[#885E43]">การกิน:</span> {customer.eating_habit || '-'}</p>
+        </div>
+        <div className="flex items-start gap-2">
+          <FileText size={12} className="text-[#DE9E48] mt-0.5 flex-shrink-0" />
+          <p className="text-[10px] text-[#372C2E] line-clamp-2 leading-relaxed"><span className="font-bold text-[#885E43]">หมายเหตุ:</span> {customer.note || '-'}</p>
+        </div>
+      </div>
+
+      {/* แถบสรุปด้านล่าง */}
+      <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-[#FDFBFA] text-center">
+         <div><p className="text-[8px] font-bold text-[#A1887F] uppercase tracking-widest">กล้อง</p><p className="text-sm font-black text-blue-600">{customer.cameraId}</p></div>
+         <div><p className="text-[8px] font-bold text-[#A1887F] uppercase tracking-widest">ยอดสะสม</p><p className="text-sm font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
+         <div><p className="text-[8px] font-bold text-[#A1887F] uppercase tracking-widest">เข้าพัก</p><p className="text-sm font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
+      </div>
+    </div>
+  ))}
+</div>
+
 
       {/* --- Pagination UI --- */}
       {totalPages > 1 && (
