@@ -190,34 +190,44 @@ export default function BookingForm({ onSaved, initialDate }) {
           </div>
 
           {/* วันที่ (แสดง พ.ศ. ให้ผู้ใช้เห็นเป็น Label กำกับ) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            {/* วันที่เข้า */}
             <div className="space-y-2">
-              <label className="flex flex-wrap items-center gap-1 text-[10px] md:text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                <span>วันที่เข้า</span>
-                <span className="text-[#a1887f] font-bold">({toThaiDisplay(formData.start_date)})</span>
+              <label className="block ml-1">
+                <span className="block text-[11px] font-black text-[#885E43] uppercase tracking-widest leading-tight">
+                  วันที่เข้า
+                </span>
+                <span className="block text-[10px] font-bold text-[#a1887f]">
+                  ({toThaiDisplay(formData.start_date)})
+                </span>
               </label>
               <div className="relative">
                 <input
                   type="date"
                   value={formData.start_date}
                   required
-                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all"
+                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all min-h-[56px]"
                   onChange={e => setFormData({ ...formData, start_date: e.target.value })}
                 />
               </div>
             </div>
 
+            {/* วันที่ออก */}
             <div className="space-y-2">
-              <label className="flex flex-wrap items-center gap-1 text-[10px] md:text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">
-                <span>วันที่ออก</span>
-                <span className="text-[#a1887f] font-bold">({toThaiDisplay(formData.end_date)})</span>
+              <label className="block ml-1">
+                <span className="block text-[11px] font-black text-[#885E43] uppercase tracking-widest leading-tight">
+                  วันที่ออก
+                </span>
+                <span className="block text-[10px] font-bold text-[#a1887f]">
+                  ({toThaiDisplay(formData.end_date)})
+                </span>
               </label>
               <div className="relative">
                 <input
                   type="date"
                   value={formData.end_date}
                   required
-                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all"
+                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border-2 border-[#efebe9] focus:border-[#885E43] outline-none font-bold text-[#372C2E] text-sm shadow-sm transition-all min-h-[56px]"
                   onChange={e => setFormData({ ...formData, end_date: e.target.value })}
                 />
               </div>
