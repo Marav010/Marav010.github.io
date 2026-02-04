@@ -174,63 +174,176 @@ export default function CustomerDatabase() {
         </div>
       </div>
 
-  {/* Grid */}
+import { useEffect, useState, useMemo } from 'react';
+import { supabase } from '../lib/supabase';
+import { 
+  User, Phone, MessageCircle, History, Camera, 
+  FileText, Search, ChevronLeft, ChevronRight, 
+  Award, Edit3, Trash2, X, Plus, Cat, Save, Facebook
+} from 'lucide-react';
+
+export default function CustomerDatabase() {
+  const [bookings, setBookings] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('add');
+  const [editingCustomer, setEditingCustomer] = useState({
+    name: '', phone: '', source: 'Line', source_id: '', cameraId: '-', note: '-', image: ''
+  });
+
+  useEffect(() => { fetchData(); }, []);
+
+  const fetchData = async () => {
+    const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+    if (!error) setBookings(data || []);
+    setLoading(false);
+  };
+
+  const customerStats = useMemo(() => {
+    const stats = bookings.reduce((acc, b) => {
+      const name = b.customer_name || 'ไม่ระบุชื่อ';
+      if (!acc[name]) {
+        acc[name] = {
+          name: name,
+          phone: b.phone || '-',
+          source: b.source || 'Line',
+          source_id: b.source_id || '', // ชื่อไอดีไลน์หรือเฟส
+          stayCount: 0,
+          totalSpent: 0,
+          cameraId: b.camera_id || '-',
+          note: b.note || '-',
+          image: b.customer_image || '',
+          catNames: new Set(),
+        };
+      }
+      acc[name].stayCount += 1;
+      acc[name].totalSpent += (b.total_price || 0);
+      if (b.cat_names) b.cat_names.split(',').forEach(n => acc[name].catNames.add(n.trim()));
+      return acc;
+    }, {});
+    return Object.values(stats).map(item => ({ ...item, catNames: Array.from(item.catNames).join(', ') }));
+  }, [bookings]);
+
+  const handleSave = async () => {
+    if (!editingCustomer.name) return alert('กรุณาระบุชื่อลูกค้า');
+    
+    const payload = {
+      customer_name: editingCustomer.name,
+      phone: editingCustomer.phone,
+      source: editingCustomer.source,
+      source_id: editingCustomer.source_id,
+      camera_id: editingCustomer.cameraId,
+      note: editingCustomer.note,
+      customer_image: editingCustomer.image
+    };
+
+    let error;
+    if (modalMode === 'edit') {
+      const { error: err } = await supabase.from('bookings').update(payload).eq('customer_name', editingCustomer.name);
+      error = err;
+    } else {
+      const { error: err } = await supabase.from('bookings').insert([{ 
+        ...payload, 
+        cat_names: 'ยังไม่มีข้อมูลแมว',
+        start_date: new Date().toISOString().split('T')[0],
+        end_date: new Date().toISOString().split('T')[0],
+        room_type: 'สแตนดาร์ด'
+      }]);
+      error = err;
+    }
+
+    if (!error) {
+      setIsModalOpen(false);
+      fetchData();
+    }
+  };
+
+  const filtered = customerStats.filter(c => c.name.includes(searchTerm) || c.phone.includes(searchTerm) || c.source_id.includes(searchTerm));
+  const currentData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  return (
+    <div className="space-y-6 py-4">
+      {/* Search Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
+        <div className="flex items-center gap-4">
+          <div className="bg-[#372C2E] p-3 rounded-2xl text-[#DE9E48] shadow-lg"><User size={28} /></div>
+          <div><h2 className="text-2xl font-black text-[#372C2E]">ฐานข้อมูลลูกค้า</h2><p className="text-xs text-[#A1887F] font-bold">จัดการ Social ID และข้อมูลติดต่อ</p></div>
+        </div>
+        <div className="flex w-full md:w-auto gap-2">
+          <input type="text" placeholder="ค้นหาชื่อ/เบอร์/ไอดี..." className="pl-4 pr-4 py-2.5 bg-white border border-[#efebe9] rounded-xl outline-none focus:border-[#885E43] font-bold text-sm w-full md:w-64" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <button onClick={() => { setModalMode('add'); setEditingCustomer({ name: '', phone: '', source: 'Line', source_id: '', cameraId: '-', note: '-', image: '' }); setIsModalOpen(true); }} className="bg-[#885E43] text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-[#5D4037] shadow-lg text-sm"><Plus size={18} /> เพิ่มลูกค้า</button>
+        </div>
+      </div>
+
+      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {currentData.map((customer, idx) => (
-          <div
-            key={idx}
-            onClick={() => setHistoryModal(customer)}
-            className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden group"
-          >
+          <div key={idx} className="bg-white rounded-[2rem] p-5 border border-[#efebe9] shadow-sm hover:shadow-md transition-all relative overflow-hidden">
             <div className="flex gap-4">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] shrink-0 shadow-inner">
-                {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32} /></div>}
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#FDF8F5] border border-[#efebe9] flex-shrink-0">
+                {customer.image ? <img src={customer.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#DBD0C5]"><User size={32}/></div>}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <h3 className="font-black text-[#372C2E] text-lg truncate">{customer.name}</h3>
-                    {/* Badge ช่องทางแบบเดิมที่เคยมี */}
-                    <div className="flex mt-0.5">
-                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm border ${
-                        customer.source === 'Line' 
-                          ? 'bg-green-50 text-green-600 border-green-100' 
-                          : 'bg-blue-50 text-blue-600 border-blue-100'
-                      }`}>
-                        {customer.source === 'Line' ? <MessageCircle size={10} fill="currentColor" className="opacity-40" /> : <Facebook size={10} fill="currentColor" className="opacity-40" />}
-                        {customer.source}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-1 shrink-0">
-                    <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg transition-colors"><Edit3 size={18} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer.name); }} className="p-2 text-[#885E43] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
+                  <h3 className="font-black text-[#372C2E] truncate">{customer.name}</h3>
+                  <div className="flex gap-1">
+                    <button onClick={() => { setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit3 size={16}/></button>
+                    <button onClick={() => { if(confirm('ลบลูกค้านี้?')) supabase.from('bookings').delete().eq('customer_name', customer.name).then(fetchData); }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16}/></button>
                   </div>
                 </div>
-                
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md"><Phone size={10} className="inline mr-1" />{customer.phone}</span>
-                  <span className="text-[10px] font-bold bg-[#FDF8F5] text-[#DE9E48] px-2 py-0.5 rounded-md"><Cat size={10} className="inline mr-1" />{customer.catNamesDisplay || 'ไม่มีข้อมูลแมว'}</span>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  <span className="text-[9px] font-bold bg-[#FDF8F5] text-[#885E43] px-2 py-0.5 rounded-md flex items-center gap-1"><Phone size={10}/>{customer.phone}</span>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 ${customer.source === 'Line' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
+                    {customer.source === 'Line' ? <MessageCircle size={10}/> : <Facebook size={10}/>}
+                    {customer.source_id || 'ไม่ได้ระบุไอดี'}
+                  </span>
                 </div>
+                <div className="mt-2 text-[10px] text-[#A1887F] font-bold flex items-center gap-1 truncate italic"><Cat size={12} className="text-[#DE9E48]" /> {customer.catNames || 'ไม่มีข้อมูลแมว'}</div>
               </div>
             </div>
-
-            <div className="mt-4 space-y-2">
-              <div className="bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]/50">
-                <div className="flex items-center gap-2 text-[#885E43] font-bold text-[10px] mb-1 uppercase"><Utensils size={12} /> ข้อมูลการกิน</div>
-                <p className="text-xs text-[#372C2E] line-clamp-2 leading-relaxed">{customer.eating_habit || '-'}</p>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-[#FDFBFA]">
-              <div className="text-center flex-1"><p className="text-[8px] font-bold text-[#A1887F] uppercase">กล้อง</p><p className="text-sm font-black text-blue-600">{customer.cameraId}</p></div>
-              <div className="text-center flex-1 border-x border-[#FDFBFA]"><p className="text-[8px] font-bold text-[#A1887F] uppercase">ยอดรวม</p><p className="text-sm font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
-              <div className="text-center flex-1"><p className="text-[8px] font-bold text-[#A1887F] uppercase">พักแล้ว</p><p className="text-sm font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
+            <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-[#FDFBFA] text-center">
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ยอดสะสม</p><p className="text-xs font-black text-[#885E43]">฿{customer.totalSpent.toLocaleString()}</p></div>
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">เข้าพัก</p><p className="text-xs font-black text-[#372C2E]">{customer.stayCount} ครั้ง</p></div>
+               <div><p className="text-[8px] font-bold text-[#A1887F] uppercase">ไอดีกล้อง</p><p className="text-xs font-black text-[#372C2E]">{customer.cameraId}</p></div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden">
+            <div className="bg-[#372C2E] p-5 text-white flex justify-between items-center"><h3 className="font-bold">{modalMode === 'edit' ? 'แก้ไขข้อมูลลูกค้า' : 'เพิ่มลูกค้าใหม่'}</h3><button onClick={() => setIsModalOpen(false)}><X size={20}/></button></div>
+            <div className="p-6 space-y-4">
+              <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">ชื่อลูกค้า</label><input className="w-full p-3 bg-[#FDFBFA] border rounded-xl font-bold" disabled={modalMode === 'edit'} value={editingCustomer.name} onChange={e => setEditingCustomer({...editingCustomer, name: e.target.value})} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">เบอร์โทร</label><input className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.phone} onChange={e => setEditingCustomer({...editingCustomer, phone: e.target.value})} /></div>
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">ช่องทางหลัก</label>
+                  <select className="w-full p-3 bg-[#FDFBFA] border rounded-xl" value={editingCustomer.source} onChange={e => setEditingCustomer({...editingCustomer, source: e.target.value})}>
+                    <option value="Line">Line</option><option value="Facebook">Facebook</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-[#A1887F] uppercase">ชื่อ ID หรือ ชื่อบัญชี ({editingCustomer.source})</label>
+                <input className="w-full p-3 bg-[#FDFBFA] border border-[#885E43]/30 rounded-xl font-bold text-[#885E43]" 
+                  placeholder={`ระบุชื่อใน ${editingCustomer.source}`}
+                  value={editingCustomer.source_id} onChange={e => setEditingCustomer({...editingCustomer, source_id: e.target.value})} />
+              </div>
+              <button onClick={handleSave} className="w-full py-4 bg-[#885E43] text-white rounded-xl font-bold flex items-center justify-center gap-2"><Save size={18}/> บันทึกข้อมูล</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
       {/* --- Pagination UI --- */}
       {totalPages > 1 && (
