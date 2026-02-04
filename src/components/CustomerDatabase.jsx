@@ -311,22 +311,27 @@ export default function CustomerDatabase() {
           </div>
         </div>
       )}
-
-      {/* ส่วนอื่นๆ ของ Modal (Edit/Delete) คงเดิม แต่ระวังส่วนวันที่ */}
-      {/* ... [รักษาโค้ด Modal Edit และ Delete ไว้เหมือนเดิม] ... */}
-      
-      {/* Pagination คงเดิม */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8 py-4">
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="p-2 rounded-xl bg-white border border-[#efebe9] text-[#885E43] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#FDF8F5] transition-all"><ChevronLeft size={20} /></button>
-          <div className="flex items-center gap-1.5">
-            {[...Array(totalPages)].map((_, i) => (
-                <button key={i+1} onClick={() => setCurrentPage(i+1)} className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${currentPage === i+1 ? 'bg-[#372C2E] text-[#DE9E48] shadow-md scale-110' : 'bg-white border border-[#efebe9] text-[#A1887F] hover:bg-[#FDF8F5]'}`}>{i+1}</button>
-            ))}
+     {/* Pagination & Empty State */}
+        {filtered.length === 0 ? (
+          <div className="p-20 text-center bg-[#FDFBFA]">
+            <div className="text-[#DBD0C5] text-5xl mb-4">🐾</div>
+            <div className="text-[#A1887F] font-bold italic tracking-wide">ไม่พบประวัติการเข้าพักที่เลือก</div>
           </div>
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} className="p-2 rounded-xl bg-white border border-[#efebe9] text-[#885E43] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#FDF8F5] transition-all"><ChevronRight size={20} /></button>
-        </div>
-      )}
+        ) : (
+          <div className="px-6 py-5 bg-[#FDFBFA] border-t border-[#efebe9] flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-[10px] font-bold text-[#A1887F] uppercase tracking-widest">
+              แสดง {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filtered.length)} จาก {filtered.length} รายการ
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => paginate(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="p-2 rounded-lg hover:bg-[#FDF8F5] disabled:opacity-30 text-[#885E43] transition-all"><ChevronLeft size={18} /></button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button key={i + 1} onClick={() => paginate(i + 1)} className={`w-8 h-8 rounded-lg text-xs font-black transition-all ${currentPage === i + 1 ? 'bg-[#885E43] text-white shadow-md shadow-[#885E43]/20' : 'text-[#A1887F] hover:bg-[#FDF8F5]'}`}>{i + 1}</button>
+              ))}
+              <button onClick={() => paginate(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} className="p-2 rounded-lg hover:bg-[#FDF8F5] disabled:opacity-30 text-[#885E43] transition-all"><ChevronRight size={18} /></button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Modal Add/Edit */}
       {isModalOpen && (
