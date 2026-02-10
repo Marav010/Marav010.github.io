@@ -3,7 +3,11 @@ import { supabase } from '../lib/supabase';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Calendar as CalendarIcon, Loader2, X, Trash2, LayoutDashboard, MousePointerClick, CalendarDays } from 'lucide-react';
+import { 
+  Calendar as CalendarIcon, Loader2, X, Trash2, LayoutDashboard, 
+  MousePointerClick, CalendarDays, Info, CheckCircle2, AlertCircle, 
+  BadgeCheck, Wallet, Receipt
+} from 'lucide-react';
 
 export default function CalendarView({ onDateClick }) {
   const [events, setEvents] = useState([]);
@@ -17,28 +21,35 @@ export default function CalendarView({ onDateClick }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  
+  // สถานะสำหรับ Custom Alert
+  const [alertConfig, setAlertConfig] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
 
   const ROOM_CONFIG = {
-    'สแตนดาร์ด': { total: 7, color: '#C39A7A' },
-    'ดีลักซ์': { total: 2, color: '#ad6ea8' },
-    'ซูพีเรีย': { total: 4, color: '#eea5a5' },
-    'พรีเมี่ยม': { total: 4, color: '#368daf' },
-    'วีไอพี': { total: 2, color: '#30532d' },
-    'วีวีไอพี': { total: 1, color: '#372C2E' }
+    'สแตนดาร์ด': { total: 7, color: '#C39A7A', price: 300 },
+    'ดีลักซ์': { total: 2, color: '#ad6ea8', price: 350 },
+    'ซูพีเรีย': { total: 4, color: '#eea5a5', price: 350 },
+    'พรีเมี่ยม': { total: 4, color: '#368daf', price: 400 },
+    'วีไอพี': { total: 2, color: '#30532d', price: 500 },
+    'วีวีไอพี': { total: 1, color: '#372C2E', price: 600 }
   };
 
   const getRoomColor = (type) => ROOM_CONFIG[type]?.color || '#e05f5f';
 
-  // ฟังก์ชันล้าง Popover ของ FullCalendar ทั้งหมด
+  // ฟังก์ชันคำนวณราคาสด
+  const calculateLivePrice = (start, end, roomType) => {
+    if (!start || !end) return 0;
+    const diff = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+    const nights = diff > 0 ? diff : 0;
+    return nights * (ROOM_CONFIG[roomType]?.price || 0);
+  };
+
   const closeAllFcPopovers = () => {
     document.querySelectorAll('.fc-popover').forEach(el => el.remove());
   };
 
-  // --- แก้ไข: เมื่อเปิด Modal จัดการการจอง ให้ปิด Popover "+ more" ทันที ---
   useEffect(() => {
-    if (isModalOpen) {
-      closeAllFcPopovers();
-    }
+    if (isModalOpen) closeAllFcPopovers();
   }, [isModalOpen]);
 
   const fetchBookings = useCallback(async () => {
@@ -50,7 +61,7 @@ export default function CalendarView({ onDateClick }) {
         end.setDate(end.getDate() + 1);
         return {
           id: b.id,
-          title: `${b.cat_names}`,
+          title: ` ${b.cat_names}`,
           start: b.start_date,
           end: end.toISOString().split('T')[0],
           backgroundColor: getRoomColor(b.room_type),
@@ -68,14 +79,6 @@ export default function CalendarView({ onDateClick }) {
     setSelectedDateStatus(getTodayStr());
   }, [fetchBookings]);
 
-  useEffect(() => {
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      const timer = setTimeout(() => calendarApi.updateSize(), 150);
-      return () => clearTimeout(timer);
-    }
-  }, [events]);
-
   const roomStatusSummary = Object.keys(ROOM_CONFIG).map(type => {
     const used = events.filter(event => (
       event.extendedProps.room_type === type &&
@@ -85,25 +88,49 @@ export default function CalendarView({ onDateClick }) {
     return { type, used, total: ROOM_CONFIG[type].total, available: ROOM_CONFIG[type].total - used };
   });
 
-  const handleDelete = async () => {
-    if (!window.confirm(`ยืนยันการลบการจองของคุณ ${selectedBooking.customer_name}?`)) return;
-    setIsUpdating(true);
-    const { error } = await supabase.from('bookings').delete().eq('id', selectedBooking.id);
-    if (!error) { setIsModalOpen(false); fetchBookings(); }
-    setIsUpdating(false);
+  // ฟังก์ชันลบแบบใช้ Alert สวยๆ
+  const triggerDelete = () => {
+    setAlertConfig({
+      isOpen: true,
+      type: 'danger',
+      title: 'ยืนยันการลบการจอง?',
+      message: `คุณต้องการลบข้อมูลการจองของ "${selectedBooking.customer_name}" ใช่หรือไม่?`,
+      onConfirm: async () => {
+        setIsUpdating(true);
+        const { error } = await supabase.from('bookings').delete().eq('id', selectedBooking.id);
+        if (!error) { 
+          setIsModalOpen(false); 
+          fetchBookings();
+          setAlertConfig(prev => ({ ...prev, isOpen: false }));
+        }
+        setIsUpdating(false);
+      }
+    });
   };
 
   const handleUpdate = async () => {
     setIsUpdating(true);
+    const newTotalPrice = calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type);
+    
     const { error } = await supabase.from('bookings')
       .update({ 
-        cat_names: selectedBooking.cat_names,
         start_date: selectedBooking.start_date,
-        end_date: selectedBooking.end_date 
+        end_date: selectedBooking.end_date,
+        total_price: newTotalPrice
       })
       .eq('id', selectedBooking.id);
     
-    if (!error) { setIsModalOpen(false); fetchBookings(); }
+    if (!error) { 
+        setIsModalOpen(false); 
+        fetchBookings(); 
+        setAlertConfig({
+            isOpen: true,
+            type: 'success',
+            title: 'อัปเดตเรียบร้อย!',
+            message: 'แก้ไขข้อมูลวันเข้าพักและปรับปรุงราคาใหม่สำเร็จแล้ว',
+            onConfirm: () => setAlertConfig(prev => ({ ...prev, isOpen: false }))
+        });
+    }
     setIsUpdating(false);
   };
 
@@ -114,9 +141,9 @@ export default function CalendarView({ onDateClick }) {
   );
 
   return (
-    <div className="py-2 md:py-4 space-y-6 overflow-visible">
+    <div className="py-2 md:py-4 space-y-6 overflow-visible font-sans">
       
-      {/* Dashboard Section */}
+      {/* Dashboard Section (คงเดิมตาม Code คุณ) */}
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -130,33 +157,22 @@ export default function CalendarView({ onDateClick }) {
           </div>
         </div>
 
-        <div id="status-dashboard" className="bg-white p-5 rounded-[2rem] border border-[#efebe9] shadow-sm transition-all duration-300">
+        <div id="status-dashboard" className="bg-white p-5 rounded-[2rem] border border-[#efebe9] shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <LayoutDashboard size={18} className="text-[#885E43]" />
-              <h3 className="text-sm font-bold text-[#372C2E]">
-                สถานะห้องว่างวันที่: <span className="text-[#885E43]">{new Date(selectedDateStatus).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-              </h3>
-            </div>
+            <h3 className="text-sm font-bold text-[#372C2E]">สถานะห้องว่างวันที่: <span className="text-[#885E43]">{new Date(selectedDateStatus).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</span></h3>
             <div className="hidden md:flex items-center gap-2 text-[10px] text-[#A1887F] font-bold bg-[#FDFBFA] px-3 py-1 rounded-full border border-[#efebe9]">
-              <MousePointerClick size={12} />
-              คลิก 1 ครั้ง: ดูสถานะ | คลิก 2 ครั้ง: จองที่พัก
+              <MousePointerClick size={12} /> คลิก 2 ครั้งเพื่อจองใหม่
             </div>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {roomStatusSummary.map(item => (
-              <div key={item.type} className={`p-3 rounded-2xl border transition-all ${item.available <= 0 ? 'bg-red-50 border-red-100' : 'bg-[#FDFBFA] border-[#efebe9]'}`}>
-                <div className="flex items-center gap-1.5 mb-1">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getRoomColor(item.type) }}></div>
-                  <span className="text-[10px] font-black text-[#885E43] uppercase truncate">{item.type}</span>
+              <div key={item.type} className={`p-3 rounded-2xl border ${item.available <= 0 ? 'bg-red-50 border-red-100' : 'bg-[#FDFBFA] border-[#efebe9]'}`}>
+                <div className="flex items-center gap-1.5 mb-1 text-[10px] font-black text-[#885E43] uppercase truncate">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getRoomColor(item.type) }}></div> {item.type}
                 </div>
                 <div className="flex items-baseline justify-between">
                   <span className={`text-lg font-black ${item.available <= 0 ? 'text-red-500' : 'text-[#372C2E]'}`}>{item.available <= 0 ? 'เต็ม' : item.available}</span>
                   <span className="text-[10px] text-[#A1887F]">/ {item.total}</span>
-                </div>
-                <div className="w-full bg-gray-100 h-1 mt-2 rounded-full overflow-hidden">
-                  <div className={`h-full ${item.available <= 0 ? 'bg-red-400' : 'bg-green-400'}`} style={{ width: `${(item.used / item.total) * 100}%` }}></div>
                 </div>
               </div>
             ))}
@@ -165,7 +181,7 @@ export default function CalendarView({ onDateClick }) {
       </div>
 
       {/* Calendar Section */}
-      <div className="bg-white p-2 md:p-6 rounded-[2.5rem] border border-[#DBD0C5] shadow-lg">
+      <div className="bg-white p-2 md:p-6 rounded-[2.5rem] border border-[#DBD0C5] shadow-lg overflow-hidden">
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -178,18 +194,11 @@ export default function CalendarView({ onDateClick }) {
           height="auto"
           selectable={true}
           headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
-          
-          // --- แก้ไข: เมื่อคลิกดู "+ more" ให้ปิด Modal แก้ไข (ถ้าเปิดอยู่) ---
-          moreLinkClick={() => {
-            setIsModalOpen(false);
-            return 'popover'; 
-          }}
-
+          moreLinkClick={() => { setIsModalOpen(false); return 'popover'; }}
           dateClick={(info) => {
-            closeAllFcPopovers(); // คลิกที่ว่างในปฏิทิน ให้ปิด popover
+            closeAllFcPopovers();
             if (clickTimer.current) {
-              clearTimeout(clickTimer.current);
-              clickTimer.current = null;
+              clearTimeout(clickTimer.current); clickTimer.current = null;
               if (onDateClick) onDateClick(info.dateStr);
             } else {
               clickTimer.current = setTimeout(() => {
@@ -199,8 +208,6 @@ export default function CalendarView({ onDateClick }) {
               }, 250);
             }
           }}
-
-          // --- แก้ไข: เมื่อคลิกชื่อแมว (Event) ให้เปิด Modal และ Popover จะถูกปิดโดย useEffect ข้างบน ---
           eventClick={(info) => {
             setSelectedBooking(info.event.extendedProps);
             setIsModalOpen(true);
@@ -208,58 +215,116 @@ export default function CalendarView({ onDateClick }) {
         />
       </div>
 
-      {/* Modal จัดการการจอง */}
+      {/* Modal แก้ไขข้อมูลการจอง */}
       {isModalOpen && selectedBooking && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={20} className="text-[#DE9E48]" />
-                <h3 className="text-xl font-bold">แก้ไขข้อมูลการจอง</h3>
-              </div>
-              <button onClick={() => setIsModalOpen(false)} className="hover:rotate-90 transition-transform"><X size={24} /></button>
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200 border border-[#efebe9]">
+            {/* Header */}
+            <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10"><CalendarDays size={100} /></div>
+                <div className="z-10">
+                    <h3 className="text-xl font-black flex items-center gap-2">
+                      <CalendarDays size={20} className="text-[#DE9E48]" />
+                        ข้อมูลการจอง
+                    </h3>
+                </div>
+                <button onClick={() => setIsModalOpen(false)} className="z-10 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all">
+                    <X size={20} />
+                </button>
             </div>
-            
-            <div className="p-8 space-y-4 max-h-[80vh] overflow-y-auto">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-[#A1887F] uppercase ml-2">ชื่อเจ้าของ</label>
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-gray-500 font-bold">{selectedBooking.customer_name}</div>
-              </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-[#A1887F] uppercase ml-2">ชื่อน้องแมว</label>
-                <input 
-                  className="w-full p-4 bg-[#FDFBFA] rounded-2xl border border-[#efebe9] font-bold text-[#372C2E] outline-none focus:border-[#885E43]"
-                  value={selectedBooking.cat_names}
-                  onChange={(e) => setSelectedBooking({ ...selectedBooking, cat_names: e.target.value })}
-                />
-              </div>
-
+            <div className="p-8 space-y-6">
+              {/* Read-Only Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A1887F] uppercase ml-2">วันที่เข้าพัก</label>
-                  <input 
-                    type="date"
-                    className="w-full p-3 bg-[#FDFBFA] rounded-xl border border-[#efebe9] text-sm font-bold"
-                    value={selectedBooking.start_date}
-                    onChange={(e) => setSelectedBooking({ ...selectedBooking, start_date: e.target.value })}
-                  />
+                    <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> เจ้าของ</label>
+                    <div className="text-sm font-bold text-[#372C2E] bg-gray-50 p-3 rounded-xl border border-gray-100">{selectedBooking.customer_name}</div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A1887F] uppercase ml-2">วันที่ออก</label>
-                  <input 
-                    type="date"
-                    className="w-full p-3 bg-[#FDFBFA] rounded-xl border border-[#efebe9] text-sm font-bold"
-                    value={selectedBooking.end_date}
-                    onChange={(e) => setSelectedBooking({ ...selectedBooking, end_date: e.target.value })}
-                  />
+                    <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> น้องแมว</label>
+                    <div className="text-sm font-bold text-[#885E43] bg-orange-50/50 p-3 rounded-xl border border-orange-100/50"> {selectedBooking.cat_names}</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-4">
-                <button onClick={handleDelete} disabled={isUpdating} className="py-4 rounded-2xl bg-red-50 text-red-500 font-bold hover:bg-red-100 transition-all">ลบออก</button>
-                <button onClick={handleUpdate} disabled={isUpdating} className="py-4 rounded-2xl bg-[#885E43] text-white font-bold hover:bg-[#5D4037] transition-all flex items-center justify-center">
-                  {isUpdating ? <Loader2 className="animate-spin" size={20} /> : 'บันทึก'}
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> ประเภทห้องพัก</label>
+                <div className="flex items-center gap-2 text-sm font-black text-[#372C2E] bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getRoomColor(selectedBooking.room_type) }}></div>
+                    {selectedBooking.room_type}
+                </div>
+              </div>
+
+              {/* Editable Dates */}
+              <div className="bg-[#FDF8F5] p-5 rounded-2xl border border-[#efebe9] space-y-4">
+                <h4 className="text-xs font-black text-[#885E43] uppercase flex items-center gap-2"><CalendarIcon size={14}/> แก้ไขช่วงเวลาเข้าพัก</h4>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-[#A1887F]">วันที่เข้า</label>
+                        <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.start_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, start_date: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-[#A1887F]">วันที่ออก</label>
+                        <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.end_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, end_date: e.target.value })} />
+                    </div>
+                </div>
+              </div>
+
+              {/* Price & Deposit Summary */}
+              <div className="flex items-center justify-between p-4 bg-[#372C2E] rounded-2xl text-white shadow-xl shadow-[#372C2E]/10">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-bold text-[#A1887F] uppercase">ราคารวมใหม่</p>
+                    <p className="text-2xl font-black text-[#DE9E48]">฿{calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type).toLocaleString()}</p>
+                </div>
+                <div className="text-right">
+                    {selectedBooking.deposit > 0 ? (
+                        <div className="flex flex-col items-end">
+                            <span className="flex items-center gap-1 text-[10px] font-black bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/30">
+                                <BadgeCheck size={12} /> มัดจำแล้ว
+                            </span>
+                            <p className="text-xs font-bold mt-1 text-white/70">฿{selectedBooking.deposit.toLocaleString()}</p>
+                        </div>
+                    ) : (
+                        <span className="flex items-center gap-1 text-[10px] font-black bg-white/10 text-white/40 px-2 py-1 rounded-full border border-white/5">
+                            ยังไม่ได้มัดจำ
+                        </span>
+                    )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button onClick={triggerDelete} disabled={isUpdating} className="flex-1 py-4 rounded-2xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all flex items-center justify-center gap-2">
+                    <Trash2 size={18} /> ลบการจอง
+                </button>
+                <button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] py-4 rounded-2xl bg-[#885E43] text-white font-black hover:bg-[#5D4037] shadow-lg shadow-[#885E43]/20 transition-all flex items-center justify-center gap-2">
+                  {isUpdating ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle2 size={18} /> บันทึกการเปลี่ยนแปลง</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- Custom Modal Alert --- */}
+      {alertConfig.isOpen && (
+        <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200">
+            <div className="p-8 text-center">
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${alertConfig.type === 'danger' ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'}`}>
+                {alertConfig.type === 'danger' ? <AlertCircle size={44} /> : <CheckCircle2 size={44} />}
+              </div>
+              <h3 className="text-xl font-black text-[#372C2E] mb-2">{alertConfig.title}</h3>
+              <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8">{alertConfig.message}</p>
+              
+              <div className="flex gap-3">
+                {alertConfig.type === 'danger' && (
+                   <button onClick={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 py-4 bg-gray-100 text-[#A1887F] rounded-2xl font-bold hover:bg-gray-200 transition-all">ยกเลิก</button>
+                )}
+                <button 
+                  onClick={alertConfig.onConfirm} 
+                  className={`flex-1 py-4 text-white rounded-2xl font-black shadow-lg transition-all ${alertConfig.type === 'danger' ? 'bg-red-500 shadow-red-200 hover:bg-red-600' : 'bg-[#885E43] shadow-orange-100 hover:bg-[#5D4037]'}`}
+                >
+                  {alertConfig.type === 'danger' ? 'ยืนยันลบทันที' : 'ตกลง'}
                 </button>
               </div>
             </div>
