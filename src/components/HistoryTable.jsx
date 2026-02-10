@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import {
   Trash2, Search, Edit3, X, Check, FileText,
   ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Calendar,
-  ArrowUpDown 
+  ArrowUpDown, Wallet, BadgeCheck
 } from 'lucide-react';
 
 export default function HistoryTable() {
@@ -30,14 +30,14 @@ export default function HistoryTable() {
     room_type: '',
     note: '',
     start_date: '',
-    end_date: ''
+    end_date: '',
+    deposit: 0 // เพิ่มช่องมัดจำในฟอร์มแก้ไข
   });
 
-  // --- แก้ไข: ฟังก์ชันช่วยจัดรูปแบบวันที่จาก ค.ศ. เป็น พ.ศ. (DD/MM/YYYY+543) ---
   const formatDateDisplay = (dateStr) => {
     if (!dateStr) return "-";
     const [year, month, day] = dateStr.split("-");
-    const thaiYear = parseInt(year) + 543; // แปลงปีเป็น พ.ศ.
+    const thaiYear = parseInt(year) + 543;
     return `${day}/${month}/${thaiYear}`;
   };
 
@@ -72,7 +72,8 @@ export default function HistoryTable() {
       room_type: booking.room_type || "สแตนดาร์ด",
       note: booking.note || "",
       start_date: booking.start_date || "",
-      end_date: booking.end_date || ""
+      end_date: booking.end_date || "",
+      deposit: booking.deposit || 0
     });
   };
 
@@ -105,9 +106,10 @@ export default function HistoryTable() {
       cat_names: editForm.cat_names,
       room_type: editForm.room_type,
       note: editForm.note,
-      start_date: editForm.start_date, // บันทึกเป็น ค.ศ. เสมอ
-      end_date: editForm.end_date,     // บันทึกเป็น ค.ศ. เสมอ
-      total_price: newTotalPrice
+      start_date: editForm.start_date,
+      end_date: editForm.end_date,
+      total_price: newTotalPrice,
+      deposit: editForm.deposit // อัปเดตค่ามัดจำด้วย
     }).eq('id', id);
 
     if (error) {
@@ -115,11 +117,10 @@ export default function HistoryTable() {
     } else {
       setEditingId(null);
       fetchBookings();
-      showAlert('success', 'บันทึกเรียบร้อย', `แก้ไขข้อมูลและปรับปรุงราคาเป็น ฿${newTotalPrice.toLocaleString()} แล้ว ✨`);
+      showAlert('success', 'บันทึกเรียบร้อย', `แก้ไขข้อมูลเรียบร้อยแล้ว ✨`);
     }
   };
 
-  // กรองข้อมูล + เรียงลำดับ
   const filtered = bookings
     .filter(b => {
       const bDate = new Date(b.start_date);
@@ -148,7 +149,7 @@ export default function HistoryTable() {
     <div className="space-y-6 py-4 animate-in fade-in duration-500">
       {/* Header & Search/Filters */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-2">
-        <h2 className="text-2xl font-black text-[#372C2E] tracking-tight text-center md:text-left">จัดการประวัติการเข้าพัก</h2>
+        <h2 className="text-2xl font-black text-[#372C2E] tracking-tight">จัดการประวัติการเข้าพัก</h2>
 
         <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
           <button
@@ -159,12 +160,11 @@ export default function HistoryTable() {
             {sortOrder === 'newest' ? 'ใหม่สุด' : 'เก่าสุด'}
           </button>
 
-          {/* Month Filter */}
           <div className="relative">
             <select
               value={selectedMonth}
               onChange={(e) => { setSelectedMonth(e.target.value); setCurrentPage(1); }}
-              className="pl-3 pr-8 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold text-[#885E43] outline-none focus:border-[#885E43] appearance-none cursor-pointer shadow-sm"
+              className="pl-3 pr-8 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold text-[#885E43] outline-none appearance-none cursor-pointer shadow-sm"
             >
               <option value="all">ทุกเดือน</option>
               {["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"].map((m, i) => (
@@ -173,16 +173,6 @@ export default function HistoryTable() {
             </select>
             <Calendar size={14} className="absolute right-2.5 top-3 text-[#A1887F] pointer-events-none" />
           </div>
-
-          {/* Year Filter (แสดงเป็น พ.ศ. ใน UI แต่ค่าเป็น ค.ศ.) */}
-          <select
-            value={selectedYear}
-            onChange={(e) => { setSelectedYear(e.target.value); setCurrentPage(1); }}
-            className="pl-3 pr-3 py-2.5 bg-white border-2 border-[#efebe9] rounded-xl text-xs font-bold text-[#885E43] outline-none focus:border-[#885E43] shadow-sm cursor-pointer"
-          >
-            <option value="all">ทุกปี</option>
-            {[2024, 2025, 2026, 2027, 2028].map(y => <option key={y} value={y}>พ.ศ. {y + 543}</option>)}
-          </select>
 
           <div className="relative w-full md:w-64">
             <Search className="absolute left-4 top-3 text-[#A1887F]" size={16} />
@@ -205,7 +195,7 @@ export default function HistoryTable() {
               <tr className="bg-[#FDFBFA] text-[#A1887F] text-[10px] uppercase font-bold tracking-[0.15em] border-b border-[#efebe9]">
                 <th className="px-6 py-5">ข้อมูลลูกค้าและน้องแมว</th>
                 <th className="px-6 py-5">ประเภทห้อง</th>
-                <th className="px-6 py-5">หมายเหตุ</th>
+                <th className="px-6 py-5">สถานะเงินมัดจำ / หมายเหตุ</th>
                 <th className="px-6 py-5">ช่วงเวลาเข้าพัก (พ.ศ.)</th>
                 <th className="px-6 py-5 text-center">จัดการ</th>
               </tr>
@@ -213,23 +203,25 @@ export default function HistoryTable() {
             <tbody className="divide-y divide-[#FDFBFA]">
               {currentItems.map(b => (
                 <tr key={b.id} className="hover:bg-[#FDF8F5] transition-colors group">
+                  {/* ข้อมูลลูกค้า */}
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <div className="space-y-2 max-w-[180px]">
-                        <input className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-sm font-bold text-[#372C2E]" value={editForm.customer_name} onChange={e => setEditForm({ ...editForm, customer_name: e.target.value })} />
-                        <input className="w-full p-2 bg-white border-2 border-[#DE9E48] rounded-lg text-sm text-[#885E43] font-bold" value={editForm.cat_names} onChange={e => setEditForm({ ...editForm, cat_names: e.target.value })} />
+                        <input className="w-full p-2 border-2 border-[#C39A7A] rounded-lg text-sm font-bold" value={editForm.customer_name} onChange={e => setEditForm({ ...editForm, customer_name: e.target.value })} />
+                        <input className="w-full p-2 border-2 border-[#DE9E48] rounded-lg text-sm text-[#885E43] font-bold" value={editForm.cat_names} onChange={e => setEditForm({ ...editForm, cat_names: e.target.value })} />
                       </div>
                     ) : (
                       <>
                         <div className="font-bold text-[#372C2E] text-md">{b.customer_name || 'ไม่ระบุชื่อ'}</div>
-                        <div className="text-xs text-[#885E43] font-black mt-1 flex items-center gap-1">🐾 {b.cat_names || 'ไม่ระบุชื่อแมว'}</div>
+                        <div className="text-xs text-[#885E43] font-black mt-1">🐾 {b.cat_names || 'ไม่ระบุชื่อแมว'}</div>
                       </>
                     )}
                   </td>
 
+                  {/* ประเภทห้อง */}
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
-                      <select className="p-2 w-full border-2 border-[#C39A7A] rounded-lg text-xs font-bold bg-white text-[#372C2E]" value={editForm.room_type} onChange={e => setEditForm({ ...editForm, room_type: e.target.value })}>
+                      <select className="p-2 w-full border-2 border-[#C39A7A] rounded-lg text-xs font-bold bg-white" value={editForm.room_type} onChange={e => setEditForm({ ...editForm, room_type: e.target.value })}>
                         {['สแตนดาร์ด', 'ดีลักซ์', 'ซูพีเรีย', 'พรีเมี่ยม', 'วีไอพี', 'วีวีไอพี'].map(type => (
                           <option key={type} value={type}>{type}</option>
                         ))}
@@ -239,41 +231,79 @@ export default function HistoryTable() {
                     )}
                   </td>
 
+                  {/* หมายเหตุ + มัดจำ (จุดสำคัญ) */}
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
-                      <textarea className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-xs outline-none min-h-[80px] font-medium text-[#372C2E]" value={editForm.note} onChange={e => setEditForm({ ...editForm, note: e.target.value })} />
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 bg-[#FDF8F5] p-2 rounded-lg border border-[#efebe9]">
+                            <label className="text-[10px] font-black text-[#885E43]">สลับสถานะมัดจำ:</label>
+                            <button 
+                              type="button"
+                              onClick={() => setEditForm({...editForm, deposit: editForm.deposit > 0 ? 0 : (calculateTotalPrice(editForm.start_date, editForm.end_date, editForm.room_type) / 2)})} // ตัวอย่างมัดจำครึ่งนึง หรือกำหนดราคาห้อง 1 คืนตามตรรกะเดิม
+                              className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${editForm.deposit > 0 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}
+                            >
+                              {editForm.deposit > 0 ? 'มัดจำแล้ว' : 'ยังไม่มัดจำ'}
+                            </button>
+                        </div>
+                        <textarea className="w-full p-2 bg-white border-2 border-[#C39A7A] rounded-lg text-xs min-h-[60px]" placeholder="โน้ตเพิ่มเติม..." value={editForm.note} onChange={e => setEditForm({ ...editForm, note: e.target.value })} />
+                      </div>
                     ) : (
-                      <div className="max-w-[200px] max-h-[60px] overflow-y-auto pr-2 text-xs text-[#A1887F] italic leading-relaxed">
-                        {b.note ? <span className="flex items-start gap-1"><FileText size={12} className="mt-0.5 flex-shrink-0 text-[#DE9E48]" />{b.note}</span> : '-'}
+                      <div className="space-y-2">
+                        {/* แสดง Badge มัดจำ */}
+                        <div className="flex flex-wrap gap-1">
+                          {b.deposit > 0 ? (
+                            <span className="flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-md text-[10px] font-black">
+                              <BadgeCheck size={12} /> มัดจำแล้ว ฿{b.deposit.toLocaleString()}
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 px-2 py-0.5 bg-gray-50 text-gray-400 border border-gray-100 rounded-md text-[10px] font-black">
+                              ยังไม่มัดจำ
+                            </span>
+                          )}
+                          
+                          {/* คำนวณยอดค้างจ่าย */}
+                          <span className="px-2 py-0.5 bg-[#372C2E] text-white rounded-md text-[10px] font-bold">
+                            คงเหลือ: ฿{(b.total_price - (b.deposit || 0)).toLocaleString()}
+                          </span>
+                        </div>
+
+                        {/* แสดง Note */}
+                        {b.note && (
+                          <div className="max-w-[200px] text-[11px] text-[#A1887F] italic line-clamp-2">
+                            <FileText size={10} className="inline mr-1 text-[#DE9E48]" />{b.note}
+                          </div>
+                        )}
                       </div>
                     )}
                   </td>
 
+                  {/* ช่วงเวลาเข้าพัก */}
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <div className="space-y-2">
-                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
-                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold text-[#372C2E]" value={editForm.end_date} onChange={e => setEditForm({ ...editForm, end_date: e.target.value })} />
+                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold" value={editForm.start_date} onChange={e => setEditForm({ ...editForm, start_date: e.target.value })} />
+                        <input type="date" className="w-full p-1.5 border-2 border-[#C39A7A] rounded-lg text-[10px] font-bold" value={editForm.end_date} onChange={e => setEditForm({ ...editForm, end_date: e.target.value })} />
                       </div>
                     ) : (
                       <>
                         <div className="text-sm font-black text-[#5D4037]">{formatDateDisplay(b.start_date)}</div>
-                        <div className="text-[10px] text-[#A1887F] font-bold uppercase tracking-tight">ถึง {formatDateDisplay(b.end_date)}</div>
+                        <div className="text-[10px] text-[#A1887F] font-bold uppercase">ถึง {formatDateDisplay(b.end_date)}</div>
                       </>
                     )}
                   </td>
 
+                  {/* จัดการ */}
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-2">
                       {editingId === b.id ? (
                         <>
-                          <button onClick={() => handleUpdate(b.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-xl transition-all shadow-sm bg-white border border-green-100"><Check size={18} /></button>
-                          <button onClick={() => setEditingId(null)} className="p-2 text-[#A1887F] hover:bg-gray-100 rounded-xl transition-all"><X size={18} /></button>
+                          <button onClick={() => handleUpdate(b.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-xl bg-white border border-green-100"><Check size={18} /></button>
+                          <button onClick={() => setEditingId(null)} className="p-2 text-[#A1887F] hover:bg-gray-100 rounded-xl"><X size={18} /></button>
                         </>
                       ) : (
                         <>
-                          <button onClick={() => startEdit(b)} className="p-2 text-[#A1887F] hover:text-[#885E43] hover:bg-[#FDF8F5] rounded-xl transition-all"><Edit3 size={18} /></button>
-                          <button onClick={() => setDeleteTarget(b)} className="p-2 text-[#A1887F] hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
+                          <button onClick={() => startEdit(b)} className="p-2 text-[#A1887F] hover:text-[#885E43] rounded-xl"><Edit3 size={18} /></button>
+                          <button onClick={() => setDeleteTarget(b)} className="p-2 text-[#A1887F] hover:text-red-600 rounded-xl"><Trash2 size={18} /></button>
                         </>
                       )}
                     </div>
