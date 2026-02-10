@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabase';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { 
-  Calendar as CalendarIcon, Loader2, X, Trash2, LayoutDashboard, 
-  MousePointerClick, CalendarDays, Info, CheckCircle2, AlertCircle, 
+import {
+  Calendar as CalendarIcon, Loader2, X, Trash2, LayoutDashboard,
+  MousePointerClick, CalendarDays, Info, CheckCircle2, AlertCircle,
   BadgeCheck, Wallet, Receipt
 } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export default function CalendarView({ onDateClick }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   // สถานะสำหรับ Custom Alert
   const [alertConfig, setAlertConfig] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
 
@@ -98,8 +98,8 @@ export default function CalendarView({ onDateClick }) {
       onConfirm: async () => {
         setIsUpdating(true);
         const { error } = await supabase.from('bookings').delete().eq('id', selectedBooking.id);
-        if (!error) { 
-          setIsModalOpen(false); 
+        if (!error) {
+          setIsModalOpen(false);
           fetchBookings();
           setAlertConfig(prev => ({ ...prev, isOpen: false }));
         }
@@ -111,25 +111,25 @@ export default function CalendarView({ onDateClick }) {
   const handleUpdate = async () => {
     setIsUpdating(true);
     const newTotalPrice = calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type);
-    
+
     const { error } = await supabase.from('bookings')
-      .update({ 
+      .update({
         start_date: selectedBooking.start_date,
         end_date: selectedBooking.end_date,
         total_price: newTotalPrice
       })
       .eq('id', selectedBooking.id);
-    
-    if (!error) { 
-        setIsModalOpen(false); 
-        fetchBookings(); 
-        setAlertConfig({
-            isOpen: true,
-            type: 'success',
-            title: 'อัปเดตเรียบร้อย!',
-            message: 'แก้ไขข้อมูลวันเข้าพักและปรับปรุงราคาใหม่สำเร็จแล้ว',
-            onConfirm: () => setAlertConfig(prev => ({ ...prev, isOpen: false }))
-        });
+
+    if (!error) {
+      setIsModalOpen(false);
+      fetchBookings();
+      setAlertConfig({
+        isOpen: true,
+        type: 'success',
+        title: 'อัปเดตเรียบร้อย!',
+        message: 'แก้ไขข้อมูลวันเข้าพักและปรับปรุงราคาใหม่สำเร็จแล้ว',
+        onConfirm: () => setAlertConfig(prev => ({ ...prev, isOpen: false }))
+      });
     }
     setIsUpdating(false);
   };
@@ -142,7 +142,7 @@ export default function CalendarView({ onDateClick }) {
 
   return (
     <div className="py-2 md:py-4 space-y-6 overflow-visible font-sans">
-      
+
       {/* Dashboard Section (คงเดิมตาม Code คุณ) */}
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
@@ -221,80 +221,100 @@ export default function CalendarView({ onDateClick }) {
           <div className="bg-white w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl transform animate-in zoom-in-95 duration-200 border border-[#efebe9]">
             {/* Header */}
             <div className="bg-[#372C2E] p-6 text-white flex justify-between items-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10"><CalendarDays size={100} /></div>
-                <div className="z-10">
-                    <h3 className="text-xl font-black flex items-center gap-2">
-                      <CalendarDays size={20} className="text-[#DE9E48]" />
-                        ข้อมูลการจอง
-                    </h3>
-                </div>
-                <button onClick={() => setIsModalOpen(false)} className="z-10 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all">
-                    <X size={20} />
-                </button>
+              <div className="absolute top-0 right-0 p-4 opacity-10"><CalendarDays size={100} /></div>
+              <div className="z-10">
+                <h3 className="text-xl font-black flex items-center gap-2">
+                  <CalendarDays size={20} className="text-[#DE9E48]" />
+                  ข้อมูลการจอง
+                </h3>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="z-10 bg-white/10 p-2 rounded-full hover:bg-white/20 transition-all">
+                <X size={20} />
+              </button>
             </div>
 
             <div className="p-8 space-y-6">
               {/* Read-Only Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                    <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> เจ้าของ</label>
-                    <div className="text-sm font-bold text-[#372C2E] bg-gray-50 p-3 rounded-xl border border-gray-100">{selectedBooking.customer_name}</div>
+                  <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> เจ้าของ</label>
+                  <div className="text-sm font-bold text-[#372C2E] bg-gray-50 p-3 rounded-xl border border-gray-100">{selectedBooking.customer_name}</div>
                 </div>
                 <div className="space-y-1">
-                    <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> น้องแมว</label>
-                    <div className="text-sm font-bold text-[#885E43] bg-orange-50/50 p-3 rounded-xl border border-orange-100/50"> {selectedBooking.cat_names}</div>
+                  <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> น้องแมว</label>
+                  <div className="text-sm font-bold text-[#885E43] bg-orange-50/50 p-3 rounded-xl border border-orange-100/50"> {selectedBooking.cat_names}</div>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-[#A1887F] uppercase flex items-center gap-1"><span className="w-1 h-1 bg-[#DE9E48] rounded-full"></span> ประเภทห้องพัก</label>
                 <div className="flex items-center gap-2 text-sm font-black text-[#372C2E] bg-[#FDFBFA] p-3 rounded-xl border border-[#efebe9]">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getRoomColor(selectedBooking.room_type) }}></div>
-                    {selectedBooking.room_type}
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getRoomColor(selectedBooking.room_type) }}></div>
+                  {selectedBooking.room_type}
                 </div>
               </div>
 
               {/* Editable Dates */}
               <div className="bg-[#FDF8F5] p-5 rounded-2xl border border-[#efebe9] space-y-4">
-                <h4 className="text-xs font-black text-[#885E43] uppercase flex items-center gap-2"><CalendarIcon size={14}/> แก้ไขช่วงเวลาเข้าพัก</h4>
+                <h4 className="text-xs font-black text-[#885E43] uppercase flex items-center gap-2"><CalendarIcon size={14} /> ช่วงเวลาเข้าพัก</h4>
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-[#A1887F]">วันที่เข้า</label>
-                        <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.start_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, start_date: e.target.value })} />
-                    </div>
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-[#A1887F]">วันที่ออก</label>
-                        <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.end_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, end_date: e.target.value })} />
-                    </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-[#A1887F]">วันที่เข้า</label>
+                    <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.start_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, start_date: e.target.value })} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-[#A1887F]">วันที่ออก</label>
+                    <input type="date" className="w-full p-3 bg-white rounded-xl border-2 border-[#efebe9] text-sm font-bold focus:border-[#885E43] outline-none transition-all" value={selectedBooking.end_date} onChange={(e) => setSelectedBooking({ ...selectedBooking, end_date: e.target.value })} />
+                  </div>
                 </div>
               </div>
 
               {/* Price & Deposit Summary */}
-              <div className="flex items-center justify-between p-4 bg-[#372C2E] rounded-2xl text-white shadow-xl shadow-[#372C2E]/10">
-                <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-[#A1887F] uppercase">ราคารวมใหม่</p>
-                    <p className="text-2xl font-black text-[#DE9E48]">฿{calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type).toLocaleString()}</p>
-                </div>
-                <div className="text-right">
-                    {selectedBooking.deposit > 0 ? (
-                        <div className="flex flex-col items-end">
-                            <span className="flex items-center gap-1 text-[10px] font-black bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/30">
-                                <BadgeCheck size={12} /> มัดจำแล้ว
-                            </span>
-                            <p className="text-xs font-bold mt-1 text-white/70">฿{selectedBooking.deposit.toLocaleString()}</p>
-                        </div>
-                    ) : (
-                        <span className="flex items-center gap-1 text-[10px] font-black bg-white/10 text-white/40 px-2 py-1 rounded-full border border-white/5">
-                            ยังไม่ได้มัดจำ
-                        </span>
-                    )}
+              <div className="bg-[#372C2E] rounded-[2rem] overflow-hidden shadow-xl shadow-[#372C2E]/10 border border-[#5D4037]">
+                <div className="p-5 space-y-4">
+                  {/* แถวราคารวม และ มัดจำ */}
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] font-bold text-[#A1887F] uppercase tracking-wider">ราคารวม (คำนวณใหม่)</p>
+                      <p className="text-xl font-black text-white">
+                        ฿{calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="text-right space-y-0.5">
+                      <p className="text-[10px] font-bold text-[#A1887F] uppercase tracking-wider">มัดจำแล้ว</p>
+                      <p className="text-xl font-black text-[#DE9E48]">
+                        - ฿{(selectedBooking.deposit || 0).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* แถวยอดคงเหลือที่ต้องจ่าย */}
+                  <div className="flex items-center justify-between bg-white/5 -mx-5 -mb-5 p-5">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-[#DE9E48] rounded-lg">
+                        <Wallet size={18} className="text-[#372C2E]" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-[#A1887F] uppercase">ยอดคงเหลือที่ต้องชำระ</p>
+                        <p className="text-xs text-white/50 font-medium">ชำระในวันเข้าพัก</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-black text-[#DE9E48]">
+                        ฿{(
+                          calculateLivePrice(selectedBooking.start_date, selectedBooking.end_date, selectedBooking.room_type) -
+                          (selectedBooking.deposit || 0)
+                        ).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-2">
                 <button onClick={triggerDelete} disabled={isUpdating} className="flex-1 py-4 rounded-2xl bg-red-50 text-red-500 font-black hover:bg-red-100 transition-all flex items-center justify-center gap-2">
-                    <Trash2 size={18} /> ลบการจอง
+                  <Trash2 size={18} /> ลบการจอง
                 </button>
                 <button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] py-4 rounded-2xl bg-[#885E43] text-white font-black hover:bg-[#5D4037] shadow-lg shadow-[#885E43]/20 transition-all flex items-center justify-center gap-2">
                   {isUpdating ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle2 size={18} /> บันทึกการเปลี่ยนแปลง</>}
@@ -315,13 +335,13 @@ export default function CalendarView({ onDateClick }) {
               </div>
               <h3 className="text-xl font-black text-[#372C2E] mb-2">{alertConfig.title}</h3>
               <p className="text-sm text-[#A1887F] font-medium leading-relaxed mb-8">{alertConfig.message}</p>
-              
+
               <div className="flex gap-3">
                 {alertConfig.type === 'danger' && (
-                   <button onClick={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 py-4 bg-gray-100 text-[#A1887F] rounded-2xl font-bold hover:bg-gray-200 transition-all">ยกเลิก</button>
+                  <button onClick={() => setAlertConfig(prev => ({ ...prev, isOpen: false }))} className="flex-1 py-4 bg-gray-100 text-[#A1887F] rounded-2xl font-bold hover:bg-gray-200 transition-all">ยกเลิก</button>
                 )}
-                <button 
-                  onClick={alertConfig.onConfirm} 
+                <button
+                  onClick={alertConfig.onConfirm}
                   className={`flex-1 py-4 text-white rounded-2xl font-black shadow-lg transition-all ${alertConfig.type === 'danger' ? 'bg-red-500 shadow-red-200 hover:bg-red-600' : 'bg-[#885E43] shadow-orange-100 hover:bg-[#5D4037]'}`}
                 >
                   {alertConfig.type === 'danger' ? 'ยืนยันลบทันที' : 'ตกลง'}
