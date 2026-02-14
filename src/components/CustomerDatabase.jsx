@@ -412,7 +412,7 @@ export default function CustomerDatabase() {
                         <span className="text-[9px] font-bold text-[#A1887F] uppercase">วันที่เข้าพัก</span>
                         <div className="text-[11px] font-black text-[#372C2E] flex flex-col">
                           <span>{formatThaiDate(h.start_date)}</span>
-                          <span className="text-gray-400">ถึง {formatThaiDate(h.end_date)}</span>
+                          <span className="text-[11px] font-black text-[#372C2E] flex flex-col">ถึง {formatThaiDate(h.end_date)}</span>
                         </div>
                       </div>
                       <div className="flex flex-col text-indigo-600 font-bold">
