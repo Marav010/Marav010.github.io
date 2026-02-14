@@ -31,8 +31,17 @@ export default function HistoryTable() {
     note: '',
     start_date: '',
     end_date: '',
-    deposit: 0 // เพิ่มช่องมัดจำในฟอร์มแก้ไข
+    deposit: 0
   });
+
+  const ROOM_PRICES = {
+    'สแตนดาร์ด': 300,
+    'ดีลักซ์': 350,
+    'ซูพีเรีย': 350,
+    'พรีเมี่ยม': 400,
+    'วีไอพี': 500,
+    'วีวีไอพี': 600
+  };
 
   const formatDateDisplay = (dateStr) => {
     if (!dateStr) return "-";
@@ -81,16 +90,14 @@ export default function HistoryTable() {
     if (!start || !end) return 0;
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const diffTime = endDate - startDate;
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = endDate.getTime() - startDate.getTime();
     const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const totalNights = nights > 0 ? nights : 0;
 
-    const roomPrices = {
-      'สแตนดาร์ด': 300, 'ดีลักซ์': 350, 'ซูพีเรีย': 350,
-      'พรีเมี่ยม': 400, 'วีไอพี': 500, 'วีวีไอพี': 600
-    };
-
-    const pricePerNight = roomPrices[roomType] || 300;
+    const pricePerNight = ROOM_PRICES[roomType] || 300;
     return totalNights * pricePerNight;
   };
 
@@ -109,7 +116,7 @@ export default function HistoryTable() {
       start_date: editForm.start_date,
       end_date: editForm.end_date,
       total_price: newTotalPrice,
-      deposit: editForm.deposit // อัปเดตค่ามัดจำด้วย
+      deposit: editForm.deposit
     }).eq('id', id);
 
     if (error) {
@@ -222,7 +229,7 @@ export default function HistoryTable() {
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <select className="p-2 w-full border-2 border-[#C39A7A] rounded-lg text-xs font-bold bg-white" value={editForm.room_type} onChange={e => setEditForm({ ...editForm, room_type: e.target.value })}>
-                        {['สแตนดาร์ด', 'ดีลักซ์', 'ซูพีเรีย', 'พรีเมี่ยม', 'วีไอพี', 'วีวีไอพี'].map(type => (
+                        {Object.keys(ROOM_PRICES).map(type => (
                           <option key={type} value={type}>{type}</option>
                         ))}
                       </select>
@@ -231,7 +238,7 @@ export default function HistoryTable() {
                     )}
                   </td>
 
-                  {/* หมายเหตุ + มัดจำ (จุดสำคัญ) */}
+                  {/* หมายเหตุ + มัดจำ */}
                   <td className="px-6 py-4">
                     {editingId === b.id ? (
                       <div className="space-y-3">
@@ -239,7 +246,10 @@ export default function HistoryTable() {
                             <label className="text-[10px] font-black text-[#885E43]">สลับสถานะมัดจำ:</label>
                             <button 
                               type="button"
-                              onClick={() => setEditForm({...editForm, deposit: editForm.deposit > 0 ? 0 : (calculateTotalPrice(editForm.start_date, editForm.end_date, editForm.room_type) / 2)})} // ตัวอย่างมัดจำครึ่งนึง หรือกำหนดราคาห้อง 1 คืนตามตรรกะเดิม
+                              onClick={() => {
+                                const oneNightPrice = ROOM_PRICES[editForm.room_type] || 0;
+                                setEditForm({...editForm, deposit: editForm.deposit > 0 ? 0 : oneNightPrice})
+                              }}
                               className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${editForm.deposit > 0 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}
                             >
                               {editForm.deposit > 0 ? 'มัดจำแล้ว' : 'ยังไม่มัดจำ'}
@@ -249,7 +259,6 @@ export default function HistoryTable() {
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {/* แสดง Badge มัดจำ */}
                         <div className="flex flex-wrap gap-1">
                           {b.deposit > 0 ? (
                             <span className="flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-md text-[10px] font-black">
@@ -260,14 +269,10 @@ export default function HistoryTable() {
                               ยังไม่มัดจำ
                             </span>
                           )}
-                          
-                          {/* คำนวณยอดค้างจ่าย */}
                           <span className="px-2 py-0.5 bg-[#372C2E] text-white rounded-md text-[10px] font-bold">
-                            คงเหลือ: ฿{(b.total_price - (b.deposit || 0)).toLocaleString()}
+                            คงเหลือ: ฿{Math.max(0, (b.total_price || 0) - (b.deposit || 0)).toLocaleString()}
                           </span>
                         </div>
-
-                        {/* แสดง Note */}
                         {b.note && (
                           <div className="max-w-[200px] text-[11px] text-[#A1887F] italic line-clamp-2">
                             <FileText size={10} className="inline mr-1 text-[#DE9E48]" />{b.note}
