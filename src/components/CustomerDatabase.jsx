@@ -23,7 +23,6 @@ export default function CustomerDatabase() {
   const [historyModal, setHistoryModal] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  // --- ระบบ Alert ---
   const [alertConfig, setAlertConfig] = useState({ 
     show: false, type: 'success', title: '', message: '' 
   });
@@ -58,7 +57,6 @@ export default function CustomerDatabase() {
 
       setCustomers(customersData || []);
       setBookings(bookingsData || []);
-
     } catch (error) {
       console.error("Error fetching:", error);
       showAlert('error', 'เกิดข้อผิดพลาด', error.message);
@@ -85,31 +83,33 @@ export default function CustomerDatabase() {
     return diffDays > 0 ? diffDays : 0;
   };
 
-  // --- แก้ไข: ลำดับการลบข้อมูล ---
+  // --- แก้ไข: ลบข้อมูลด้วย ID ---
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
       const { error } = await supabase
         .from('customers')
         .delete()
-        .eq('customer_name', deleteTarget);
+        .eq('id', deleteTarget.id); // ใช้ id ในการลบ
       
       if (error) throw error;
       
-      // 1. แจ้งเตือนความสำเร็จก่อน
       showAlert('success', 'ลบสำเร็จ', 'ลบข้อมูลลูกค้าเรียบร้อยแล้ว');
-      // 2. ปิดหน้าต่างยืนยันการลบ
       setDeleteTarget(null);
-      // 3. รีเฟรชข้อมูลทีหลัง
       fetchData();
     } catch (error) { 
       showAlert('error', 'เกิดข้อผิดพลาด', error.message); 
     }
   };
 
+  // --- แก้ไข: ดึงประวัติโดยใช้ ID เชื่อมโยง ---
   const customerStats = useMemo(() => {
     return customers.map(c => {
-      const history = bookings.filter(b => b.customer_name === c.customer_name);
+      // ค้นหาการจองที่ customer_id ตรงกับ id ของลูกค้า หรือ ชื่อตรงกัน (กรณีข้อมูลเก่า)
+      const history = bookings.filter(b => 
+        (b.customer_id === c.id) || (b.customer_name === c.customer_name)
+      );
+      
       const catNames = new Set();
       history.forEach(h => {
         if (h.cat_names) h.cat_names.split(',').forEach(n => catNames.add(n.trim()));
@@ -160,7 +160,7 @@ export default function CustomerDatabase() {
 
   const toggleSort = () => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
 
-  // --- แก้ไข: ลำดับการบันทึกข้อมูล ---
+  // --- แก้ไข: บันทึกข้อมูลแบบรองรับการเปลี่ยนชื่อ (ใช้ ID) ---
   const handleSave = async () => {
     if (!editingCustomer.customer_name) {
       return showAlert('warning', 'ข้อมูลไม่ครบถ้วน', 'กรุณาระบุชื่อลูกค้า');
@@ -177,18 +177,21 @@ export default function CustomerDatabase() {
       customer_image: editingCustomer.customer_image || ''
     };
 
+    // สำคัญ: ถ้าเป็นการ Edit ต้องส่ง ID เดิมไปด้วยเพื่อให้อัปเดตแถวเดิม
+    if (modalMode === 'edit' && editingCustomer.id) {
+      payload.id = editingCustomer.id;
+    }
+
     try {
+      // ใช้ upsert โดยอิงจาก id เป็นหลัก
       const { error } = await supabase
         .from('customers')
-        .upsert(payload, { onConflict: 'customer_name' });
+        .upsert(payload, { onConflict: 'id' });
 
       if (error) throw error;
 
-      // 1. แจ้งเตือนก่อน
       showAlert('success', 'บันทึกสำเร็จ!', 'บันทึกข้อมูลลูกค้าเรียบร้อยแล้ว 🎉');
-      // 2. ปิด Modal
       setIsModalOpen(false);
-      // 3. รีเฟรชข้อมูล
       fetchData();
     } catch (err) { 
       showAlert('error', 'เกิดข้อผิดพลาด', err.message); 
@@ -265,7 +268,7 @@ export default function CustomerDatabase() {
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <button onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setModalMode('edit'); setIsModalOpen(true); }} className="p-2 text-[#885E43] hover:bg-[#FDF8F5] rounded-lg"><Edit3 size={18} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer.customer_name); }} className="p-2 text-[#885E43] hover:text-red-600 rounded-lg"><Trash2 size={18} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(customer); }} className="p-2 text-[#885E43] hover:text-red-600 rounded-lg"><Trash2 size={18} /></button>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -321,7 +324,8 @@ export default function CustomerDatabase() {
                 <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleFileUpload} />
               </div>
               <div className="space-y-3">
-                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">ชื่อลูกค้า</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl font-bold" disabled={modalMode === 'edit'} value={editingCustomer.customer_name || ''} onChange={e => setEditingCustomer({ ...editingCustomer, customer_name: e.target.value })} /></div>
+                {/* แก้ไข: ลบ disabled={modalMode === 'edit'} ออกเพื่อให้แก้ไขชื่อได้ */}
+                <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">ชื่อลูกค้า</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl font-bold" value={editingCustomer.customer_name || ''} onChange={e => setEditingCustomer({ ...editingCustomer, customer_name: e.target.value })} /></div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className="text-[10px] font-bold text-[#A1887F] uppercase">เบอร์โทร</label><input className="w-full p-2.5 bg-[#FDFBFA] border border-[#efebe9] rounded-xl" value={editingCustomer.phone || ''} onChange={e => setEditingCustomer({ ...editingCustomer, phone: e.target.value })} /></div>
                   <div><label className="text-[10px] font-bold text-blue-600 uppercase">ไอดีกล้อง</label><input className="w-full p-2.5 bg-blue-50 border border-blue-200 rounded-xl font-bold text-blue-600" value={editingCustomer.camera_id || ''} onChange={e => setEditingCustomer({ ...editingCustomer, camera_id: e.target.value })} /></div>
@@ -339,7 +343,7 @@ export default function CustomerDatabase() {
         </div>
       )}
 
-      {/* --- Alert Modal --- */}
+      {/* Alert Modal */}
       {alertConfig.show && (
         <div className="fixed inset-0 z-[3000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in zoom-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl p-8 text-center">
@@ -371,7 +375,7 @@ export default function CustomerDatabase() {
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl p-8 text-center">
             <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6"><AlertTriangle size={40} /></div>
             <h3 className="text-xl font-black text-[#372C2E] mb-2">ยืนยันการลบ?</h3>
-            <p className="text-sm text-[#A1887F] mb-8">คุณกำลังจะลบข้อมูลของ <span className="text-red-600 font-bold">"{deleteTarget}"</span> ข้อมูลนี้จะไม่สามารถกู้คืนได้</p>
+            <p className="text-sm text-[#A1887F] mb-8">คุณกำลังจะลบข้อมูลของ <span className="text-red-600 font-bold">"{deleteTarget.customer_name}"</span> ข้อมูลนี้จะไม่สามารถกู้คืนได้</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteTarget(null)} className="flex-1 py-4 bg-gray-100 text-[#A1887F] rounded-2xl font-bold">ยกเลิก</button>
               <button onClick={confirmDelete} className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-black">ลบทันที</button>
@@ -434,6 +438,9 @@ export default function CustomerDatabase() {
                     </div>
                   </div>
                 ))}
+                {historyModal.history.length === 0 && (
+                  <div className="text-center py-10 text-[#A1887F] font-bold italic">ไม่พบประวัติการเข้าพัก</div>
+                )}
               </div>
             </div>
           </div>
