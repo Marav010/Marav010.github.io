@@ -90,28 +90,42 @@ export default function BookingForm({ onSaved, initialDate }) {
     }
   };
 
+  // --- แก้ไขตรรกะคำนวณมัดจำใหม่ ---
   const bookingSummary = useMemo(() => {
-    let depositValue = 0;
-    formData.cats.forEach(cat => {
-      depositValue += (ROOM_PRICES[cat.room_type] || 0);
-    });
-
-    if (!formData.start_date || !formData.end_date) {
-      return { nights: 0, total: 0, depositValue };
+    // 1. คำนวณจำนวนคืนก่อน
+    let nights = 0;
+    if (formData.start_date && formData.end_date) {
+      const start = new Date(formData.start_date);
+      const end = new Date(formData.end_date);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+      const diffTime = end.getTime() - start.getTime();
+      nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
-
-    const start = new Date(formData.start_date);
-    const end = new Date(formData.end_date);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
-
-    const diffTime = end.getTime() - start.getTime();
-    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const validNights = nights > 0 ? nights : 0;
 
+    // 2. คำนวณค่ามัดจำ และ ยอดรวม
     let total = 0;
+    let depositValue = 0;
+
     formData.cats.forEach(cat => {
-      total += (ROOM_PRICES[cat.room_type] || 0) * validNights;
+      const pricePerNight = ROOM_PRICES[cat.room_type] || 0;
+      
+      // คำนวณยอดรวม (ราคาห้อง * จำนวนคืน)
+      total += pricePerNight * validNights;
+
+      // คำนวณมัดจำตามเงื่อนไข:
+      // ถ้าพัก 1 คืน -> มัดจำครึ่งราคา (price / 2)
+      // ถ้าพักมากกว่า 1 คืน -> มัดจำเต็มราคาห้อง 1 คืน (price)
+      if (validNights === 1) {
+        depositValue += (pricePerNight / 2);
+      } else if (validNights > 1) {
+        depositValue += pricePerNight;
+      } else {
+        // กรณีวันที่ยังไม่ครบหรือยังไม่ระบุ ให้แสดงมัดจำแบบ 1 คืน (หรือ 0) ตามต้องการ
+        // ในที่นี้ตั้งเป็นมัดจำเต็ม 1 คืนเพื่อให้ผู้ใช้เห็นยอดประเมิน
+        depositValue += pricePerNight;
+      }
     });
 
     return { nights: validNights, total, depositValue };
@@ -155,7 +169,7 @@ export default function BookingForm({ onSaved, initialDate }) {
     const finalDeposit = formData.is_deposited ? bookingSummary.depositValue : 0;
 
     try {
-      // 1. บันทึก/อัปเดตข้อมูลลูกค้า และดึง ID กลับมา (ใช้ .select() เพื่อเอา id)
+      // 1. บันทึก/อัปเดตข้อมูลลูกค้า
       const { data: customerData, error: customerError } = await supabase
         .from('customers')
         .upsert({ customer_name: formData.customer_name }, { onConflict: 'customer_name' })
@@ -164,18 +178,27 @@ export default function BookingForm({ onSaved, initialDate }) {
 
       if (customerError) throw customerError;
 
-      // 2. เตรียมข้อมูลการจองโดยใส่ customer_id ที่ได้มา
-      const bookingsToInsert = formData.cats.map(cat => ({
-        customer_id: customerData.id, // ใส่ ID ที่เชื่อมโยงกัน
-        customer_name: formData.customer_name,
-        cat_names: cat.cat_name,
-        room_type: cat.room_type,
-        start_date: formData.start_date,
-        end_date: formData.end_date,
-        status: 'Confirmed',
-        total_price: (ROOM_PRICES[cat.room_type] || 0) * bookingSummary.nights,
-        deposit: finalDeposit / formData.cats.length
-      }));
+      // 2. เตรียมข้อมูลการจอง
+      const bookingsToInsert = formData.cats.map(cat => {
+        const roomPrice = ROOM_PRICES[cat.room_type] || 0;
+        // คำนวณมัดจำแยกตามตัวแมวแต่ละตัวเพื่อลง Database
+        let catDeposit = 0;
+        if (formData.is_deposited) {
+          catDeposit = bookingSummary.nights === 1 ? (roomPrice / 2) : roomPrice;
+        }
+
+        return {
+          customer_id: customerData.id,
+          customer_name: formData.customer_name,
+          cat_names: cat.cat_name,
+          room_type: cat.room_type,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          booking_status: 'Confirmed', // แก้เป็นชื่อคอลัมน์ที่ถูกต้องใน SQL ของคุณ
+          total_price: roomPrice * bookingSummary.nights,
+          deposit: catDeposit
+        };
+      });
 
       const { error: bookingError } = await supabase.from('bookings').insert(bookingsToInsert);
 
@@ -202,7 +225,7 @@ export default function BookingForm({ onSaved, initialDate }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* ชื่อเจ้าของแมว + ระบบค้นหาอัตโนมัติ */}
+          {/* ชื่อเจ้าของแมว */}
           <div className="space-y-3 relative" ref={suggestionRef}>
             <label className="block text-xs font-black text-[#885E43] uppercase ml-1 tracking-widest">ชื่อเจ้าของแมว</label>
             <div className="relative">
@@ -219,7 +242,6 @@ export default function BookingForm({ onSaved, initialDate }) {
               />
             </div>
 
-            {/* Dropdown รายการแนะนำ */}
             {showSuggestions && customerSuggestions.length > 0 && (
               <div className="absolute z-[100] w-full mt-2 bg-white rounded-2xl shadow-2xl border border-[#efebe9] overflow-hidden animate-in fade-in slide-in-from-top-2">
                 <div className="p-2 border-b border-gray-50 text-[10px] font-black text-[#a1887f] uppercase px-4 bg-gray-50/50">ลูกค้าที่เคยใช้บริการ</div>
@@ -354,3 +376,4 @@ export default function BookingForm({ onSaved, initialDate }) {
     </div>
   );
 }
+
