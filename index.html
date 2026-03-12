@@ -11,157 +11,128 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0A0A0F; --surface: rgba(255,255,255,0.06);
-    --border: rgba(255,255,255,0.09); --text: #F0F0F5;
-    --muted: #888; --dim: #444;
-  }
-  html, body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Sarabun', -apple-system, sans-serif;
-    min-height: 100vh; overflow-x: hidden;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-font-smoothing: antialiased;
-  }
-  body { padding-bottom: env(safe-area-inset-bottom, 20px); }
-  #bg-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; transition: background 0.6s; }
-  .app { position: relative; z-index: 1; max-width: 440px; margin: 0 auto; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#0A0A0F;--surface:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.09);--text:#F0F0F5;--muted:#888;}
+  html,body{background:var(--bg);color:var(--text);font-family:'Sarabun',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
+  body{padding-bottom:env(safe-area-inset-bottom,20px);}
+  #bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  .app{position:relative;z-index:1;max-width:440px;margin:0 auto;}
 
-/* HEADER */
-.header { padding: 48px 20px 20px; border-bottom: 1px solid var(–border); }
-.header-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.header-label { font-size: 11px; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
-.header-day { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
-.header-theme { font-size: 14px; color: var(–muted); margin-top: 2px; }
-.points-box { text-align: right; }
-.points-num { font-size: 30px; font-weight: 900; line-height: 1; background: linear-gradient(135deg,#FFE66D,#FF6B35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.points-label { font-size: 11px; color: #555; letter-spacing: 1px; }
-.stats { display: flex; gap: 10px; margin-top: 18px; }
-.stat-card { flex: 1; background: var(–surface); border-radius: 12px; padding: 10px 12px; border: 1px solid var(–border); }
-.stat-label { font-size: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.stat-value { font-size: 20px; font-weight: 800; }
-.stat-sub { font-size: 10px; color: #444; margin-top: 1px; }
+.header{padding:48px 20px 20px;border-bottom:1px solid var(–border);}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-label{font-size:11px;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.header-day{font-size:26px;font-weight:900;letter-spacing:-0.5px;}
+.header-theme{font-size:14px;color:var(–muted);margin-top:2px;}
+.points-box{text-align:right;}
+.points-num{font-size:30px;font-weight:900;line-height:1;background:linear-gradient(135deg,#FFE66D,#FF6B35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.points-label{font-size:11px;color:#555;letter-spacing:1px;}
+.stats{display:flex;gap:10px;margin-top:18px;}
+.stat-card{flex:1;background:var(–surface);border-radius:12px;padding:10px 12px;border:1px solid var(–border);}
+.stat-label{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.stat-value{font-size:20px;font-weight:800;}
+.stat-sub{font-size:10px;color:#444;margin-top:1px;}
 
-/* TABS */
-.tabs { display: flex; padding: 14px 20px 0; gap: 8px; }
-.tab { flex: 1; padding: 9px 0; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; outline: none; background: rgba(255,255,255,0.06); color: var(–muted); }
-.tab.active { color: #0A0A0F; }
+.tabs{display:flex;padding:14px 20px 0;gap:8px;}
+.tab{flex:1;padding:9px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;outline:none;background:rgba(255,255,255,0.06);color:var(–muted);}
+.tab.active{color:#0A0A0F;}
 
-/* TODAY */
-.today-content { padding: 18px 20px 30px; }
-.checkin-btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-size: 17px; font-weight: 800; letter-spacing: 1px; cursor: pointer; font-family: inherit; transition: all 0.3s; margin-bottom: 18px; outline: none; }
-.checkin-btn:active { transform: scale(0.97); }
-.section-label { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.today-content{padding:18px 20px 40px;}
+.checkin-btn{width:100%;padding:18px;border-radius:18px;border:none;font-size:17px;font-weight:800;letter-spacing:1px;cursor:pointer;font-family:inherit;transition:all 0.3s;margin-bottom:18px;outline:none;}
+.checkin-btn:active{transform:scale(0.97);}
+.section-label{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
 
-/* EXERCISE CARD */
-.exercise-card { background: var(–surface); border-radius: 16px; border: 1px solid var(–border); margin-bottom: 10px; overflow: hidden; transition: border-color 0.3s, opacity 0.3s; }
-.exercise-card.done { opacity: 0.55; }
-.ex-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
-.ex-num { width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
-.ex-info { flex: 1; }
-.ex-name { font-weight: 700; font-size: 15px; }
-.ex-detail { font-size: 12px; color: var(–muted); margin-top: 2px; }
-.ex-done-badge { font-size: 20px; }
+.exercise-card{background:var(–surface);border-radius:16px;border:1px solid var(–border);margin-bottom:10px;overflow:hidden;transition:border-color 0.3s,opacity 0.3s;}
+.exercise-card.ex-done{opacity:0.5;}
+.ex-header{display:flex;align-items:center;gap:12px;padding:14px 16px;}
+.ex-num{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
+.ex-info{flex:1;}
+.ex-name{font-weight:700;font-size:15px;}
+.ex-detail{font-size:12px;color:var(–muted);margin-top:2px;}
 
-/* SETS ROW */
-.sets-row { display: flex; gap: 7px; padding: 0 16px 14px; }
-.set-btn {
-flex: 1; padding: 10px 4px; border-radius: 11px;
-border: 1.5px solid rgba(255,255,255,0.1);
-font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit;
-background: rgba(255,255,255,0.04); color: #555;
-transition: all 0.18s; outline: none; text-align: center; line-height: 1.4;
-}
-.set-btn.set-done { color: #0A0A0F; }
-.set-btn.set-next { animation: pulseBtn 1.8s ease-in-out infinite; }
-.set-btn:disabled { cursor: default; }
-.set-btn:not(:disabled):active { transform: scale(0.9); }
-@keyframes pulseBtn {
-0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.0); }
-50%      { box-shadow: 0 0 0 5px rgba(255,255,255,0.05); }
-}
+/* STOPWATCH */
+.sw-bar{display:flex;align-items:center;justify-content:space-between;padding:2px 16px 12px;gap:10px;}
+.sw-time-wrap{display:flex;align-items:baseline;gap:1px;}
+.sw-num{font-size:38px;font-weight:900;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;}
+.sw-cs{font-size:20px;font-weight:700;color:var(–muted);font-variant-numeric:tabular-nums;}
+.sw-sublabel{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
+.sw-toggle{padding:10px 20px;border-radius:12px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;outline:none;transition:transform 0.15s;}
+.sw-toggle:active{transform:scale(0.92);}
+.sw-laps{display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 12px;}
+.sw-lap{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.06);color:var(–muted);border:1px solid rgba(255,255,255,0.08);}
+.sw-lap.lap-best{color:#4ECDC4;border-color:#4ECDC440;background:#4ECDC412;}
+.sw-lap.lap-worst{color:#FF6B9D;border-color:#FF6B9D40;background:#FF6B9D12;}
 
-/* REST TIMER OVERLAY */
-#rest-overlay {
-position: fixed; inset: 0; z-index: 500;
-display: flex; align-items: center; justify-content: center; flex-direction: column;
-background: rgba(6,6,10,0.93); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-opacity: 0; pointer-events: none; transition: opacity 0.3s;
-}
-#rest-overlay.show { opacity: 1; pointer-events: all; }
-.rest-type-label { font-size: 12px; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
-.rest-context { font-size: 17px; font-weight: 700; margin-bottom: 28px; text-align: center; line-height: 1.5; }
+.sets-row{display:flex;gap:7px;padding:0 16px 14px;}
+.set-btn{flex:1;padding:10px 4px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.1);font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;background:rgba(255,255,255,0.04);color:#555;transition:all 0.18s;outline:none;text-align:center;line-height:1.4;}
+.set-btn.set-done{color:#0A0A0F;}
+.set-btn.set-next{animation:pulseBtn 1.8s ease-in-out infinite;}
+.set-btn:disabled{cursor:default;}
+.set-btn:not(:disabled):active{transform:scale(0.9);}
+@keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 5px rgba(255,255,255,0.05)}}
 
-.ring-wrap { position: relative; width: 210px; height: 210px; margin-bottom: 28px; }
-.ring-wrap svg { transform: rotate(-90deg); }
-.ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 9; }
-.ring-fill { fill: none; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.85s linear, stroke 0.5s; }
-.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.ring-time-num { font-size: 56px; font-weight: 900; letter-spacing: -3px; line-height: 1; }
-.ring-time-sub { font-size: 12px; color: #555; letter-spacing: 1px; margin-top: 4px; }
+#rest-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(6,6,10,0.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);opacity:0;pointer-events:none;transition:opacity 0.3s;}
+#rest-overlay.show{opacity:1;pointer-events:all;}
+.rest-type-label{font-size:12px;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.rest-context{font-size:17px;font-weight:700;margin-bottom:28px;text-align:center;line-height:1.5;}
+.ring-wrap{position:relative;width:210px;height:210px;margin-bottom:28px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:9;}
+.ring-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 0.85s linear,stroke 0.5s;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-time-num{font-size:56px;font-weight:900;letter-spacing:-3px;line-height:1;}
+.ring-time-sub{font-size:12px;color:#555;letter-spacing:1px;margin-top:4px;}
+.rest-skip-btn{padding:14px 44px;border-radius:50px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;color:#0A0A0F;outline:none;transition:transform 0.2s;}
+.rest-skip-btn:active{transform:scale(0.95);}
+.rest-next-info{margin-top:14px;font-size:13px;color:#555;text-align:center;}
 
-.rest-skip-btn { padding: 14px 44px; border-radius: 50px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; color: #0A0A0F; outline: none; transition: transform 0.2s; }
-.rest-skip-btn:active { transform: scale(0.95); }
-.rest-next-info { margin-top: 14px; font-size: 13px; color: #555; text-align: center; }
+.workout-done-banner{margin-bottom:18px;padding:20px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(255,230,109,0.12),rgba(255,107,53,0.12));border:1px solid rgba(255,230,109,0.25);}
+.workout-done-big{font-size:40px;margin-bottom:6px;}
+.workout-done-title{font-size:20px;font-weight:900;}
+.workout-done-sub{font-size:13px;color:var(–muted);margin-top:4px;}
 
-/* DONE BANNER */
-.workout-done-banner { margin-bottom: 18px; padding: 20px; border-radius: 16px; text-align: center; background: linear-gradient(135deg,rgba(255,230,109,0.12),rgba(255,107,53,0.12)); border: 1px solid rgba(255,230,109,0.25); }
-.workout-done-big { font-size: 40px; margin-bottom: 6px; }
-.workout-done-title { font-size: 20px; font-weight: 900; }
-.workout-done-sub { font-size: 13px; color: var(–muted); margin-top: 4px; }
+.calendar-content{padding:20px;}
+.cal-month{font-size:14px;font-weight:700;text-align:center;color:var(–muted);margin-bottom:16px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-header{text-align:center;font-size:11px;color:#444;font-weight:600;padding:4px 0;}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;border:1px solid var(–border);background:var(–surface);color:#444;}
+.cal-day.today-day{font-weight:800;border-width:2px;}
+.cal-day.checked{color:#fff;}
+.cal-day .sticker{font-size:9px;line-height:1;}
+.cal-legend{display:flex;gap:16px;justify-content:center;margin-top:16px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(–muted);}
+.legend-dot{width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);}
 
-/* CALENDAR */
-.calendar-content { padding: 20px; }
-.cal-month { font-size: 14px; font-weight: 700; text-align: center; color: var(–muted); margin-bottom: 16px; }
-.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
-.cal-header { text-align: center; font-size: 11px; color: #444; font-weight: 600; padding: 4px 0; }
-.cal-day { aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; border: 1px solid var(–border); background: var(–surface); color: #444; }
-.cal-day.today-day { font-weight: 800; border-width: 2px; }
-.cal-day.checked { color: #fff; }
-.cal-day .sticker { font-size: 9px; line-height: 1; }
-.cal-legend { display: flex; gap: 16px; justify-content: center; margin-top: 16px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(–muted); }
-.legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+.schedule-content{padding:20px;display:flex;flex-direction:column;gap:12px;}
+.sched-card{border-radius:16px;overflow:hidden;border:1px solid var(–border);background:rgba(255,255,255,0.03);}
+.sched-header{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(–border);}
+.sched-emoji{font-size:20px;}
+.sched-day{font-weight:800;font-size:14px;}
+.sched-theme{font-size:12px;color:var(–muted);}
+.today-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:1px;color:#0A0A0F;}
+.sched-exercises{padding:8px 16px 12px;}
+.sched-ex{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;}
+.sched-ex:last-child{border-bottom:none;}
+.sched-ex-num{font-weight:700;min-width:18px;font-size:11px;}
+.sched-ex-name{font-weight:600;}
+.sched-ex-detail{margin-left:auto;font-size:11px;color:#444;}
 
-/* SCHEDULE */
-.schedule-content { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.sched-card { border-radius: 16px; overflow: hidden; border: 1px solid var(–border); background: rgba(255,255,255,0.03); }
-.sched-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(–border); }
-.sched-emoji { font-size: 20px; }
-.sched-day { font-weight: 800; font-size: 14px; }
-.sched-theme { font-size: 12px; color: var(–muted); }
-.today-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; letter-spacing: 1px; color: #0A0A0F; }
-.sched-exercises { padding: 8px 16px 12px; }
-.sched-ex { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
-.sched-ex:last-child { border-bottom: none; }
-.sched-ex-num { font-weight: 700; min-width: 18px; font-size: 11px; }
-.sched-ex-name { font-weight: 600; }
-.sched-ex-detail { margin-left: auto; font-size: 11px; color: #444; }
-
-/* FX */
-.confetti-piece { position: fixed; top: -20px; border-radius: 2px; z-index: 1000; pointer-events: none; animation: fall 2.5s ease-in forwards; }
-#celebration { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-#celebration.show { opacity: 1; pointer-events: all; }
-.celebration-inner { text-align: center; }
-.celebration-sticker { font-size: 90px; line-height: 1; margin-bottom: 16px; display: block; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-.celebration-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
-.celebration-pts { font-size: 16px; color: var(–muted); margin-top: 8px; }
-
-#install-hint { position: fixed; bottom: calc(env(safe-area-inset-bottom,16px) + 8px); left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 10px 18px; font-size: 12px; color: rgba(255,255,255,0.7); text-align: center; white-space: nowrap; z-index: 100; cursor: pointer; animation: fadeIn 1s 2s both; }
-
-@keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
-@keyframes popIn { 0%{transform:scale(0.2);opacity:0} 100%{transform:scale(1);opacity:1} }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.confetti-piece{position:fixed;top:-20px;border-radius:2px;z-index:1000;pointer-events:none;animation:fall 2.5s ease-in forwards;}
+#celebration{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity 0.3s;}
+#celebration.show{opacity:1;pointer-events:all;}
+.celebration-inner{text-align:center;}
+.celebration-sticker{font-size:90px;line-height:1;margin-bottom:16px;display:block;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.celebration-title{font-size:28px;font-weight:900;letter-spacing:2px;}
+.celebration-pts{font-size:16px;color:var(–muted);margin-top:8px;}
+#install-hint{position:fixed;bottom:calc(env(safe-area-inset-bottom,16px) + 8px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:10px 18px;font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap;z-index:100;cursor:pointer;animation:fadeIn 1s 2s both;}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes popIn{0%{transform:scale(0.2);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 </style>
 
 </head>
 <body>
-
 <div id="bg-glow"></div>
 <div class="app" id="app"></div>
-
-<!-- REST OVERLAY -->
 
 <div id="rest-overlay">
   <div class="rest-type-label" id="rest-type-label">พักระหว่างเซต</div>
@@ -172,15 +143,13 @@ opacity: 0; pointer-events: none; transition: opacity 0.3s;
       <circle class="ring-fill" id="ring-fill" cx="105" cy="105" r="93"/>
     </svg>
     <div class="ring-center">
-      <div class="ring-time-num" id="rest-countdown">1:30</div>
+      <div class="ring-time-num" id="rest-countdown">1:00</div>
       <div class="ring-time-sub">เหลืออีก</div>
     </div>
   </div>
   <button class="rest-skip-btn" id="rest-skip-btn" onclick="skipRest()">ข้ามการพัก →</button>
   <div class="rest-next-info" id="rest-next-info"></div>
 </div>
-
-<!-- CELEBRATION -->
 
 <div id="celebration">
   <div class="celebration-inner">
@@ -189,257 +158,243 @@ opacity: 0; pointer-events: none; transition: opacity 0.3s;
     <div class="celebration-pts">+10 แต้ม 🎯</div>
   </div>
 </div>
-
 <div id="install-hint" onclick="this.remove()">📲 แชร์ → "Add to Home Screen" เพื่อใช้แบบแอป</div>
 
 <script>
-// ===== SCHEDULE DATA =====
+// ===== SCHEDULE =====
 const SCHEDULE = {
   1:{label:"จันทร์",theme:"อก + แขน + ท้อง",emoji:"💪",color:"#FF6B35",
-    exercises:[
-      {name:"Push up",detail:"15 × 4 sets",sets:4},
-      {name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},
-      {name:"Lateral raise",detail:"12 × 4 sets",sets:4},
-      {name:"Leg raise",detail:"15 × 4 sets",sets:4},
-      {name:"Ab wheel",detail:"10–15 × 4 sets",sets:4},
-    ]},
+    exercises:[{name:"Push up",detail:"15 × 4 sets",sets:4},{name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},{name:"Lateral raise",detail:"12 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Ab wheel",detail:"10–15 × 4 sets",sets:4}]},
   2:{label:"อังคาร",theme:"ขา + หลัง + core",emoji:"🦵",color:"#4ECDC4",
-    exercises:[
-      {name:"Squat",detail:"20 × 4 sets",sets:4},
-      {name:"Dumbbell row",detail:"12 × 4 sets",sets:4},
-      {name:"Shoulder press",detail:"12 × 4 sets",sets:4},
-      {name:"Reverse crunch",detail:"15 × 4 sets",sets:4},
-      {name:"Side plank",detail:"30–45 วิ × 3 / ข้าง",sets:3},
-    ]},
-  3:{label:"พุธ",theme:"วันท้อง (เน้นท้องล่าง + ข้าง)",emoji:"🔥",color:"#FFE66D",
-    exercises:[
-      {name:"Ab wheel",detail:"12 × 4 sets",sets:4},
-      {name:"Leg raise",detail:"15 × 4 sets",sets:4},
-      {name:"Oblique crunch",detail:"15 × 3 / ข้าง",sets:3},
-      {name:"Russian twist",detail:"20 × 3 sets",sets:3},
-      {name:"Plank",detail:"45 วิ × 3 sets",sets:3},
-    ]},
+    exercises:[{name:"Squat",detail:"20 × 4 sets",sets:4},{name:"Dumbbell row",detail:"12 × 4 sets",sets:4},{name:"Shoulder press",detail:"12 × 4 sets",sets:4},{name:"Reverse crunch",detail:"15 × 4 sets",sets:4},{name:"Side plank",detail:"30–45 วิ × 3",sets:3}]},
+  3:{label:"พุธ",theme:"วันท้อง",emoji:"🔥",color:"#FFE66D",
+    exercises:[{name:"Ab wheel",detail:"12 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Oblique crunch",detail:"15 × 3 / ข้าง",sets:3},{name:"Russian twist",detail:"20 × 3 sets",sets:3},{name:"Plank",detail:"45 วิ × 3 sets",sets:3}]},
   4:{label:"พฤหัส",theme:"พัก / คาร์ดิโอเบา",emoji:"🚶",color:"#A8DADC",rest:true,
-    exercises:[
-      {name:"เดินเร็ว",detail:"20 นาที",sets:1},
-      {name:"วิ่งอยู่กับที่",detail:"5–10 นาที",sets:1},
-    ]},
+    exercises:[{name:"เดินเร็ว",detail:"20 นาที",sets:1},{name:"วิ่งอยู่กับที่",detail:"5–10 นาที",sets:1}]},
   5:{label:"ศุกร์",theme:"อก + ไหล่ + แขน",emoji:"🏋️",color:"#FF6B9D",
-    exercises:[
-      {name:"Push up",detail:"15 × 4 sets",sets:4},
-      {name:"Shoulder press",detail:"12 × 4 sets",sets:4},
-      {name:"Lateral raise",detail:"12 × 4 sets",sets:4},
-      {name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},
-      {name:"Ab wheel",detail:"10–15 × 3 sets",sets:3},
-    ]},
+    exercises:[{name:"Push up",detail:"15 × 4 sets",sets:4},{name:"Shoulder press",detail:"12 × 4 sets",sets:4},{name:"Lateral raise",detail:"12 × 4 sets",sets:4},{name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},{name:"Ab wheel",detail:"10–15 × 3 sets",sets:3}]},
   6:{label:"เสาร์",theme:"หลัง + ขา + ท้องล่าง",emoji:"⚡",color:"#C77DFF",
-    exercises:[
-      {name:"Squat",detail:"20 × 4 sets",sets:4},
-      {name:"Dumbbell row",detail:"12 × 4 sets",sets:4},
-      {name:"Reverse crunch",detail:"15 × 4 sets",sets:4},
-      {name:"Leg raise",detail:"15 × 4 sets",sets:4},
-      {name:"Side plank",detail:"45 วิ × 3 sets",sets:3},
-    ]},
+    exercises:[{name:"Squat",detail:"20 × 4 sets",sets:4},{name:"Dumbbell row",detail:"12 × 4 sets",sets:4},{name:"Reverse crunch",detail:"15 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Side plank",detail:"45 วิ × 3 sets",sets:3}]},
   0:{label:"อาทิตย์",theme:"พักเต็มที่",emoji:"😴",color:"#6C757D",rest:true,
-    exercises:[
-      {name:"เดินเบาๆ",detail:"ตามอัธยาศัย",sets:1},
-      {name:"ยืดกล้าม",detail:"ตามอัธยาศัย",sets:1},
-    ]},
+    exercises:[{name:"เดินเบาๆ",detail:"ตามอัธยาศัย",sets:1},{name:"ยืดกล้าม",detail:"ตามอัธยาศัย",sets:1}]},
 };
-
 const STICKERS=["🏅","⭐","🔥","💎","👑","🚀","💪","🎯","⚡","🌟"];
-const MILESTONES=[
-  {count:30,label:"ครบเดือน!",sticker:"🚀"},
-  {count:14,label:"สองสัปดาห์!",sticker:"💎"},
-  {count:7,label:"ครบสัปดาห์!",sticker:"👑"},
-  {count:3,label:"สามวันติด!",sticker:"🔥"},
-  {count:1,label:"เริ่มต้นแล้ว!",sticker:"🌱"},
-];
-
-const REST_SET = 60;   // seconds between sets
-const REST_EX  = 90;   // seconds between exercises
-const CIRC = 2 * Math.PI * 93; // ring circumference
+const MILESTONES=[{count:30,label:"ครบเดือน!",sticker:"🚀"},{count:14,label:"สองสัปดาห์!",sticker:"💎"},{count:7,label:"ครบสัปดาห์!",sticker:"👑"},{count:3,label:"สามวันติด!",sticker:"🔥"},{count:1,label:"เริ่มต้นแล้ว!",sticker:"🌱"}];
+const REST_SET=60, REST_EX=90, CIRC=2*Math.PI*93;
 
 // ===== STORAGE =====
-function loadData(){
-  try{ const r=localStorage.getItem('workout_v2'); return r?JSON.parse(r):{checkIns:{},points:0}; }
-  catch{ return{checkIns:{},points:0}; }
-}
-function saveData(d){ try{localStorage.setItem('workout_v2',JSON.stringify(d));}catch{} }
-function todayKey(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function calcStreak(c){
-  let s=0; const t=new Date(); t.setHours(0,0,0,0);
-  for(let i=0;i<365;i++){
-    const d=new Date(t); d.setDate(d.getDate()-i);
-    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if(c[k]) s++; else if(i>0) break;
-  }
-  return s;
-}
-function getMilestone(n){ return MILESTONES.find(m=>n>=m.count)||null; }
+function loadData(){try{const r=localStorage.getItem('workout_v2');return r?JSON.parse(r):{checkIns:{},points:0};}catch{return{checkIns:{},points:0};}}
+function saveData(d){try{localStorage.setItem('workout_v2',JSON.stringify(d));}catch{}}
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function calcStreak(c){let s=0;const t=new Date();t.setHours(0,0,0,0);for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(c[k])s++;else if(i>0)break;}return s;}
+function getMilestone(n){return MILESTONES.find(m=>n>=m.count)||null;}
 
 // ===== STATE =====
-let data = loadData();
-let activeTab = 'today';
-const dow = new Date().getDay();
-const sched = SCHEDULE[dow];
-const today = todayKey();
-let setProgress = sched.exercises.map(()=>0); // sets done per exercise
+let data=loadData();
+let activeTab='today';
+const dow=new Date().getDay();
+const sched=SCHEDULE[dow];
+const today=todayKey();
+let setProgress=sched.exercises.map(()=>0);
 
-// ===== TIMER =====
-let timerInterval = null;
-let timerRemaining = 0;
-let timerTotal = 0;
-let afterTimer = null;
+// ===== STOPWATCH =====
+// sw.laps[exIdx] = array of lap ms for each completed set
+const sw={
+  running:false,
+  startMs:0,
+  elapsed:0,
+  exIdx:0,
+  laps:sched.exercises.map(()=>[]),
+  ticker:null
+};
 
-function startTimer(duration, typeLabel, contextHtml, nextHtml, onDone){
-  clearInterval(timerInterval);
-  timerRemaining = duration;
-  timerTotal = duration;
-  afterTimer = onDone;
-
-  document.getElementById('rest-type-label').textContent = typeLabel;
-  document.getElementById('rest-context').innerHTML = contextHtml;
-  document.getElementById('rest-next-info').innerHTML = nextHtml;
-  document.getElementById('rest-skip-btn').style.background = sched.color;
-
-  const ring = document.getElementById('ring-fill');
-  ring.style.strokeDasharray = CIRC;
-  ring.style.strokeDashoffset = 0;
-  ring.style.stroke = sched.color;
-
-  updateTimerDisplay();
-  document.getElementById('rest-overlay').classList.add('show');
-
-  timerInterval = setInterval(()=>{
-    timerRemaining--;
-    updateTimerDisplay();
-    if(timerRemaining <= 0){
-      clearInterval(timerInterval);
-      timerInterval = null;
-      document.getElementById('rest-overlay').classList.remove('show');
-      if(navigator.vibrate) navigator.vibrate([200,100,200]);
-      if(afterTimer){ afterTimer(); afterTimer=null; }
-    }
-  }, 1000);
+function swGetMs(){
+  return sw.running ? (Date.now()-sw.startMs+sw.elapsed) : sw.elapsed;
 }
 
-function updateTimerDisplay(){
-  const m = Math.floor(timerRemaining/60);
-  const s = String(timerRemaining%60).padStart(2,'0');
-  document.getElementById('rest-countdown').textContent = `${m}:${s}`;
-  const ring = document.getElementById('ring-fill');
-  const progress = timerRemaining / timerTotal;
-  ring.style.strokeDashoffset = CIRC * (1 - progress);
-  if(progress > 0.5) ring.style.stroke = sched.color;
-  else if(progress > 0.25) ring.style.stroke = '#FFE66D';
-  else ring.style.stroke = '#FF4455';
+function swStart(exIdx){
+  clearInterval(sw.ticker);
+  sw.exIdx=exIdx;
+  sw.elapsed=0;
+  sw.startMs=Date.now();
+  sw.running=true;
+  sw.ticker=setInterval(()=>{
+    // Direct DOM update — no re-render
+    const ms=swGetMs();
+    const m=Math.floor(ms/60000);
+    const s=Math.floor((ms%60000)/1000);
+    const cs=Math.floor((ms%1000)/10);
+    const elNum=document.getElementById('sw-num');
+    const elCs=document.getElementById('sw-cs');
+    if(elNum) elNum.textContent=`${m}:${String(s).padStart(2,'0')}`;
+    if(elCs)  elCs.textContent=`.${String(cs).padStart(2,'0')}`;
+  },50);
+}
+
+function swPause(){
+  if(!sw.running) return;
+  sw.elapsed+=Date.now()-sw.startMs;
+  sw.running=false;
+  clearInterval(sw.ticker);
+  sw.ticker=null;
+}
+
+function swResume(){
+  if(sw.running) return;
+  sw.startMs=Date.now();
+  sw.running=true;
+  sw.ticker=setInterval(()=>{
+    const ms=swGetMs();
+    const m=Math.floor(ms/60000);
+    const s=Math.floor((ms%60000)/1000);
+    const cs=Math.floor((ms%1000)/10);
+    const elNum=document.getElementById('sw-num');
+    const elCs=document.getElementById('sw-cs');
+    if(elNum) elNum.textContent=`${m}:${String(s).padStart(2,'0')}`;
+    if(elCs)  elCs.textContent=`.${String(cs).padStart(2,'0')}`;
+  },50);
+}
+
+function swToggle(){
+  if(sw.running){swPause();}else{swResume();}
+  const btn=document.getElementById('sw-toggle-btn');
+  if(btn){
+    btn.textContent=sw.running?'⏸ หยุด':'▶ ต่อ';
+    btn.style.background=sw.running?'rgba(255,255,255,0.1)':sched.color;
+    btn.style.color=sw.running?'#fff':'#0A0A0F';
+  }
+}
+
+function swLapRecord(){
+  sw.laps[sw.exIdx].push(swGetMs());
+  // reset for next set
+  sw.elapsed=0;
+  sw.startMs=Date.now();
+}
+
+function fmtMs(ms){
+  const s=Math.floor(ms/1000);
+  const cs=Math.floor((ms%1000)/10);
+  if(s>=60) return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  return `${s}.${String(cs).padStart(2,'0')}s`;
+}
+
+// ===== REST TIMER =====
+let restIv=null,restRem=0,restTot=0,afterRest=null;
+
+function startRest(dur,typeLabel,ctxHtml,nextHtml,onDone){
+  clearInterval(restIv);
+  restRem=dur;restTot=dur;afterRest=onDone;
+  document.getElementById('rest-type-label').textContent=typeLabel;
+  document.getElementById('rest-context').innerHTML=ctxHtml;
+  document.getElementById('rest-next-info').innerHTML=nextHtml;
+  document.getElementById('rest-skip-btn').style.background=sched.color;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=0;ring.style.stroke=sched.color;
+  updateRestUI();
+  document.getElementById('rest-overlay').classList.add('show');
+  restIv=setInterval(()=>{
+    restRem--;updateRestUI();
+    if(restRem<=0){
+      clearInterval(restIv);
+      document.getElementById('rest-overlay').classList.remove('show');
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      if(afterRest){afterRest();afterRest=null;}
+    }
+  },1000);
+}
+
+function updateRestUI(){
+  const m=Math.floor(restRem/60),s=String(restRem%60).padStart(2,'0');
+  document.getElementById('rest-countdown').textContent=`${m}:${s}`;
+  const p=restRem/restTot;
+  const ring=document.getElementById('ring-fill');
+  ring.style.strokeDashoffset=CIRC*(1-p);
+  ring.style.stroke=p>0.5?sched.color:p>0.25?'#FFE66D':'#FF4455';
 }
 
 function skipRest(){
-  clearInterval(timerInterval);
-  timerInterval = null;
+  clearInterval(restIv);
   document.getElementById('rest-overlay').classList.remove('show');
-  if(afterTimer){ afterTimer(); afterTimer=null; }
+  if(afterRest){afterRest();afterRest=null;}
 }
 
-// ===== SET LOGIC =====
-function tapSet(exIdx, setIdx){
-  if(setIdx !== setProgress[exIdx]) return; // only next undone set
-  const ex = sched.exercises[exIdx];
+// ===== TAP SET =====
+function tapSet(exIdx,setIdx){
+  if(setIdx!==setProgress[exIdx])return;
+  const ex=sched.exercises[exIdx];
+
+  // Record lap, keep sw running (reset internally for next set)
+  swLapRecord();
+  // Pause sw during rest
+  swPause();
+
   setProgress[exIdx]++;
-  render();
 
-  const allExDone = setProgress.every((p,i) => p >= sched.exercises[i].sets);
-
-  if(setProgress[exIdx] < ex.sets){
-    // More sets left → rest between sets
-    const nextSet = setProgress[exIdx] + 1;
-    startTimer(
-      REST_SET,
-      'พักระหว่างเซต',
+  if(setProgress[exIdx]<ex.sets){
+    render();
+    startRest(REST_SET,'พักระหว่างเซต',
       `<strong>${ex.name}</strong><br>เสร็จเซต ${setProgress[exIdx]} / ${ex.sets}`,
-      `ต่อไป: <strong>เซต ${nextSet}</strong> ของ ${ex.name}`,
-      ()=>render()
+      `ต่อไป: เซต ${setProgress[exIdx]+1}`,
+      ()=>{swResume();render();}
     );
   } else {
-    // All sets of this exercise done
-    const nextExIdx = exIdx + 1;
-    if(nextExIdx < sched.exercises.length){
-      const nextEx = sched.exercises[nextExIdx];
-      startTimer(
-        REST_EX,
-        'พักระหว่างท่า',
-        `<strong>${ex.name}</strong> เสร็จทุกเซตแล้ว ✓`,
-        `ท่าต่อไป: <strong>${nextEx.name}</strong>`,
-        ()=>render()
+    const nextIdx=exIdx+1;
+    if(nextIdx<sched.exercises.length){
+      render();
+      startRest(REST_EX,'พักระหว่างท่า',
+        `<strong>${ex.name}</strong> เสร็จครบแล้ว ✓`,
+        `ท่าต่อไป: <strong>${sched.exercises[nextIdx].name}</strong>`,
+        ()=>{swStart(nextIdx);render();}
       );
     } else {
-      // ALL exercises done!
       render();
-      if(!data.checkIns[today]){
-        setTimeout(()=>handleCheckIn(), 500);
-      }
+      if(!data.checkIns[today])setTimeout(()=>handleCheckIn(),500);
     }
   }
 }
 
 // ===== CHECK IN =====
 function handleCheckIn(){
-  if(data.checkIns[today]) return;
-  const sticker = STICKERS[Math.floor(Math.random()*STICKERS.length)];
-  data.checkIns[today] = {sticker, time: new Date().toISOString()};
-  data.points = (data.points||0) + 10;
-  saveData(data);
-  spawnConfetti();
-  showCelebration(sticker);
-  render();
+  if(data.checkIns[today])return;
+  const sticker=STICKERS[Math.floor(Math.random()*STICKERS.length)];
+  data.checkIns[today]={sticker,time:new Date().toISOString()};
+  data.points=(data.points||0)+10;
+  saveData(data);spawnConfetti();showCelebration(sticker);render();
 }
-
 function showCelebration(sticker){
-  const cel = document.getElementById('celebration');
-  document.getElementById('cel-sticker').textContent = sticker;
-  document.getElementById('cel-title').style.color = sched.color;
-  cel.classList.add('show');
-  setTimeout(()=>cel.classList.remove('show'), 2800);
+  const cel=document.getElementById('celebration');
+  document.getElementById('cel-sticker').textContent=sticker;
+  document.getElementById('cel-title').style.color=sched.color;
+  cel.classList.add('show');setTimeout(()=>cel.classList.remove('show'),2800);
 }
-
 function spawnConfetti(){
   const colors=["#FF6B35","#4ECDC4","#FFE66D","#FF6B9D","#C77DFF"];
   for(let i=0;i<32;i++){
-    const el=document.createElement('div');
-    el.className='confetti-piece';
-    el.style.cssText=`left:${Math.random()*100}%;width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.6}s;transform:rotate(${Math.random()*360}deg);`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 3200);
+    const el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}%;width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;background:${colors[~~(Math.random()*5)]};animation-delay:${Math.random()*0.6}s;transform:rotate(${Math.random()*360}deg);`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),3200);
   }
 }
 
 // ===== RENDER =====
 function render(){
-  const total = Object.keys(data.checkIns).length;
-  const streak = calcStreak(data.checkIns);
-  const milestone = getMilestone(total);
-  const checkedToday = !!data.checkIns[today];
-  const allExDone = setProgress.every((p,i)=>p>=sched.exercises[i].sets);
+  const total=Object.keys(data.checkIns).length;
+  const streak=calcStreak(data.checkIns);
+  const milestone=getMilestone(total);
+  const checkedToday=!!data.checkIns[today];
+  const allDone=setProgress.every((p,i)=>p>=sched.exercises[i].sets);
 
-  let h = '';
+  let h='';
 
-  // HEADER
-  h += `<div class="header">
+  h+=`<div class="header">
     <div class="header-top">
       <div>
         <div class="header-label">Workout Tracker</div>
         <div class="header-day">${sched.emoji} วัน${sched.label}</div>
         <div class="header-theme">${sched.theme}</div>
       </div>
-      <div class="points-box">
-        <div class="points-num">${data.points}</div>
-        <div class="points-label">POINTS</div>
-      </div>
+      <div class="points-box"><div class="points-num">${data.points}</div><div class="points-label">POINTS</div></div>
     </div>
     <div class="stats">
       <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value">${streak} 🔥</div><div class="stat-sub">วัน</div></div>
@@ -448,142 +403,154 @@ function render(){
     </div>
   </div>`;
 
-  // TABS
-  h += `<div class="tabs">
-    ${[['today','วันนี้'],['calendar','ปฏิทิน'],['schedule','ตาราง']].map(([id,label])=>
-      `<button class="tab ${activeTab===id?'active':''}" onclick="setTab('${id}')" style="${activeTab===id?`background:${sched.color};`:''}"> ${label}</button>`
+  h+=`<div class="tabs">
+    ${[['today','วันนี้'],['calendar','ปฏิทิน'],['schedule','ตาราง']].map(([id,lbl])=>
+      `<button class="tab ${activeTab===id?'active':''}" onclick="setTab('${id}')" style="${activeTab===id?`background:${sched.color};`:''}"> ${lbl}</button>`
     ).join('')}
   </div>`;
 
-  // ======= TODAY =======
-  if(activeTab === 'today'){
-    h += `<div class="today-content">`;
-
-    if(allExDone && !sched.rest){
-      h += `<div class="workout-done-banner">
-        <div class="workout-done-big">🎉</div>
+  if(activeTab==='today'){
+    h+=`<div class="today-content">`;
+    if(allDone&&!sched.rest){
+      h+=`<div class="workout-done-banner"><div class="workout-done-big">🎉</div>
         <div class="workout-done-title">ออกกำลังกายเสร็จแล้ว!</div>
         <div class="workout-done-sub">${checkedToday?`เช็คอินแล้ว ${data.checkIns[today].sticker}`:'กำลังบันทึก...'}</div>
       </div>`;
     }
-
-    // checkin button
-    if(sched.rest || !allExDone || checkedToday){
-      const bs = checkedToday
-        ? `background:rgba(255,255,255,0.07);border:2px solid ${sched.color};color:${sched.color};box-shadow:none;cursor:default;`
-        : `background:linear-gradient(135deg,${sched.color},${sched.color}bb);border:none;color:#0A0A0F;box-shadow:0 8px 30px ${sched.color}44;cursor:pointer;`;
-      h += `<button class="checkin-btn" style="${bs}" onclick="${checkedToday?'':'handleCheckIn()'}">
+    if(sched.rest||!allDone||checkedToday){
+      const bs=checkedToday
+        ?`background:rgba(255,255,255,0.07);border:2px solid ${sched.color};color:${sched.color};box-shadow:none;cursor:default;`
+        :`background:linear-gradient(135deg,${sched.color},${sched.color}bb);border:none;color:#0A0A0F;box-shadow:0 8px 30px ${sched.color}44;cursor:pointer;`;
+      h+=`<button class="checkin-btn" style="${bs}" onclick="${checkedToday?'':'handleCheckIn()'}">
         ${checkedToday?`✓ เช็คอินแล้ววันนี้ ${data.checkIns[today].sticker}`:'⚡ CHECK IN วันนี้'}
       </button>`;
     }
+    h+=`<div class="section-label">${sched.rest?'ตัวเลือก':'ท่าออกกำลังกาย'}</div>`;
 
-    h += `<div class="section-label">${sched.rest?'ตัวเลือก':'ท่าออกกำลังกาย'}</div>`;
+    sched.exercises.forEach((ex,i)=>{
+      const exDone=setProgress[i]>=ex.sets;
+      const prevOk=i===0||setProgress[i-1]>=sched.exercises[i-1].sets;
+      const isActive=!exDone&&prevOk;
 
-    sched.exercises.forEach((ex, i)=>{
-      const exDone = setProgress[i] >= ex.sets;
-      // active = previous exercise done (or first)
-      const prevDone = i===0 || setProgress[i-1] >= sched.exercises[i-1].sets;
-      const isActive = !exDone && prevDone;
-
-      h += `<div class="exercise-card ${exDone?'done':''}" style="${isActive?`border-color:${sched.color}60;`:''} ">
+      h+=`<div class="exercise-card ${exDone?'ex-done':''}" style="${isActive?`border-color:${sched.color}70;border-width:1.5px;`:''}">
         <div class="ex-header">
-          <div class="ex-num" style="background:${sched.color}${exDone?'50':'22'};color:${exDone?'#fff':sched.color};">${exDone?'✓':i+1}</div>
-          <div class="ex-info">
-            <div class="ex-name">${ex.name}</div>
-            <div class="ex-detail">${ex.detail}</div>
-          </div>
-          ${exDone?'<div class="ex-done-badge">✅</div>':''}
+          <div class="ex-num" style="background:${sched.color}${exDone?'55':'22'};color:${exDone?'#fff':sched.color};">${exDone?'✓':i+1}</div>
+          <div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div>
+          ${exDone?'<span style="font-size:20px">✅</span>':isActive?`<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${sched.color};color:#0A0A0F;">ทำได้เลย</span>`:''}
         </div>`;
 
-      if(!sched.rest){
-        h += `<div class="sets-row">`;
-        for(let s=0; s<ex.sets; s++){
-          const setDone = s < setProgress[i];
-          const isNext  = s === setProgress[i] && isActive;
-          let bs = '';
-          if(setDone)      bs = `background:${sched.color};border-color:${sched.color};color:#0A0A0F;`;
-          else if(isNext)  bs = `border-color:${sched.color};color:${sched.color};`;
+      // STOPWATCH for active exercise
+      if(isActive&&!sched.rest){
+        const laps=sw.laps[i];
+        const best=laps.length>1?Math.min(...laps):null;
+        const worst=laps.length>1?Math.max(...laps):null;
+        // snapshot for initial HTML; ticker updates #sw-num/#sw-cs directly
+        const snapMs=swGetMs();
+        const snapM=Math.floor(snapMs/60000);
+        const snapS=Math.floor((snapMs%60000)/1000);
+        const snapCs=Math.floor((snapMs%1000)/10);
 
-          h += `<button
-            class="set-btn ${setDone?'set-done':''} ${isNext?'set-next':''}"
-            style="${bs}"
-            ${isNext?`onclick="tapSet(${i},${s})"`:' disabled'}
-          >เซต ${s+1}<br>${setDone?'✓':isNext?'▶':'·'}</button>`;
+        h+=`<div class="sw-bar">
+          <div>
+            <div class="sw-time-wrap">
+              <span class="sw-num" id="sw-num" style="color:${sched.color}">${snapM}:${String(snapS).padStart(2,'0')}</span>
+              <span class="sw-cs" id="sw-cs">.${String(snapCs).padStart(2,'0')}</span>
+            </div>
+            <div class="sw-sublabel">⏱ เวลาเซตปัจจุบัน</div>
+          </div>
+          <button id="sw-toggle-btn" class="sw-toggle" onclick="swToggle()"
+            style="background:${sw.running?'rgba(255,255,255,0.1)':sched.color};color:${sw.running?'#fff':'#0A0A0F'};">
+            ${sw.running?'⏸ หยุด':'▶ ต่อ'}
+          </button>
+        </div>`;
+
+        if(laps.length>0){
+          h+=`<div class="sw-laps">`;
+          laps.forEach((lapMs,li)=>{
+            const isBest=best!==null&&lapMs===best;
+            const isWorst=worst!==null&&lapMs===worst;
+            h+=`<div class="sw-lap ${isBest?'lap-best':isWorst?'lap-worst':''}">เซต${li+1} ${fmtMs(lapMs)}${isBest?' 🏆':isWorst?' 😓':''}</div>`;
+          });
+          h+=`</div>`;
         }
-        h += `</div>`;
       }
 
-      h += `</div>`;
+      if(!sched.rest&&(isActive||exDone)){
+        h+=`<div class="sets-row">`;
+        for(let s=0;s<ex.sets;s++){
+          const done=s<setProgress[i];
+          const next=s===setProgress[i]&&isActive;
+          let bs='';
+          if(done) bs=`background:${sched.color};border-color:${sched.color};color:#0A0A0F;`;
+          else if(next) bs=`border-color:${sched.color};color:${sched.color};background:${sched.color}18;`;
+          h+=`<button class="set-btn ${done?'set-done':''} ${next?'set-next':''}" style="${bs}"
+            ${next?`onclick="tapSet(${i},${s})"`:' disabled'}>
+            เซต ${s+1}<br>${done?'✓':next?'กด':'·'}
+          </button>`;
+        }
+        h+=`</div>`;
+      } else if(!sched.rest&&!exDone){
+        h+=`<div style="padding:0 16px 14px;font-size:12px;color:#444;">⏳ รอท่าก่อนหน้าเสร็จก่อน</div>`;
+      }
+      h+=`</div>`;
     });
-
-    h += `</div>`;
+    h+=`</div>`;
   }
 
-  // ======= CALENDAR =======
-  if(activeTab === 'calendar'){
-    const now=new Date();
-    const year=now.getFullYear(), month=now.getMonth();
-    const firstDay=new Date(year,month,1).getDay();
-    const daysInMonth=new Date(year,month+1,0).getDate();
+  if(activeTab==='calendar'){
+    const now=new Date(),year=now.getFullYear(),month=now.getMonth();
+    const firstDay=new Date(year,month,1).getDay(),dim=new Date(year,month+1,0).getDate();
     const monthName=now.toLocaleDateString('th-TH',{month:'long',year:'numeric'});
     let days='';
     for(let i=0;i<firstDay;i++) days+='<div></div>';
-    for(let d=1;d<=daysInMonth;d++){
+    for(let d=1;d<=dim;d++){
       const key=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const ck=data.checkIns[key];
-      const isT=key===today;
+      const ck=data.checkIns[key],isT=key===today;
       days+=`<div class="cal-day${isT?' today-day':''}${ck?' checked':''}"
         style="background:${ck?sched.color+'28':isT?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.04)'};border:${isT?`2px solid ${sched.color}`:'1px solid rgba(255,255,255,0.08)'};color:${isT?sched.color:ck?'#fff':'#444'};">
         <span>${d}</span>${ck?`<span class="sticker">${ck.sticker}</span>`:''}
       </div>`;
     }
-    h+=`<div class="calendar-content">
-      <div class="cal-month">${monthName}</div>
-      <div class="cal-grid">
-        ${['อา','จ','อ','พ','พฤ','ศ','ส'].map(d=>`<div class="cal-header">${d}</div>`).join('')}
-        ${days}
-      </div>
+    h+=`<div class="calendar-content"><div class="cal-month">${monthName}</div>
+      <div class="cal-grid">${['อา','จ','อ','พ','พฤ','ศ','ส'].map(d=>`<div class="cal-header">${d}</div>`).join('')}${days}</div>
       <div class="cal-legend">
         <div class="legend-item"><div class="legend-dot" style="background:${sched.color}28;"></div>เช็คอินแล้ว</div>
         <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.1);border:2px solid ${sched.color};"></div>วันนี้</div>
-      </div>
-    </div>`;
+      </div></div>`;
   }
 
-  // ======= SCHEDULE =======
-  if(activeTab === 'schedule'){
+  if(activeTab==='schedule'){
     h+=`<div class="schedule-content">`;
     for(const d of [1,2,3,4,5,6,0]){
-      const s=SCHEDULE[d]; const isT2=d===dow;
-      h+=`<div class="sched-card" style="border-color:${isT2?s.color:'rgba(255,255,255,0.09)'};background:${isT2?s.color+'10':'rgba(255,255,255,0.03)'}">
-        <div class="sched-header">
-          <span class="sched-emoji">${s.emoji}</span>
+      const s=SCHEDULE[d],isT=d===dow;
+      h+=`<div class="sched-card" style="border-color:${isT?s.color:'rgba(255,255,255,0.09)'};background:${isT?s.color+'10':'rgba(255,255,255,0.03)'}">
+        <div class="sched-header"><span class="sched-emoji">${s.emoji}</span>
           <div><div class="sched-day" style="color:${s.color}">วัน${s.label}</div><div class="sched-theme">${s.theme}</div></div>
-          ${isT2?`<span class="today-badge" style="background:${s.color}">TODAY</span>`:''}
+          ${isT?`<span class="today-badge" style="background:${s.color}">TODAY</span>`:''}
         </div>
-        <div class="sched-exercises">
-          ${s.exercises.map((ex,i)=>`<div class="sched-ex">
-            <span class="sched-ex-num" style="color:${s.color}">${i+1}.</span>
-            <span class="sched-ex-name">${ex.name}</span>
-            <span class="sched-ex-detail">${ex.detail}</span>
-          </div>`).join('')}
-        </div>
+        <div class="sched-exercises">${s.exercises.map((ex,i)=>`<div class="sched-ex">
+          <span class="sched-ex-num" style="color:${s.color}">${i+1}.</span>
+          <span class="sched-ex-name">${ex.name}</span>
+          <span class="sched-ex-detail">${ex.detail}</span>
+        </div>`).join('')}</div>
       </div>`;
     }
     h+=`</div>`;
   }
 
-  document.getElementById('app').innerHTML = h;
+  document.getElementById('app').innerHTML=h;
 }
 
-function setTab(id){ activeTab=id; render(); }
+function setTab(id){activeTab=id;render();}
 
 // ===== INIT =====
-document.getElementById('bg-glow').style.background =
+document.getElementById('bg-glow').style.background=
   `radial-gradient(ellipse at 20% 20%,${sched.color}18 0%,transparent 60%),
    radial-gradient(ellipse at 80% 80%,#C77DFF15 0%,transparent 60%)`;
+
+if(!sched.rest) swStart(0);
 render();
-setTimeout(()=>{ const hint=document.getElementById('install-hint'); if(hint)hint.remove(); }, 8000);
+setTimeout(()=>{const h=document.getElementById('install-hint');if(h)h.remove();},8000);
 </script>
 
 </body>
