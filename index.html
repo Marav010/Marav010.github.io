@@ -3,460 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>💪 WorkOut Tracker</title>
+<title>💪 FitStreak</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --card: #1a1a26;
-    --accent: #f0ff40;
-    --accent2: #40ffb0;
-    --accent3: #ff4060;
-    --text: #f0f0f8;
-    --muted: #6060a0;
-    --border: #2a2a40;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: 'Prompt', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body { min-height: 100vh; background: #0A0A0F; font-family: 'Prompt','Segoe UI',sans-serif; color: #fff; overflow-x: hidden; }
 
-  /* HEADER */
-  .header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(10,10,15,0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--accent); }
-  .streak-badge {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .streak-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--accent); }
+  /* ── HEADER ── */
+  .header { background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); padding: 16px 20px 0; border-bottom: 1px solid #222; position: sticky; top:0; z-index:100; backdrop-filter:blur(12px); }
+  .header-inner { max-width: 480px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .brand-sub { font-size: 10px; color: #555; letter-spacing: 3px; }
+  .brand-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+  .header-right { display:flex; gap:10px; align-items:center; }
+  .streak-chip { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:5px 12px; font-size:13px; display:flex; align-items:center; gap:5px; }
+  .streak-chip-val { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; }
+  .points-wrap { text-align:right; }
+  .points-label { font-size: 10px; color: #555; letter-spacing: 2px; }
+  .points-val { font-size: 24px; font-weight: 900; color: #FFE66D; font-family:'Bebas Neue',sans-serif; }
 
-  /* TABS */
-  .tabs {
-    display: flex;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex: none;
-    padding: 12px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all .2s;
-  }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); margin-left: 6px; vertical-align: middle; }
+  /* ── NAV TABS ── */
+  .nav { display: flex; border-radius: 12px 12px 0 0; overflow: hidden; }
+  .nav-btn { flex: 1; padding: 10px 0; border: none; cursor: pointer; background: transparent; color: #555; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: inherit; transition:all .2s; }
+  .nav-btn.active { background: #0A0A0F; color: #fff; font-weight: 700; border-radius: 8px 8px 0 0; }
 
-  /* PAGES */
-  .page { display: none; padding: 16px; }
-  .page.active { display: block; }
+  /* ── MAIN ── */
+  .main { max-width: 480px; margin: 0 auto; padding: 20px 16px 80px; }
+  .page { display:none; }
+  .page.active { display:block; }
 
-  /* TODAY CARD */
-  .day-hero {
-    background: linear-gradient(135deg, var(--card), #1e1e32);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .day-hero::before {
-    content: '';
-    position: absolute; top: -30px; right: -30px;
-    width: 120px; height: 120px;
-    background: radial-gradient(circle, rgba(240,255,64,0.08), transparent);
-    border-radius: 50%;
-  }
-  .day-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--muted); }
-  .day-name { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--accent); line-height: 1; }
-  .day-focus { font-size: 14px; color: var(--accent2); margin-top: 4px; }
-  .progress-bar-wrap { margin-top: 16px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .progress-bar {
-    height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 3px; transition: width .5s cubic-bezier(.4,0,.2,1);
-  }
-  .checkin-btn {
-    width: 100%; margin-top: 16px;
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: transform .1s, opacity .2s;
-  }
-  .checkin-btn:active { transform: scale(0.97); }
-  .checkin-btn:disabled { opacity: 0.4; cursor: default; }
-  .checkin-btn.done { background: var(--accent2); }
-  .rest-btn {
-    width: 100%; margin-top: 8px;
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px;
-    font-family: 'Prompt', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .rest-btn:hover { color: var(--text); border-color: var(--muted); }
+  /* ── STATS ROW ── */
+  .stats-row { display: flex; gap: 10px; margin-bottom: 18px; }
+  .stat-card-home { flex: 1; border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .stat-card-home.s-streak { background: linear-gradient(135deg,#FF6B35,#ff8c42); }
+  .stat-card-home.s-plain { background: #1a1a2e; border: 1px solid #2a2a3e; }
+  .stat-val { font-size: 28px; font-weight: 900; font-family:'Bebas Neue',sans-serif; }
+  .stat-lbl { font-size: 10px; opacity: 0.7; letter-spacing: 1px; margin-top:2px; }
 
-  /* EXERCISE LIST */
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin: 16px 0 10px;
-  }
-  .exercise-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    transition: border-color .2s;
-  }
-  .exercise-card.active-ex { border-color: var(--accent); }
-  .exercise-card.completed-ex { border-color: var(--accent2); opacity: 0.7; }
-  .exercise-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px;
-    cursor: pointer;
-  }
-  .ex-num {
-    width: 30px; height: 30px;
-    background: var(--border);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--muted);
-    flex-shrink: 0;
-  }
-  .exercise-card.active-ex .ex-num { background: var(--accent); color: var(--bg); }
-  .exercise-card.completed-ex .ex-num { background: var(--accent2); color: var(--bg); }
-  .ex-info { flex: 1; }
-  .ex-name { font-weight: 600; font-size: 15px; }
-  .ex-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .ex-arrow { color: var(--muted); font-size: 18px; transition: transform .2s; }
-  .exercise-card.open .ex-arrow { transform: rotate(180deg); }
+  /* ── TODAY CARD ── */
+  .today-card { background: #1a1a2e; border: 2px solid; border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; }
+  .today-bg-emoji { position: absolute; top: -16px; right: -16px; font-size: 80px; opacity: 0.07; pointer-events: none; }
+  .today-sub { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 4px; }
+  .today-title { font-size: 19px; font-weight: 800; margin-bottom: 2px; }
+  .today-meta { font-size: 12px; color: #555; margin-bottom: 12px; }
+  .today-progress-wrap { margin-bottom: 14px; }
+  .today-progress-labels { display:flex; justify-content:space-between; font-size:11px; color:#555; margin-bottom:5px; }
+  .today-progress-bar { background:#111; border-radius:99px; height:5px; overflow:hidden; }
+  .today-progress-fill { height:100%; border-radius:99px; transition:width .5s; }
+  .big-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; cursor: pointer; font-size: 15px; font-weight: 900; font-family: inherit; transition:opacity .2s; }
+  .big-btn:disabled { opacity:0.4; cursor:default; }
+  .big-btn.done-btn { background: #2a2a3e; color: #888; cursor: default; }
+  .rest-tip { background: #1a1a2e; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 11px; color: #666; display: flex; gap: 8px; }
 
-  /* SETS */
-  .sets-panel { display: none; padding: 0 14px 14px; }
-  .exercise-card.open .sets-panel { display: block; }
-  .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; margin-bottom: 12px; }
-  .set-btn {
-    background: var(--border);
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .15s;
-    position: relative;
-  }
-  .set-btn .set-label { font-size: 11px; color: var(--muted); }
-  .set-btn .set-reps { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text); }
-  .set-btn.done-set { background: rgba(64,255,176,0.12); border-color: var(--accent2); }
-  .set-btn.done-set .set-reps { color: var(--accent2); }
-  .set-btn.active-set { border-color: var(--accent); background: rgba(240,255,64,0.08); }
-  .set-btn.active-set .set-reps { color: var(--accent); }
-  .set-btn .check-icon { position: absolute; top: 4px; right: 4px; font-size: 10px; display: none; }
-  .set-btn.done-set .check-icon { display: block; }
-  .timer-row {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-  .timer-icon { font-size: 18px; }
-  .timer-label { flex: 1; color: var(--muted); }
-  .timer-countdown {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    color: var(--accent);
-    min-width: 48px;
-    text-align: right;
-  }
-  .timer-countdown.warning { color: var(--accent3); }
-  .start-timer-btn {
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 1px;
-    cursor: pointer;
-  }
-  .start-timer-btn.running { background: var(--accent3); }
-  .start-timer-btn.paused { background: var(--accent2); }
+  /* ── BADGE PROGRESS ── */
+  .badge-progress { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a3e; }
+  .badge-emoji-big { font-size: 34px; }
+  .badge-info { flex: 1; }
+  .badge-sub-lbl { font-size: 11px; color: #666; }
+  .badge-title-lbl { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .badge-bar { background: #111; border-radius: 99px; height: 5px; overflow: hidden; }
+  .badge-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#FF6B35,#FFE66D); transition: width 0.5s; }
+  .badge-count-lbl { font-size: 10px; color: #555; margin-top: 3px; }
+  .badges-section { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; border: 1px solid #2a2a3e; margin-bottom:14px; }
+  .section-label { font-size: 10px; color: #555; letter-spacing: 3px; margin-bottom: 10px; }
+  .badges-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge-item { background: #111; border-radius: 10px; padding: 8px 10px; text-align: center; }
+  .badge-item-emoji { font-size: 26px; }
+  .badge-item-lbl { font-size: 10px; color: #666; margin-top: 2px; }
 
-  /* TIMER OVERLAY */
-  .timer-overlay {
-    display: none;
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.92);
-    flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 24px;
-  }
-  .timer-overlay.show { display: flex; }
-  .timer-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--muted); }
-  .timer-big {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 96px;
-    line-height: 1;
-    color: var(--accent);
-    transition: color .3s;
-  }
-  .timer-big.warning { color: var(--accent3); }
-  .timer-subtitle { font-size: 14px; color: var(--muted); text-align: center; }
-  .timer-ring {
-    position: relative;
-    width: 200px; height: 200px;
-  }
-  .timer-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
-  .timer-ring-text {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
-  circle.bg { fill: none; stroke: var(--border); stroke-width: 6; }
-  circle.fg { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .5s linear, stroke .3s; }
-  circle.fg.warning { stroke: var(--accent3); }
-  .timer-actions { display: flex; gap: 12px; }
-  .timer-skip-btn, .timer-stop-btn {
-    border: none; border-radius: 12px;
-    padding: 12px 28px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px; letter-spacing: 1px;
-    cursor: pointer;
-    transition: transform .1s;
-  }
-  .timer-skip-btn:active, .timer-stop-btn:active { transform: scale(0.96); }
-  .timer-skip-btn { background: var(--accent); color: var(--bg); }
-  .timer-stop-btn { background: var(--card); color: var(--muted); border: 1px solid var(--border); }
-  .timer-type-badge {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 13px; color: var(--accent2);
-  }
+  /* ── EXERCISE CARDS (file 1) ── */
+  .ex-section-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; color:#555; margin:16px 0 10px; }
+  .exercise-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; margin-bottom:10px; overflow:hidden; transition:border-color .2s; }
+  .exercise-card.active-ex { border-color:#FF6B35; }
+  .exercise-card.completed-ex { border-color:#4ECDC4; opacity:0.75; }
+  .exercise-header { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; }
+  .ex-num-box { width:30px; height:30px; background:#2a2a3e; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:16px; color:#555; flex-shrink:0; transition:all .2s; }
+  .exercise-card.active-ex .ex-num-box { background:#FF6B35; color:#000; }
+  .exercise-card.completed-ex .ex-num-box { background:#4ECDC4; color:#000; }
+  .ex-info { flex:1; }
+  .ex-name { font-weight:700; font-size:15px; }
+  .ex-detail { font-size:11px; color:#555; margin-top:2px; }
+  .ex-arrow { color:#444; font-size:16px; transition:transform .2s; }
+  .exercise-card.open .ex-arrow { transform:rotate(180deg); }
+  .sets-panel { display:none; padding:0 14px 14px; }
+  .exercise-card.open .sets-panel { display:block; }
+  .sets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:8px; margin-bottom:12px; }
+  .set-btn { background:#111; border:2px solid #2a2a3e; border-radius:10px; padding:10px 6px; text-align:center; cursor:pointer; transition:all .15s; position:relative; }
+  .set-btn .set-lbl { font-size:10px; color:#555; }
+  .set-btn .set-reps { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#ccc; }
+  .set-btn.done-set { background:rgba(78,205,196,0.12); border-color:#4ECDC4; }
+  .set-btn.done-set .set-reps { color:#4ECDC4; }
+  .set-btn.active-set { border-color:#FF6B35; background:rgba(255,107,53,0.08); }
+  .set-btn.active-set .set-reps { color:#FF6B35; }
+  .set-btn .check-icon { position:absolute; top:3px; right:5px; font-size:9px; display:none; color:#4ECDC4; }
+  .set-btn.done-set .check-icon { display:block; }
 
-  /* CALENDAR */
-  .calendar-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 4px; margin-bottom: 16px;
-  }
-  .cal-day-header { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0; }
-  .cal-day {
-    aspect-ratio: 1;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
-    background: var(--card);
-    color: var(--muted);
-    position: relative;
-  }
-  .cal-day.today { border: 2px solid var(--accent); color: var(--accent); }
-  .cal-day.checked { background: rgba(64,255,176,0.15); color: var(--accent2); }
-  .cal-day.checked::after {
-    content: '✓';
-    position: absolute; bottom: 2px; right: 4px;
-    font-size: 9px; color: var(--accent2);
-  }
-  .cal-day.rest-day { background: rgba(96,96,160,0.1); color: var(--muted); }
-  .cal-day.empty { background: transparent; }
-  .cal-month { font-family: 'Bebas Neue', sans-serif; font-size: 20px; margin-bottom: 12px; letter-spacing: 2px; }
+  /* ── TIMER ROW inside card (file 1) ── */
+  .timer-row { display:flex; align-items:center; gap:8px; background:#111; border-radius:10px; padding:10px 12px; font-size:12px; }
+  .timer-icon { font-size:16px; }
+  .timer-label { flex:1; color:#555; }
+  .timer-countdown { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; min-width:44px; text-align:right; }
+  .timer-countdown.warning { color:#ff4060; }
+  .start-timer-btn { background:#FF6B35; color:#000; border:none; border-radius:8px; padding:5px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:1px; cursor:pointer; }
+  .start-timer-btn.running { background:#ff4060; }
 
-  /* STATS */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-  }
-  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--accent); line-height: 1; }
-  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  /* ── TIMER OVERLAY (file 1) ── */
+  .timer-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.93); flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+  .timer-overlay.show { display:flex; }
+  .timer-type-badge { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 16px; font-size:12px; color:#4ECDC4; }
+  .timer-ring { position:relative; width:200px; height:200px; }
+  .timer-ring svg { position:absolute; top:0; left:0; transform:rotate(-90deg); }
+  .timer-ring-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .timer-title-txt { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:3px; color:#555; }
+  .timer-big { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:1; color:#FF6B35; transition:color .3s; }
+  .timer-big.warning { color:#ff4060; }
+  .timer-subtitle { font-size:12px; color:#555; text-align:center; padding:0 16px; }
+  .timer-actions { display:flex; gap:12px; }
+  .timer-skip-btn { background:#FF6B35; color:#000; border:none; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
+  .timer-stop-btn { background:#1a1a2e; color:#555; border:1px solid #2a2a3e; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
+  circle.bg { fill:none; stroke:#222; stroke-width:6; }
+  circle.fg { fill:none; stroke:#FF6B35; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset .5s linear,stroke .3s; }
+  circle.fg.warning { stroke:#ff4060; }
 
-  /* STICKERS */
-  .sticker-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-  .sticker {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-size: 22px;
-    display: flex; flex-direction: column; align-items: center;
-    min-width: 70px;
-    position: relative;
-  }
-  .sticker.earned { border-color: var(--accent2); background: rgba(64,255,176,0.08); }
-  .sticker.earned::after { content: '✓'; position: absolute; top: 4px; right: 6px; font-size: 10px; color: var(--accent2); }
-  .sticker-label { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: center; }
-  .sticker.earned .sticker-label { color: var(--accent2); }
+  /* ── DONE BANNER ── */
+  .done-banner { background:linear-gradient(135deg,rgba(78,205,196,0.12),rgba(255,230,109,0.06)); border:1px solid #4ECDC4; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
+  .done-banner .done-emoji { font-size:48px; display:block; margin-bottom:8px; }
+  .done-banner h2 { font-family:'Bebas Neue',sans-serif; font-size:26px; color:#4ECDC4; letter-spacing:2px; }
+  .done-banner p { font-size:12px; color:#666; margin-top:4px; }
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--accent);
-    color: var(--bg);
-    border-radius: 20px;
-    padding: 12px 24px;
-    font-weight: 700;
-    font-size: 15px;
-    z-index: 300;
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+  /* ── CALENDAR (file 1) ── */
+  .cal-month { font-family:'Bebas Neue',sans-serif; font-size:20px; margin-bottom:12px; letter-spacing:2px; color:#FF6B35; }
+  .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
+  .cal-day-header { text-align:center; font-size:11px; color:#555; padding:4px 0; }
+  .cal-day { aspect-ratio:1; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; background:#1a1a2e; color:#444; border:1px solid #222; position:relative; }
+  .cal-day.today { border:2px solid #FF6B35; color:#FF6B35; }
+  .cal-day.checked { background:rgba(255,107,53,0.15); color:#FF6B35; border-color:rgba(255,107,53,0.4); }
+  .cal-day.checked::after { content:'✓'; position:absolute; bottom:2px; right:4px; font-size:9px; color:#FF6B35; }
+  .cal-day.rest-day { background:rgba(96,96,160,0.1); color:#444; }
+  .cal-day.empty { background:transparent; border-color:transparent; }
 
-  /* CONFETTI */
-  .confetti-piece {
-    position: fixed;
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    z-index: 400;
-    pointer-events: none;
-    animation: confetti-fall 1.5s ease-in forwards;
-  }
-  @keyframes confetti-fall {
-    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-  }
-  .points-pop {
-    position: fixed;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: var(--accent);
-    z-index: 300;
-    pointer-events: none;
-    animation: pop-up 1s ease-out forwards;
-  }
-  @keyframes pop-up {
-    0% { transform: translateY(0) scale(0.5); opacity: 0; }
-    30% { transform: translateY(-20px) scale(1.2); opacity: 1; }
-    100% { transform: translateY(-60px) scale(1); opacity: 0; }
-  }
+  /* ── STICKERS (file 1 threshold) ── */
+  .sticker-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .sticker { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:10px 14px; font-size:22px; display:flex; flex-direction:column; align-items:center; min-width:70px; position:relative; }
+  .sticker.earned { border-color:#4ECDC4; background:rgba(78,205,196,0.08); }
+  .sticker.earned::after { content:'✓'; position:absolute; top:4px; right:6px; font-size:10px; color:#4ECDC4; }
+  .sticker-label { font-size:10px; color:#555; margin-top:4px; text-align:center; }
+  .sticker.earned .sticker-label { color:#4ECDC4; }
 
-  .points-display {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    color: var(--accent);
-  }
+  /* ── STATS (file 1) ── */
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .stat-card-stats { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; padding:16px; }
+  .stat-value { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#FF6B35; line-height:1; }
+  .stat-label-stats { font-size:12px; color:#555; margin-top:4px; }
 
-  /* WORKOUT DONE BANNER */
-  .done-banner {
-    background: linear-gradient(135deg, rgba(64,255,176,0.15), rgba(240,255,64,0.08));
-    border: 1px solid var(--accent2);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 16px;
-  }
-  .done-banner .done-emoji { font-size: 48px; display: block; margin-bottom: 8px; }
-  .done-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent2); letter-spacing: 2px; }
-  .done-banner p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  /* ── SCHEDULE ── */
+  .schedule-day { margin-bottom:8px; border:1px solid #2a2a3e; border-radius:16px; overflow:hidden; background:#1a1a2e; }
+  .day-header-row { display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; }
+  .day-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .day-name-txt { font-weight:700; font-size:14px; }
+  .today-tag { font-size:9px; border-radius:4px; padding:2px 6px; letter-spacing:1px; font-weight:700; color:#000; }
+  .day-focus-txt { font-size:11px; color:#777; margin-top:1px; }
+  .day-arrow-sch { font-size:11px; color:#444; margin-left:auto; }
+  .day-body { padding:0 16px 14px; border-top:1px solid #ffffff08; display:none; }
+  .day-body.open { display:block; }
+  .sch-ex-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ffffff06; align-items:center; }
+  .sch-ex-num { font-size:11px; color:#555; margin-right:8px; }
+  .rest-info-box { margin-top:10px; padding:7px 10px; background:#ffffff07; border-radius:8px; font-size:10px; color:#555; }
+
+  /* ── TOAST ── */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#FF6B35; color:#000; border-radius:20px; padding:12px 24px; font-weight:700; font-size:14px; z-index:400; transition:transform .3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* ── CONFETTI + POINTS POP ── */
+  .confetti-piece { position:fixed; width:8px; height:8px; border-radius:2px; z-index:400; pointer-events:none; animation:confetti-fall 1.5s ease-in forwards; }
+  .points-pop { position:fixed; font-family:'Bebas Neue',sans-serif; font-size:26px; color:#FFE66D; z-index:300; pointer-events:none; animation:pop-up 1s ease-out forwards; }
+
+  /* ── CELEBRATION ── */
+  .celebration { position:fixed; inset:0; z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.88); animation:fadeIn .3s; }
+  .celeb-emoji { font-size:96px; animation:bounce .5s ease infinite alternate; }
+  .celeb-title { font-size:28px; font-weight:900; color:#FFE66D; margin-top:16px; letter-spacing:2px; }
+  .celeb-pts { font-size:15px; color:#aaa; margin-top:8px; }
+  .celeb-fires { font-size:38px; margin-top:12px; }
+  .celeb-streak { color:#FF6B35; font-weight:700; font-size:17px; margin-top:6px; }
+  .hidden { display:none !important; }
+
+  @keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes pop-up { 0%{transform:translateY(0) scale(.5);opacity:0} 30%{transform:translateY(-20px) scale(1.2);opacity:1} 100%{transform:translateY(-60px) scale(1);opacity:0} }
+  @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">PUMP LOG</div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <div class="streak-badge">🔥 <span class="streak-num" id="streakNum">0</span> days</div>
-    <div class="streak-badge">⚡ <span class="points-display" id="pointsDisplay">0</span></div>
-  </div>
+<!-- Celebration -->
+<div class="celebration hidden" id="celebration">
+  <div class="celeb-emoji" id="celebEmoji"></div>
+  <div class="celeb-title">เช็คอินสำเร็จ!</div>
+  <div class="celeb-pts" id="celebPts"></div>
+  <div class="celeb-fires" id="celebFires"></div>
+  <div class="celeb-streak" id="celebStreak"></div>
 </div>
 
-<div class="tabs" id="tabsBar">
-  <div class="tab active" onclick="switchTab('today')">วันนี้</div>
-  <div class="tab" onclick="switchTab('calendar')">ปฏิทิน</div>
-  <div class="tab" onclick="switchTab('stats')">สถิติ</div>
-</div>
-
-<!-- TODAY PAGE -->
-<div class="page active" id="page-today">
-  <div class="day-hero" id="dayHero">
-    <div class="day-label">TODAY — <span id="todayDate"></span></div>
-    <div class="day-name" id="dayName">–</div>
-    <div class="day-focus" id="dayFocus">–</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-label">
-        <span id="progressText">0 / 0 ท่า</span>
-        <span id="progressPct">0%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-    </div>
-    <button class="checkin-btn" id="masterCheckin" onclick="masterCheckinClick()">✓ CHECK IN วันนี้</button>
-    <button class="rest-btn" id="restDayBtn" onclick="markRestDay()" style="display:none">😴 วันพักผ่อน — เช็คอินวันพัก</button>
-  </div>
-
-  <div id="exerciseList"></div>
-</div>
-
-<!-- CALENDAR PAGE -->
-<div class="page" id="page-calendar">
-  <div class="cal-month" id="calMonth"></div>
-  <div class="calendar-grid" id="calGrid"></div>
-  <div class="section-title">สติกเกอร์รางวัล 🏆</div>
-  <div class="sticker-row" id="stickerRow"></div>
-</div>
-
-<!-- STATS PAGE -->
-<div class="page" id="page-stats">
-  <div class="stats-grid" id="statsGrid"></div>
-  <div class="section-title">ประวัติล่าสุด</div>
-  <div id="historyList"></div>
-</div>
-
-<!-- TIMER OVERLAY -->
+<!-- Timer Overlay -->
 <div class="timer-overlay" id="timerOverlay">
   <div class="timer-type-badge" id="timerTypeBadge">พักระหว่างเซต</div>
   <div class="timer-ring">
     <svg viewBox="0 0 200 200" width="200" height="200">
       <circle class="bg" cx="100" cy="100" r="88"/>
-      <circle class="fg" id="timerCircle" cx="100" cy="100" r="88"
-        stroke-dasharray="553" stroke-dashoffset="0"/>
+      <circle class="fg" id="timerCircle" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="0"/>
     </svg>
-    <div class="timer-ring-text">
-      <div class="timer-title" id="timerTitle">พักเซต</div>
+    <div class="timer-ring-inner">
+      <div class="timer-title-txt" id="timerTitle">พักเซต</div>
       <div class="timer-big" id="timerBig">1:00</div>
       <div class="timer-subtitle" id="timerSub"></div>
     </div>
@@ -467,217 +224,264 @@
   </div>
 </div>
 
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="brand-sub">WORKOUT TRACKER</div>
+        <div class="brand-name">💪 FitStreak</div>
+      </div>
+      <div class="header-right">
+        <div class="streak-chip">🔥 <span class="streak-chip-val" id="streakNum">0</span></div>
+        <div class="points-wrap">
+          <div class="points-label">POINTS</div>
+          <div class="points-val" id="pointsDisplay">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="switchTab('today',this)">🏠 วันนี้</button>
+      <button class="nav-btn" onclick="switchTab('calendar',this)">📅 ปฏิทิน</button>
+      <button class="nav-btn" onclick="switchTab('schedule',this)">📋 ตาราง</button>
+      <button class="nav-btn" onclick="switchTab('stats',this)">📊 สถิติ</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="page active" id="page-today"></div>
+
+  <div class="page" id="page-calendar">
+    <div class="cal-month" id="calMonth"></div>
+    <div class="calendar-grid" id="calGrid"></div>
+    <div class="ex-section-title">สติกเกอร์รางวัล 🏆</div>
+    <div class="sticker-row" id="stickerRow"></div>
+  </div>
+
+  <div class="page" id="page-schedule"></div>
+
+  <div class="page" id="page-stats">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="ex-section-title">ประวัติล่าสุด</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// DATA
-// ============================================================
 const SCHEDULE = {
-  1: { // Monday
-    name: 'จันทร์', focus: 'อก + แขน + ท้อง', isRest: false,
-    exercises: [
-      { name: 'Push Up', sets: 4, reps: '15', detail: '15 × 4 — พัก 60-90 วิ' },
-      { name: 'Dumbbell Curl', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Lateral Raise', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4 — ท้องล่าง' },
-      { name: 'Ab Wheel', sets: 4, reps: '10-15', detail: '10-15 × 4' },
-    ]
-  },
-  2: {
-    name: 'อังคาร', focus: 'ขา + หลัง + Core', isRest: false,
-    exercises: [
-      { name: 'Squat', sets: 4, reps: '20', detail: '20 × 4' },
-      { name: 'Dumbbell Row', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Shoulder Press', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Reverse Crunch', sets: 4, reps: '15', detail: '15 × 4' },
-      { name: 'Side Plank', sets: 3, reps: '30-45วิ', detail: '30-45 วิ × 3 / ข้าง', isTime: true },
-    ]
-  },
-  3: {
-    name: 'พุธ', focus: 'วันท้อง (เน้นท้องล่าง + ข้าง)', isRest: false,
-    exercises: [
-      { name: 'Ab Wheel', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4' },
-      { name: 'Oblique Crunch', sets: 3, reps: '15', detail: '15 × 3 / ข้าง' },
-      { name: 'Russian Twist', sets: 3, reps: '20', detail: '20 × 3' },
-      { name: 'Plank', sets: 3, reps: '45วิ', detail: '45 วิ × 3', isTime: true },
-    ]
-  },
-  4: {
-    name: 'พฤหัส', focus: 'พัก / คาร์ดิโอเบา', isRest: true,
-    exercises: [
-      { name: 'เดินเร็ว 20 นาที', sets: 1, reps: '20นาที', detail: 'เลือกอย่างใดอย่างหนึ่ง', isTime: true },
-      { name: 'วิ่งอยู่กับที่', sets: 1, reps: '5-10นาที', detail: '5-10 นาที', isTime: true },
-    ],
-    note: 'เลือกทำอย่างใดอย่างหนึ่งก็ได้ 🚶'
-  },
-  5: {
-    name: 'ศุกร์', focus: 'อก + ไหล่ + แขน', isRest: false,
-    exercises: [
-      { name: 'Push Up', sets: 4, reps: '15', detail: '15 × 4' },
-      { name: 'Shoulder Press', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Lateral Raise', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Dumbbell Curl', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Ab Wheel', sets: 3, reps: '10-15', detail: '10-15 × 3' },
-    ]
-  },
-  6: {
-    name: 'เสาร์', focus: 'หลัง + ขา + ท้องล่าง', isRest: false,
-    exercises: [
-      { name: 'Squat', sets: 4, reps: '20', detail: '20 × 4' },
-      { name: 'Dumbbell Row', sets: 4, reps: '12', detail: '12 × 4' },
-      { name: 'Reverse Crunch', sets: 4, reps: '15', detail: '15 × 4' },
-      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4' },
-      { name: 'Side Plank', sets: 3, reps: '45วิ', detail: '45 วิ × 3 / ข้าง', isTime: true },
-    ]
-  },
-  0: {
-    name: 'อาทิตย์', focus: 'พักเต็มที่ 💤', isRest: true,
-    exercises: [
-      { name: 'เดินเบา ๆ (ถ้าอยากทำ)', sets: 1, reps: '–', detail: 'optional' },
-      { name: 'ยืดกล้ามเนื้อ (ถ้าอยากทำ)', sets: 1, reps: '–', detail: 'optional' },
-    ],
-    note: 'วันพักเต็มที่ 😌'
-  }
+  1:{name:'จันทร์',focus:'อก + แขน + ท้อง',emoji:'💪',color:'#FF6B35',isRest:false,exercises:[
+    {name:'Push Up',sets:4,reps:'15',detail:'15 × 4 — พัก 60-90 วิ'},
+    {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Lateral Raise',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4 — ท้องล่าง'},
+    {name:'Ab Wheel',sets:4,reps:'10-15',detail:'10-15 × 4'},
+  ]},
+  2:{name:'อังคาร',focus:'ขา + หลัง + Core',emoji:'🦵',color:'#4ECDC4',isRest:false,exercises:[
+    {name:'Squat',sets:4,reps:'20',detail:'20 × 4'},
+    {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Reverse Crunch',sets:4,reps:'15',detail:'15 × 4'},
+    {name:'Side Plank',sets:3,reps:'30-45วิ',detail:'30-45 วิ × 3 / ข้าง',isTime:true},
+  ]},
+  3:{name:'พุธ',focus:'วันท้อง (เน้นท้องล่าง + ข้าง)',emoji:'🔥',color:'#FFE66D',isRest:false,exercises:[
+    {name:'Ab Wheel',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
+    {name:'Oblique Crunch',sets:3,reps:'15',detail:'15 × 3 / ข้าง'},
+    {name:'Russian Twist',sets:3,reps:'20',detail:'20 × 3'},
+    {name:'Plank',sets:3,reps:'45วิ',detail:'45 วิ × 3',isTime:true},
+  ]},
+  4:{name:'พฤหัส',focus:'พัก / คาร์ดิโอเบา',emoji:'🚶',color:'#95E1D3',isRest:true,exercises:[
+    {name:'เดินเร็ว 20 นาที',sets:1,reps:'20นาที',detail:'เลือกอย่างใดอย่างหนึ่ง',isTime:true},
+    {name:'วิ่งอยู่กับที่',sets:1,reps:'5-10นาที',detail:'5-10 นาที',isTime:true},
+  ],note:'เลือกทำอย่างใดอย่างหนึ่งก็ได้ 🚶'},
+  5:{name:'ศุกร์',focus:'อก + ไหล่ + แขน',emoji:'🏋️',color:'#F38181',isRest:false,exercises:[
+    {name:'Push Up',sets:4,reps:'15',detail:'15 × 4'},
+    {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Lateral Raise',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Ab Wheel',sets:3,reps:'10-15',detail:'10-15 × 3'},
+  ]},
+  6:{name:'เสาร์',focus:'หลัง + ขา + ท้องล่าง',emoji:'⚡',color:'#A8E6CF',isRest:false,exercises:[
+    {name:'Squat',sets:4,reps:'20',detail:'20 × 4'},
+    {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
+    {name:'Reverse Crunch',sets:4,reps:'15',detail:'15 × 4'},
+    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
+    {name:'Side Plank',sets:3,reps:'45วิ',detail:'45 วิ × 3 / ข้าง',isTime:true},
+  ]},
+  0:{name:'อาทิตย์',focus:'พักเต็มที่ 💤',emoji:'😴',color:'#C3A6FF',isRest:true,exercises:[
+    {name:'เดินเบา ๆ (ถ้าอยากทำ)',sets:1,reps:'–',detail:'optional'},
+    {name:'ยืดกล้ามเนื้อ (ถ้าอยากทำ)',sets:1,reps:'–',detail:'optional'},
+  ],note:'วันพักเต็มที่ 😌'},
 };
 
-const STICKERS = [
-  { emoji: '🌱', label: 'เริ่มต้น', threshold: 1 },
-  { emoji: '🔥', label: '3 วัน', threshold: 3 },
-  { emoji: '⚡', label: '7 วัน', threshold: 7 },
-  { emoji: '💪', label: '14 วัน', threshold: 14 },
-  { emoji: '🏅', label: '21 วัน', threshold: 21 },
-  { emoji: '🥇', label: '30 วัน', threshold: 30 },
-  { emoji: '🚀', label: '50 วัน', threshold: 50 },
-  { emoji: '👑', label: '100 วัน', threshold: 100 },
+const STICKERS=[
+  {emoji:'🌱',label:'เริ่มต้น',threshold:1},
+  {emoji:'🔥',label:'3 วัน',threshold:3},
+  {emoji:'⚡',label:'7 วัน',threshold:7},
+  {emoji:'💪',label:'14 วัน',threshold:14},
+  {emoji:'🏅',label:'21 วัน',threshold:21},
+  {emoji:'🥇',label:'30 วัน',threshold:30},
+  {emoji:'🚀',label:'50 วัน',threshold:50},
+  {emoji:'👑',label:'100 วัน',threshold:100},
 ];
 
-// ============================================================
-// STATE
-// ============================================================
-function loadState() {
-  try { return JSON.parse(localStorage.getItem('pumplog_v2') || '{}'); } catch(e) { return {}; }
-}
-function saveState() { localStorage.setItem('pumplog_v2', JSON.stringify(state)); }
+const STREAK_BADGES=[
+  {days:3,badge:'🥉',label:'3 วันติด!'},{days:7,badge:'🥈',label:'1 สัปดาห์!'},
+  {days:14,badge:'🥇',label:'2 สัปดาห์!'},{days:30,badge:'🏆',label:'1 เดือน!'},
+  {days:60,badge:'👑',label:'2 เดือน!'},{days:100,badge:'💎',label:'100 วัน!'},
+];
 
-let state = loadState();
-if (!state.checkins) state.checkins = {}; // date -> { done, points, sets: {exIdx: [bool]} }
-if (!state.totalPoints) state.totalPoints = 0;
+const TIMER_SET=60, TIMER_EX=90;
 
-// ============================================================
-// TIMER STATE
-// ============================================================
-let timer = { id: null, seconds: 0, total: 0, onDone: null, type: '', label: '' };
-const TIMER_SET = 60;    // set rest: 1 min
-const TIMER_EX  = 90;   // exercise rest: 1.5 min
+// ── State ──
+function loadState(){try{return JSON.parse(localStorage.getItem('fitstreak_v2')||'{}');}catch{return {};}}
+function saveState(){localStorage.setItem('fitstreak_v2',JSON.stringify(state));}
+let state=loadState();
+if(!state.checkins) state.checkins={};
+if(!state.totalPoints) state.totalPoints=0;
 
-// ============================================================
-// HELPERS
-// ============================================================
-function todayKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function todayDow() { return new Date().getDay(); }
-function getSchedule() { return SCHEDULE[todayDow()]; }
-function getCheckin(key) { return state.checkins[key] || { done: false, points: 0, sets: {} }; }
-
-function streak() {
-  let count = 0, d = new Date();
-  while (true) {
-    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    if (state.checkins[k] && state.checkins[k].done) { count++; d.setDate(d.getDate()-1); }
-    else break;
+// ── Helpers ──
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function todayDow(){return new Date().getDay();}
+function getSchedule(){return SCHEDULE[todayDow()];}
+function getCheckin(key){if(!state.checkins[key])state.checkins[key]={done:false,points:0,sets:{}};return state.checkins[key];}
+function streak(){
+  let count=0;const d=new Date();
+  while(true){
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(state.checkins[k]&&state.checkins[k].done){count++;d.setDate(d.getDate()-1);}else break;
   }
   return count;
 }
+function totalCheckins(){return Object.values(state.checkins).filter(v=>v.done).length;}
+function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${m}:${String(sec).padStart(2,'0')}`;}
+function vibrate(){if(navigator.vibrate)navigator.vibrate([200,100,200]);}
 
-function totalCheckins() { return Object.values(state.checkins).filter(v => v.done).length; }
+// ── Timer ──
+let timer={id:null,seconds:0,total:0,onDone:null,type:'',label:''};
 
-// ============================================================
-// RENDER TODAY
-// ============================================================
-function renderToday() {
-  const dow = todayDow();
-  const sched = SCHEDULE[dow];
-  const key = todayKey();
-  const checkin = getCheckin(key);
-  const d = new Date();
-
-  document.getElementById('todayDate').textContent =
-    d.toLocaleDateString('th-TH', { weekday:'short', day:'numeric', month:'short' });
-  document.getElementById('dayName').textContent = sched.name;
-  document.getElementById('dayFocus').textContent = sched.focus;
-
-  // progress
-  const exs = sched.exercises;
-  const setsInfo = checkin.sets || {};
-  let totalSets = 0, doneSets = 0;
-  exs.forEach((ex, i) => {
-    totalSets += ex.sets;
-    const doneArr = setsInfo[i] || [];
-    doneSets += doneArr.filter(Boolean).length;
-  });
-  const pct = totalSets ? Math.round(doneSets/totalSets*100) : 0;
-  document.getElementById('progressText').textContent = `${doneSets} / ${totalSets} เซต`;
-  document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressFill').style.width = pct + '%';
-
-  // buttons
-  const masterBtn = document.getElementById('masterCheckin');
-  const restBtn = document.getElementById('restDayBtn');
-  if (checkin.done) {
-    masterBtn.textContent = '✓ เช็คอินแล้ววันนี้!';
-    masterBtn.classList.add('done');
-    masterBtn.disabled = true;
-    restBtn.style.display = 'none';
-  } else {
-    masterBtn.disabled = pct < 100 && !sched.isRest;
-    masterBtn.classList.remove('done');
-    masterBtn.textContent = pct === 100 ? '🎉 เช็คอิน!' : '✓ CHECK IN วันนี้';
-    if (sched.isRest) {
-      restBtn.style.display = 'block';
-      masterBtn.style.display = 'none';
-    } else {
-      restBtn.style.display = 'none';
-      masterBtn.style.display = 'block';
+function startTimerOverlay(seconds,type,subtitle,onDone){
+  if(timer.id)clearInterval(timer.id);
+  timer={id:null,seconds,total:seconds,onDone,type,label:subtitle};
+  document.getElementById('timerTypeBadge').textContent=type;
+  document.getElementById('timerTitle').textContent=type;
+  document.getElementById('timerSub').textContent=subtitle;
+  document.getElementById('timerOverlay').classList.add('show');
+  updateTimerDisplay();
+  timer.id=setInterval(()=>{
+    timer.seconds--;
+    updateTimerDisplay();
+    if(timer.seconds<=0){
+      clearInterval(timer.id);timer.id=null;
+      document.getElementById('timerOverlay').classList.remove('show');
+      vibrate();
+      showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
+      if(timer.onDone)timer.onDone();
     }
-  }
-
-  // exercise list
-  const list = document.getElementById('exerciseList');
-  if (sched.isRest && !checkin.done) {
-    list.innerHTML = `<div class="done-banner">
-      <span class="done-emoji">${dow === 0 ? '🛋️' : '🚶'}</span>
-      <h2>${sched.name === 'พฤหัส' ? 'วันพักเบา' : 'วันพักเต็มที่'}</h2>
-      <p>${sched.note || ''}</p>
-    </div>`;
-    if (sched.note) list.innerHTML += buildExerciseList(sched, checkin, key);
-    return;
-  }
-  if (checkin.done && pct === 100) {
-    list.innerHTML = `<div class="done-banner">
-      <span class="done-emoji">🏆</span>
-      <h2>ทำได้แล้ว!</h2>
-      <p>+${checkin.points} แต้มวันนี้ 🎉</p>
-    </div>` + buildExerciseList(sched, checkin, key);
-  } else {
-    list.innerHTML = buildExerciseList(sched, checkin, key);
-  }
+  },1000);
 }
 
-function buildExerciseList(sched, checkin, key) {
-  let html = `<div class="section-title">ท่าออกกำลังกาย</div>`;
-  sched.exercises.forEach((ex, i) => {
-    const setsInfo = checkin.sets || {};
-    const doneArr = setsInfo[i] || new Array(ex.sets).fill(false);
-    const allDone = doneArr.every(Boolean);
-    const anyDone = doneArr.some(Boolean);
-    const cardClass = allDone ? 'completed-ex' : (anyDone ? 'active-ex' : '');
-    html += `<div class="exercise-card ${cardClass} ${anyDone && !allDone ? 'open' : ''}" id="exCard${i}">
+function updateTimerDisplay(){
+  const s=timer.seconds;
+  const big=document.getElementById('timerBig');
+  const circle=document.getElementById('timerCircle');
+  big.textContent=fmt(s);
+  const warn=s<=10;
+  big.classList.toggle('warning',warn);
+  circle.classList.toggle('warning',warn);
+  circle.style.strokeDashoffset=(2*Math.PI*88)*(1-timer.seconds/timer.total);
+}
+
+function stopTimer(){if(timer.id)clearInterval(timer.id);timer.id=null;document.getElementById('timerOverlay').classList.remove('show');}
+function skipTimer(){stopTimer();}
+function startSetTimer(exIdx){startTimerOverlay(TIMER_SET,'พักระหว่างเซต',`เซต ${exIdx+1} — พักให้หายใจ`,()=>{});}
+function startSetTimerAuto(){startTimerOverlay(TIMER_SET,'พักระหว่างเซต','เซตต่อไปพร้อมยัง?',()=>{});}
+function startExTimer(nextName){startTimerOverlay(TIMER_EX,'พักระหว่างท่า',`ถัดไป: ${nextName}`,()=>{});}
+
+// ── Render Today ──
+function renderToday(){
+  const dow=todayDow(),sched=SCHEDULE[dow],key=todayKey(),checkin=getCheckin(key);
+  const d=new Date(),s_=streak(),totalCI=totalCheckins(),pts=state.totalPoints||0;
+  const setsInfo=checkin.sets||{};
+  let totalSets=0,doneSets=0;
+  sched.exercises.forEach((ex,i)=>{totalSets+=ex.sets;doneSets+=(setsInfo[i]||[]).filter(Boolean).length;});
+  const pct=totalSets?Math.round(doneSets/totalSets*100):0;
+  const nextBadge=STREAK_BADGES.find(b=>s_<b.days);
+  const earnedBadges=STREAK_BADGES.filter(b=>s_>=b.days);
+
+  let h=`<div class="stats-row">
+    <div class="stat-card-home s-streak"><div class="stat-val">${s_}</div><div class="stat-lbl">🔥 STREAK</div></div>
+    <div class="stat-card-home s-plain"><div class="stat-val">${totalCI}</div><div class="stat-lbl">✅ เช็คอิน</div></div>
+    <div class="stat-card-home s-plain"><div class="stat-val">${pts}</div><div class="stat-lbl">⭐ POINTS</div></div>
+  </div>
+  <div class="today-card" style="border-color:${sched.color}44">
+    <div class="today-bg-emoji">${sched.emoji}</div>
+    <div class="today-sub">วันนี้ — ${sched.name} | ${d.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</div>
+    <div class="today-title">${sched.emoji} ${sched.focus}</div>
+    <div class="today-meta">${sched.isRest?'วันพัก 🌿':`${sched.exercises.length} ท่า · ${sched.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
+
+  if(!sched.isRest){
+    h+=`<div class="today-progress-wrap">
+      <div class="today-progress-labels"><span>${doneSets} / ${totalSets} เซต</span><span>${pct}%</span></div>
+      <div class="today-progress-bar"><div class="today-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${sched.color},${sched.color}88)"></div></div>
+    </div>`;
+  }
+
+  if(checkin.done){
+    h+=`<button class="big-btn done-btn">✓ เช็คอินแล้ววันนี้!</button>`;
+  } else if(sched.isRest){
+    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000" onclick="markRestDay()">😌 เช็คอินวันพัก (+5 แต้ม)</button>`;
+  } else {
+    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000;box-shadow:0 4px 20px ${sched.color}44" ${pct>=100?'':'disabled'} onclick="masterCheckinClick()">${pct>=100?'🎉 เช็คอิน!':'✓ CHECK IN วันนี้'}</button>`;
+  }
+  h+=`</div>`;
+
+  if(!sched.isRest) h+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
+
+  // done/rest banners
+  if(sched.isRest&&!checkin.done){
+    h+=`<div class="done-banner"><span class="done-emoji">${dow===0?'🛋️':'🚶'}</span><h2>${sched.name==='พฤหัส'?'วันพักเบา':'วันพักเต็มที่'}</h2><p>${sched.note||''}</p></div>`;
+  } else if(checkin.done&&pct>=100){
+    h+=`<div class="done-banner"><span class="done-emoji">🏆</span><h2>ทำได้แล้ว!</h2><p>+${checkin.points||0} แต้มวันนี้ 🎉</p></div>`;
+  }
+
+  h+=buildExerciseList(sched,checkin);
+
+  if(nextBadge) h+=`<div class="badge-progress">
+    <div class="badge-emoji-big">${nextBadge.badge}</div>
+    <div class="badge-info">
+      <div class="badge-sub-lbl">เป้าหมายถัดไป</div>
+      <div class="badge-title-lbl">${nextBadge.label}</div>
+      <div class="badge-bar"><div class="badge-bar-fill" style="width:${Math.min((s_/nextBadge.days)*100,100)}%"></div></div>
+      <div class="badge-count-lbl">${s_} / ${nextBadge.days} วัน</div>
+    </div>
+  </div>`;
+
+  if(earnedBadges.length){
+    h+=`<div class="badges-section"><div class="section-label">🏅 BADGES EARNED</div><div class="badges-grid">`;
+    earnedBadges.forEach(b=>{h+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`;});
+    h+=`</div></div>`;
+  }
+
+  document.getElementById('page-today').innerHTML=h;
+  updateHeaderStats();
+}
+
+// ── Build Exercise List (file 1) ──
+function buildExerciseList(sched,checkin){
+  const setsInfo=checkin.sets||{};
+  let html=`<div class="ex-section-title">ท่าออกกำลังกายวันนี้</div>`;
+  sched.exercises.forEach((ex,i)=>{
+    const doneArr=setsInfo[i]||new Array(ex.sets).fill(false);
+    const allDone=doneArr.every(Boolean);
+    const anyDone=doneArr.some(Boolean);
+    const cardClass=allDone?'completed-ex':(anyDone?'active-ex':'');
+    html+=`<div class="exercise-card ${cardClass} ${anyDone&&!allDone?'open':''}" id="exCard${i}">
       <div class="exercise-header" onclick="toggleExCard(${i})">
-        <div class="ex-num">${allDone ? '✓' : i+1}</div>
+        <div class="ex-num-box">${allDone?'✓':i+1}</div>
         <div class="ex-info">
           <div class="ex-name">${ex.name}</div>
           <div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div>
@@ -686,16 +490,16 @@ function buildExerciseList(sched, checkin, key) {
       </div>
       <div class="sets-panel" id="setsPanel${i}">
         <div class="sets-grid">`;
-    for (let s = 0; s < ex.sets; s++) {
-      const done = doneArr[s];
-      const isNext = !done && (s === 0 || doneArr[s-1]);
-      html += `<div class="set-btn ${done ? 'done-set' : (isNext ? 'active-set' : '')}" onclick="toggleSet(${i},${s})">
+    for(let s=0;s<ex.sets;s++){
+      const done=doneArr[s];
+      const isNext=!done&&(s===0||doneArr[s-1]);
+      html+=`<div class="set-btn ${done?'done-set':(isNext?'active-set':'')}" onclick="toggleSet(${i},${s})">
         <span class="check-icon">✓</span>
-        <div class="set-label">เซต ${s+1}</div>
+        <div class="set-lbl">เซต ${s+1}</div>
         <div class="set-reps">${ex.reps}</div>
       </div>`;
     }
-    html += `</div>
+    html+=`</div>
         <div class="timer-row" id="timerRow${i}">
           <span class="timer-icon">⏱</span>
           <span class="timer-label" id="timerLabel${i}">พักระหว่างเซต 60 วิ</span>
@@ -708,311 +512,181 @@ function buildExerciseList(sched, checkin, key) {
   return html;
 }
 
-function toggleExCard(i) {
-  const card = document.getElementById(`exCard${i}`);
-  card.classList.toggle('open');
-}
+function toggleExCard(i){document.getElementById(`exCard${i}`).classList.toggle('open');}
 
-// ============================================================
-// SET LOGIC
-// ============================================================
-function toggleSet(exIdx, setIdx) {
-  const key = todayKey();
-  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
-  const checkin = state.checkins[key];
-  if (!checkin.sets) checkin.sets = {};
-  const sched = getSchedule();
-  const ex = sched.exercises[exIdx];
-  if (!checkin.sets[exIdx]) checkin.sets[exIdx] = new Array(ex.sets).fill(false);
-
-  const wasTrue = checkin.sets[exIdx][setIdx];
-  checkin.sets[exIdx][setIdx] = !wasTrue;
-
-  const justCompleted = !wasTrue;
-  if (justCompleted) {
-    // add points
-    checkin.points = (checkin.points || 0) + 5;
-    state.totalPoints = (state.totalPoints || 0) + 5;
+// ── Set Logic (file 1) ──
+function toggleSet(exIdx,setIdx){
+  const key=todayKey(),checkin=getCheckin(key),sched=getSchedule(),ex=sched.exercises[exIdx];
+  if(!checkin.sets[exIdx])checkin.sets[exIdx]=new Array(ex.sets).fill(false);
+  const wasTrue=checkin.sets[exIdx][setIdx];
+  checkin.sets[exIdx][setIdx]=!wasTrue;
+  if(!wasTrue){
+    checkin.points=(checkin.points||0)+5;
+    state.totalPoints=(state.totalPoints||0)+5;
     showPointsPop('+5');
-    // check if all sets of this exercise done
-    const allSetsDone = checkin.sets[exIdx].every(Boolean);
-    if (allSetsDone) {
-      // check if all exercises done
-      const allExDone = sched.exercises.every((e, i) => {
-        const arr = checkin.sets[i] || [];
-        return arr.filter(Boolean).length >= e.sets;
-      });
-      if (allExDone) {
-        checkin.points += 20;
-        state.totalPoints += 20;
-        // auto check-in
-        checkin.done = true;
-        saveState();
-        updateUI();
-        setTimeout(() => {
-          launchConfetti();
-          showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');
-        }, 300);
+    const allSetsDone=checkin.sets[exIdx].every(Boolean);
+    if(allSetsDone){
+      const allExDone=sched.exercises.every((e,i)=>(checkin.sets[i]||[]).filter(Boolean).length>=e.sets);
+      if(allExDone){
+        checkin.points+=20;state.totalPoints+=20;checkin.done=true;
+        saveState();updateUI();
+        setTimeout(()=>{launchConfetti();showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');showCelebration(checkin.points,'done');},300);
         return;
       } else {
-        // start exercise rest timer
-        saveState();
-        updateUI();
-        setTimeout(() => {
-          const nextEx = findNextExercise(exIdx, sched, checkin);
-          startExTimer(nextEx ? nextEx.name : 'ท่าถัดไป');
-        }, 100);
+        saveState();updateUI();
+        setTimeout(()=>{
+          const nxt=findNextExercise(exIdx,sched,checkin);
+          startExTimer(nxt?nxt.name:'ท่าถัดไป');
+        },100);
         return;
       }
     } else {
-      // start set rest timer
-      saveState();
-      updateUI();
-      setTimeout(() => startSetTimerAuto(exIdx), 100);
+      saveState();updateUI();
+      setTimeout(()=>startSetTimerAuto(),100);
       return;
     }
   }
-
-  saveState();
-  updateUI();
+  saveState();updateUI();
 }
 
-function findNextExercise(currentIdx, sched, checkin) {
-  for (let i = currentIdx + 1; i < sched.exercises.length; i++) {
-    const arr = checkin.sets[i] || [];
-    if (arr.filter(Boolean).length < sched.exercises[i].sets) return sched.exercises[i];
+function findNextExercise(idx,sched,checkin){
+  for(let i=idx+1;i<sched.exercises.length;i++){
+    if((checkin.sets[i]||[]).filter(Boolean).length<sched.exercises[i].sets)return sched.exercises[i];
   }
   return null;
 }
 
-// ============================================================
-// TIMERS
-// ============================================================
-function startSetTimer(exIdx) {
-  startTimerOverlay(TIMER_SET, 'พักระหว่างเซต', `เซต ${exIdx+1} — พักให้หายใจ`, () => {});
+// ── Check-in (file 1) ──
+function masterCheckinClick(){
+  const key=todayKey(),checkin=getCheckin(key);
+  checkin.done=true;checkin.points=(checkin.points||0)+10;state.totalPoints=(state.totalPoints||0)+10;
+  saveState();updateUI();launchConfetti();showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');showCelebration(checkin.points,'workout');
 }
-function startSetTimerAuto(exIdx) {
-  startTimerOverlay(TIMER_SET, 'พักระหว่างเซต', 'เซตต่อไปพร้อมยัง?', () => {});
+function markRestDay(){
+  const key=todayKey(),checkin=getCheckin(key);
+  checkin.done=true;checkin.points=(checkin.points||0)+5;checkin.isRest=true;state.totalPoints=(state.totalPoints||0)+5;
+  saveState();updateUI();showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');showCelebration(checkin.points,'rest');
 }
-function startExTimer(nextName) {
-  startTimerOverlay(TIMER_EX, 'พักระหว่างท่า', `ถัดไป: ${nextName}`, () => {});
-}
-
-function startTimerOverlay(seconds, type, subtitle, onDone) {
-  if (timer.id) clearInterval(timer.id);
-  timer = { id: null, seconds, total: seconds, onDone, type, label: subtitle };
-  document.getElementById('timerTypeBadge').textContent = type;
-  document.getElementById('timerTitle').textContent = type;
-  document.getElementById('timerSub').textContent = subtitle;
-  const overlay = document.getElementById('timerOverlay');
-  overlay.classList.add('show');
-  updateTimerDisplay();
-  timer.id = setInterval(() => {
-    timer.seconds--;
-    updateTimerDisplay();
-    if (timer.seconds <= 0) {
-      clearInterval(timer.id); timer.id = null;
-      overlay.classList.remove('show');
-      vibrate();
-      showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
-      if (timer.onDone) timer.onDone();
-    }
-  }, 1000);
+function showCelebration(pts,type){
+  const s=streak(),el=document.getElementById('celebration');
+  const emojis=['🌟','🔥','💎','⚡','🏆','💪','🎯','🚀'];
+  document.getElementById('celebEmoji').textContent=type==='rest'?'😌':(type==='done'?'🏆':emojis[Math.floor(Math.random()*emojis.length)]);
+  document.getElementById('celebPts').textContent=`+${pts} แต้ม 🎯`;
+  document.getElementById('celebFires').textContent='🔥'.repeat(Math.min(s,7));
+  document.getElementById('celebStreak').textContent=`Streak: ${s} วัน!`;
+  el.classList.remove('hidden');
+  setTimeout(()=>el.classList.add('hidden'),3000);
 }
 
-function updateTimerDisplay() {
-  const s = timer.seconds;
-  const min = Math.floor(s/60);
-  const sec = String(s%60).padStart(2,'0');
-  const txt = `${min}:${sec}`;
-  const big = document.getElementById('timerBig');
-  const circle = document.getElementById('timerCircle');
-  big.textContent = txt;
-  const warn = s <= 10;
-  big.classList.toggle('warning', warn);
-  circle.classList.toggle('warning', warn);
-  const circ = 2 * Math.PI * 88;
-  const offset = circ * (1 - timer.seconds / timer.total);
-  circle.style.strokeDashoffset = offset;
-}
-
-function stopTimer() {
-  if (timer.id) clearInterval(timer.id); timer.id = null;
-  document.getElementById('timerOverlay').classList.remove('show');
-}
-function skipTimer() { stopTimer(); }
-
-function vibrate() { if (navigator.vibrate) navigator.vibrate([200,100,200]); }
-
-// ============================================================
-// CHECK IN
-// ============================================================
-function masterCheckinClick() {
-  const key = todayKey();
-  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
-  state.checkins[key].done = true;
-  state.checkins[key].points = (state.checkins[key].points || 0) + 10;
-  state.totalPoints = (state.totalPoints || 0) + 10;
-  saveState();
-  updateUI();
-  launchConfetti();
-  showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');
-}
-
-function markRestDay() {
-  const key = todayKey();
-  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
-  state.checkins[key].done = true;
-  state.checkins[key].points = (state.checkins[key].points || 0) + 5;
-  state.checkins[key].isRest = true;
-  state.totalPoints = (state.totalPoints || 0) + 5;
-  saveState();
-  updateUI();
-  showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');
-}
-
-// ============================================================
-// CALENDAR
-// ============================================================
-function renderCalendar() {
-  const now = new Date();
-  const year = now.getFullYear(), month = now.getMonth();
-  document.getElementById('calMonth').textContent =
-    now.toLocaleDateString('th-TH', { month:'long', year:'numeric' });
-
-  const headers = ['อา','จ','อ','พ','พฤ','ศ','ส'];
-  let html = headers.map(h => `<div class="cal-day-header">${h}</div>`).join('');
-
-  const firstDay = new Date(year, month, 1).getDay();
-  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
-  const days = new Date(year, month+1, 0).getDate();
-  for (let d = 1; d <= days; d++) {
-    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const ck = state.checkins[key];
-    const dow = new Date(year, month, d).getDay();
-    const isToday = d === now.getDate();
-    const isRest = SCHEDULE[dow].isRest;
-    let cls = '';
-    if (isToday) cls += ' today';
-    if (ck && ck.done) cls += ' checked';
-    else if (isRest) cls += ' rest-day';
-    html += `<div class="cal-day${cls}">${d}</div>`;
+// ── Calendar (file 1) ──
+function renderCalendar(){
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth();
+  document.getElementById('calMonth').textContent=now.toLocaleDateString('th-TH',{month:'long',year:'numeric'});
+  const headers=['อา','จ','อ','พ','พฤ','ศ','ส'];
+  let html=headers.map(h=>`<div class="cal-day-header">${h}</div>`).join('');
+  const firstDay=new Date(year,month,1).getDay();
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
+  const days=new Date(year,month+1,0).getDate();
+  for(let d=1;d<=days;d++){
+    const key=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const ck=state.checkins[key],dow=new Date(year,month,d).getDay(),isToday=d===now.getDate(),isRest=SCHEDULE[dow].isRest;
+    let cls='';
+    if(isToday)cls+=' today';
+    if(ck&&ck.done)cls+=' checked';
+    else if(isRest)cls+=' rest-day';
+    html+=`<div class="cal-day${cls}">${d}</div>`;
   }
-  document.getElementById('calGrid').innerHTML = html;
-
-  // stickers
-  const total = totalCheckins();
-  let sHtml = '';
-  STICKERS.forEach(s => {
-    const earned = total >= s.threshold;
-    sHtml += `<div class="sticker ${earned ? 'earned' : ''}">
-      <span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span>
-      <div class="sticker-label">${s.label}</div>
-    </div>`;
+  document.getElementById('calGrid').innerHTML=html;
+  const total=totalCheckins();
+  let sHtml='';
+  STICKERS.forEach(s=>{
+    const earned=total>=s.threshold;
+    sHtml+=`<div class="sticker ${earned?'earned':''}"><span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span><div class="sticker-label">${s.label}</div></div>`;
   });
-  document.getElementById('stickerRow').innerHTML = sHtml;
+  document.getElementById('stickerRow').innerHTML=sHtml;
 }
 
-// ============================================================
-// STATS
-// ============================================================
-function renderStats() {
-  const total = totalCheckins();
-  const s = streak();
-  const pts = state.totalPoints || 0;
-  const weeks = Math.floor(total / 5);
-  const g = document.getElementById('statsGrid');
-  g.innerHTML = `
-    <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">🗓 วันที่เช็คอิน</div></div>
-    <div class="stat-card"><div class="stat-value">${s}</div><div class="stat-label">🔥 สตรีคปัจจุบัน</div></div>
-    <div class="stat-card"><div class="stat-value">${pts}</div><div class="stat-label">⚡ แต้มสะสม</div></div>
-    <div class="stat-card"><div class="stat-value">${weeks}</div><div class="stat-label">📅 สัปดาห์ที่ครบ</div></div>
-  `;
-
-  // history
-  const entries = Object.entries(state.checkins)
-    .filter(([,v]) => v.done)
-    .sort((a,b) => b[0].localeCompare(a[0]))
-    .slice(0, 14);
-  let hHtml = '';
-  entries.forEach(([k, v]) => {
-    const dd = new Date(k + 'T00:00:00');
-    const dow = dd.getDay();
-    const sched = SCHEDULE[dow];
-    hHtml += `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:12px;margin-bottom:8px;">
-      <div style="font-size:28px">${v.isRest ? '😴' : '✅'}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div>
-        <div style="font-size:12px;color:var(--muted)">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div>
+// ── Schedule ──
+function renderSchedule(){
+  const el=document.getElementById('page-schedule'),dow=todayDow();
+  let h=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
+  [1,2,3,4,5,6,0].forEach(d=>{
+    const w=SCHEDULE[d],isToday=d===dow;
+    h+=`<div class="schedule-day" style="${isToday?`border-color:${w.color}`:''}">
+      <div class="day-header-row" onclick="toggleDay(${d})">
+        <div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div>
+        <div><div style="display:flex;align-items:center;gap:8px"><span class="day-name-txt">${w.name}</span>${isToday?`<span class="today-tag" style="background:${w.color}">TODAY</span>`:''}</div><div class="day-focus-txt">${w.focus}</div></div>
+        <div class="day-arrow-sch" id="sch-arrow-${d}">▼</div>
       </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent)">+${v.points||0}</div>
+      <div class="day-body" id="daybody-${d}">`;
+    w.exercises.forEach((ex,i)=>{h+=`<div class="sch-ex-row"><div><span class="sch-ex-num">${i+1}.</span><span style="font-size:13px;color:#ddd">${ex.name}</span></div><div><span style="font-size:12px;font-weight:700;color:${w.color}">${ex.sets} เซต</span><span style="font-size:11px;color:#555;margin-left:6px">× ${ex.reps}</span></div></div>`;});
+    h+=`<div class="rest-info-box">⏱ พักเซต 60 วิ · พักท่า 90 วิ</div></div></div>`;
+  });
+  el.innerHTML=h;
+  const tb=document.getElementById(`daybody-${dow}`),ta=document.getElementById(`sch-arrow-${dow}`);
+  if(tb){tb.classList.add('open');if(ta)ta.textContent='▲';}
+}
+function toggleDay(d){
+  const b=document.getElementById(`daybody-${d}`),a=document.getElementById(`sch-arrow-${d}`);
+  b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▲':'▼';
+}
+
+// ── Stats (file 1) ──
+function renderStats(){
+  const total=totalCheckins(),s=streak(),pts=state.totalPoints||0,weeks=Math.floor(total/5);
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-card-stats"><div class="stat-value">${total}</div><div class="stat-label-stats">🗓 วันที่เช็คอิน</div></div>
+    <div class="stat-card-stats"><div class="stat-value">${s}</div><div class="stat-label-stats">🔥 สตรีคปัจจุบัน</div></div>
+    <div class="stat-card-stats"><div class="stat-value">${pts}</div><div class="stat-label-stats">⚡ แต้มสะสม</div></div>
+    <div class="stat-card-stats"><div class="stat-value">${weeks}</div><div class="stat-label-stats">📅 สัปดาห์ที่ครบ</div></div>`;
+  const entries=Object.entries(state.checkins).filter(([,v])=>v.done).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
+  let hHtml='';
+  entries.forEach(([k,v])=>{
+    const dd=new Date(k+'T00:00:00'),dow=dd.getDay(),sched=SCHEDULE[dow];
+    hHtml+=`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:8px;">
+      <div style="font-size:28px">${v.isRest?'😴':'✅'}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div><div style="font-size:12px;color:#555">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div></div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35">+${v.points||0}</div>
     </div>`;
   });
-  document.getElementById('historyList').innerHTML = hHtml || '<div style="color:var(--muted);text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
+  document.getElementById('historyList').innerHTML=hHtml||'<div style="color:#555;text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
 }
 
-// ============================================================
-// UI UTILS
-// ============================================================
-function updateUI() {
-  document.getElementById('streakNum').textContent = streak();
-  document.getElementById('pointsDisplay').textContent = state.totalPoints || 0;
-  const active = document.querySelector('.tab.active').getAttribute('onclick').match(/\'(\w+)\'/)[1];
-  if (active === 'today') renderToday();
-  if (active === 'calendar') renderCalendar();
-  if (active === 'stats') renderStats();
+// ── UI ──
+function updateHeaderStats(){
+  document.getElementById('streakNum').textContent=streak();
+  document.getElementById('pointsDisplay').textContent=state.totalPoints||0;
 }
-
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+function updateUI(){
+  updateHeaderStats();
+  const active=document.querySelector('.page.active');
+  if(!active)return;
+  const id=active.id;
+  if(id==='page-today')    renderToday();
+  if(id==='page-calendar') renderCalendar();
+  if(id==='page-schedule') renderSchedule();
+  if(id==='page-stats')    renderStats();
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
-  if (name === 'today') renderToday();
-  if (name === 'calendar') renderCalendar();
-  if (name === 'stats') renderStats();
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='today')    renderToday();
+  if(name==='calendar') renderCalendar();
+  if(name==='schedule') renderSchedule();
+  if(name==='stats')    renderStats();
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function showPointsPop(text){const el=document.createElement('div');el.className='points-pop';el.textContent=text;el.style.left=(Math.random()*60+20)+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1100);}
+function launchConfetti(){
+  const colors=['#FF6B35','#FFE66D','#4ECDC4','#fff','#A8E6CF','#ff4060'];
+  for(let i=0;i<40;i++){const el=document.createElement('div');el.className='confetti-piece';el.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${1.2+Math.random()*.8}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),2500);}
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-function showPointsPop(text) {
-  const el = document.createElement('div');
-  el.className = 'points-pop';
-  el.textContent = text;
-  el.style.left = (Math.random() * 60 + 20) + '%';
-  el.style.top = '40%';
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1100);
-}
-
-function launchConfetti() {
-  const colors = ['#f0ff40','#40ffb0','#ff4060','#fff','#ffd700'];
-  for (let i = 0; i < 40; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.cssText = `
-      left:${Math.random()*100}%;
-      top:${Math.random()*30}%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      animation-delay:${Math.random()*0.5}s;
-      animation-duration:${1.2+Math.random()*0.8}s;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 2500);
-  }
-}
-
-// ============================================================
-// INIT
-// ============================================================
+// ── Init ──
 renderToday();
-document.getElementById('streakNum').textContent = streak();
-document.getElementById('pointsDisplay').textContent = state.totalPoints || 0;
+updateHeaderStats();
 </script>
 </body>
 </html>
