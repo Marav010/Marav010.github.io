@@ -1,557 +1,580 @@
 <!DOCTYPE html>
-
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Workout">
-<title>💪 Workout Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💪 FitStreak</title>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  :root{--bg:#0A0A0F;--surface:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.09);--text:#F0F0F5;--muted:#888;}
-  html,body{background:var(--bg);color:var(--text);font-family:'Sarabun',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;}
-  body{padding-bottom:env(safe-area-inset-bottom,20px);}
-  #bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;}
-  .app{position:relative;z-index:1;max-width:440px;margin:0 auto;}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #0A0A0F; font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; }
 
-.header{padding:48px 20px 20px;border-bottom:1px solid var(–border);}
-.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
-.header-label{font-size:11px;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
-.header-day{font-size:26px;font-weight:900;letter-spacing:-0.5px;}
-.header-theme{font-size:14px;color:var(–muted);margin-top:2px;}
-.points-box{text-align:right;}
-.points-num{font-size:30px;font-weight:900;line-height:1;background:linear-gradient(135deg,#FFE66D,#FF6B35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.points-label{font-size:11px;color:#555;letter-spacing:1px;}
-.stats{display:flex;gap:10px;margin-top:18px;}
-.stat-card{flex:1;background:var(–surface);border-radius:12px;padding:10px 12px;border:1px solid var(–border);}
-.stat-label{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.stat-value{font-size:20px;font-weight:800;}
-.stat-sub{font-size:10px;color:#444;margin-top:1px;}
+  .header { background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); padding: 20px 20px 0; border-bottom: 1px solid #222; }
+  .header-inner { max-width: 480px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .brand-sub { font-size: 10px; color: #555; letter-spacing: 3px; }
+  .brand-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+  .points-label { font-size: 10px; color: #555; letter-spacing: 2px; text-align: right; }
+  .points-val { font-size: 26px; font-weight: 900; color: #FFE66D; text-align: right; }
 
-.tabs{display:flex;padding:14px 20px 0;gap:8px;}
-.tab{flex:1;padding:9px 0;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;outline:none;background:rgba(255,255,255,0.06);color:var(–muted);}
-.tab.active{color:#0A0A0F;}
+  .nav { display: flex; border-radius: 12px 12px 0 0; overflow: hidden; }
+  .nav-btn { flex: 1; padding: 10px 0; border: none; cursor: pointer; background: transparent; color: #555; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: inherit; transition: all 0.2s; }
+  .nav-btn.active { background: #0A0A0F; color: #fff; font-weight: 700; border-radius: 8px 8px 0 0; }
 
-.today-content{padding:18px 20px 40px;}
-.checkin-btn{width:100%;padding:18px;border-radius:18px;border:none;font-size:17px;font-weight:800;letter-spacing:1px;cursor:pointer;font-family:inherit;transition:all 0.3s;margin-bottom:18px;outline:none;}
-.checkin-btn:active{transform:scale(0.97);}
-.section-label{font-size:11px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+  .main { max-width: 480px; margin: 0 auto; padding: 20px 16px 60px; }
 
-.exercise-card{background:var(–surface);border-radius:16px;border:1px solid var(–border);margin-bottom:10px;overflow:hidden;transition:border-color 0.3s,opacity 0.3s;}
-.exercise-card.ex-done{opacity:0.5;}
-.ex-header{display:flex;align-items:center;gap:12px;padding:14px 16px;}
-.ex-num{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;}
-.ex-info{flex:1;}
-.ex-name{font-weight:700;font-size:15px;}
-.ex-detail{font-size:12px;color:var(–muted);margin-top:2px;}
+  .stats-row { display: flex; gap: 10px; margin-bottom: 18px; }
+  .stat-card { flex: 1; border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .stat-card.streak { background: linear-gradient(135deg,#FF6B35,#ff8c42); }
+  .stat-card.plain { background: #1a1a2e; border: 1px solid #2a2a3e; }
+  .stat-val { font-size: 28px; font-weight: 900; }
+  .stat-lbl { font-size: 10px; opacity: 0.7; letter-spacing: 1px; }
 
-/* STOPWATCH */
-.sw-bar{display:flex;align-items:center;justify-content:space-between;padding:2px 16px 12px;gap:10px;}
-.sw-time-wrap{display:flex;align-items:baseline;gap:1px;}
-.sw-num{font-size:38px;font-weight:900;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;}
-.sw-cs{font-size:20px;font-weight:700;color:var(–muted);font-variant-numeric:tabular-nums;}
-.sw-sublabel{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:3px;}
-.sw-toggle{padding:10px 20px;border-radius:12px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;outline:none;transition:transform 0.15s;}
-.sw-toggle:active{transform:scale(0.92);}
-.sw-laps{display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 12px;}
-.sw-lap{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.06);color:var(–muted);border:1px solid rgba(255,255,255,0.08);}
-.sw-lap.lap-best{color:#4ECDC4;border-color:#4ECDC440;background:#4ECDC412;}
-.sw-lap.lap-worst{color:#FF6B9D;border-color:#FF6B9D40;background:#FF6B9D12;}
+  .today-card { background: #1a1a2e; border: 2px solid; border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; }
+  .today-bg-emoji { position: absolute; top: -16px; right: -16px; font-size: 80px; opacity: 0.07; pointer-events: none; }
+  .today-sub { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 4px; }
+  .today-title { font-size: 19px; font-weight: 800; margin-bottom: 2px; }
+  .today-meta { font-size: 12px; color: #555; margin-bottom: 18px; }
 
-.sets-row{display:flex;gap:7px;padding:0 16px 14px;}
-.set-btn{flex:1;padding:10px 4px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.1);font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;background:rgba(255,255,255,0.04);color:#555;transition:all 0.18s;outline:none;text-align:center;line-height:1.4;}
-.set-btn.set-done{color:#0A0A0F;}
-.set-btn.set-next{animation:pulseBtn 1.8s ease-in-out infinite;}
-.set-btn:disabled{cursor:default;}
-.set-btn:not(:disabled):active{transform:scale(0.9);}
-@keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 5px rgba(255,255,255,0.05)}}
+  .big-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 15px; font-weight: 900; letter-spacing: 1px; font-family: inherit; transition: transform 0.1s, opacity 0.15s; }
+  .big-btn:active { transform: scale(0.98); }
+  .big-btn.done { background: #2a2a3e; color: #888; cursor: default; }
 
-#rest-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(6,6,10,0.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);opacity:0;pointer-events:none;transition:opacity 0.3s;}
-#rest-overlay.show{opacity:1;pointer-events:all;}
-.rest-type-label{font-size:12px;color:#555;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
-.rest-context{font-size:17px;font-weight:700;margin-bottom:28px;text-align:center;line-height:1.5;}
-.ring-wrap{position:relative;width:210px;height:210px;margin-bottom:28px;}
-.ring-wrap svg{transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:9;}
-.ring-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 0.85s linear,stroke 0.5s;}
-.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.ring-time-num{font-size:56px;font-weight:900;letter-spacing:-3px;line-height:1;}
-.ring-time-sub{font-size:12px;color:#555;letter-spacing:1px;margin-top:4px;}
-.rest-skip-btn{padding:14px 44px;border-radius:50px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;color:#0A0A0F;outline:none;transition:transform 0.2s;}
-.rest-skip-btn:active{transform:scale(0.95);}
-.rest-next-info{margin-top:14px;font-size:13px;color:#555;text-align:center;}
+  .rest-tip { background: #1a1a2e; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 11px; color: #666; display: flex; gap: 8px; }
 
-.workout-done-banner{margin-bottom:18px;padding:20px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(255,230,109,0.12),rgba(255,107,53,0.12));border:1px solid rgba(255,230,109,0.25);}
-.workout-done-big{font-size:40px;margin-bottom:6px;}
-.workout-done-title{font-size:20px;font-weight:900;}
-.workout-done-sub{font-size:13px;color:var(–muted);margin-top:4px;}
+  .badge-progress { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a3e; }
+  .badge-emoji { font-size: 34px; }
+  .badge-info { flex: 1; }
+  .badge-sub { font-size: 11px; color: #666; }
+  .badge-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .progress-bar { background: #111; border-radius: 99px; height: 5px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#FF6B35,#FFE66D); transition: width 0.5s; }
+  .badge-count { font-size: 10px; color: #555; margin-top: 3px; }
 
-.calendar-content{padding:20px;}
-.cal-month{font-size:14px;font-weight:700;text-align:center;color:var(–muted);margin-bottom:16px;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-header{text-align:center;font-size:11px;color:#444;font-weight:600;padding:4px 0;}
-.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;border:1px solid var(–border);background:var(–surface);color:#444;}
-.cal-day.today-day{font-weight:800;border-width:2px;}
-.cal-day.checked{color:#fff;}
-.cal-day .sticker{font-size:9px;line-height:1;}
-.cal-legend{display:flex;gap:16px;justify-content:center;margin-top:16px;}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(–muted);}
-.legend-dot{width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);}
+  .badges-section { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; border: 1px solid #2a2a3e; }
+  .section-label { font-size: 10px; color: #555; letter-spacing: 3px; margin-bottom: 10px; }
+  .badges-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge-item { background: #111; border-radius: 10px; padding: 8px 10px; text-align: center; }
+  .badge-item-emoji { font-size: 26px; }
+  .badge-item-lbl { font-size: 10px; color: #666; margin-top: 2px; }
 
-.schedule-content{padding:20px;display:flex;flex-direction:column;gap:12px;}
-.sched-card{border-radius:16px;overflow:hidden;border:1px solid var(–border);background:rgba(255,255,255,0.03);}
-.sched-header{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(–border);}
-.sched-emoji{font-size:20px;}
-.sched-day{font-weight:800;font-size:14px;}
-.sched-theme{font-size:12px;color:var(–muted);}
-.today-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:1px;color:#0A0A0F;}
-.sched-exercises{padding:8px 16px 12px;}
-.sched-ex{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;}
-.sched-ex:last-child{border-bottom:none;}
-.sched-ex-num{font-weight:700;min-width:18px;font-size:11px;}
-.sched-ex-name{font-weight:600;}
-.sched-ex-detail{margin-left:auto;font-size:11px;color:#444;}
+  /* Schedule */
+  .schedule-day { margin-bottom: 8px; border: 1px solid #2a2a3e; border-radius: 16px; overflow: hidden; background: #1a1a2e; }
+  .schedule-day.today-day { border-color: var(--day-color); }
+  .day-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
+  .day-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .day-name { font-weight: 700; font-size: 14px; }
+  .today-tag { font-size: 9px; border-radius: 4px; padding: 2px 6px; letter-spacing: 1px; font-weight: 700; color: #000; }
+  .day-focus { font-size: 11px; color: #777; margin-top: 1px; }
+  .day-arrow { font-size: 11px; color: #444; margin-left: auto; }
+  .day-body { padding: 0 16px 14px; border-top: 1px solid #ffffff08; display: none; }
+  .day-body.open { display: block; }
+  .ex-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #ffffff06; align-items: center; }
+  .ex-num { font-size: 11px; color: #555; margin-right: 8px; }
+  .ex-name { font-size: 13px; color: #ddd; }
+  .ex-detail { font-size: 12px; font-weight: 600; }
+  .ex-sets { font-size: 11px; color: #555; margin-left: 6px; }
+  .rest-info { margin-top: 10px; padding: 7px 10px; background: #ffffff07; border-radius: 8px; font-size: 10px; color: #555; }
 
-.confetti-piece{position:fixed;top:-20px;border-radius:2px;z-index:1000;pointer-events:none;animation:fall 2.5s ease-in forwards;}
-#celebration{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity 0.3s;}
-#celebration.show{opacity:1;pointer-events:all;}
-.celebration-inner{text-align:center;}
-.celebration-sticker{font-size:90px;line-height:1;margin-bottom:16px;display:block;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);}
-.celebration-title{font-size:28px;font-weight:900;letter-spacing:2px;}
-.celebration-pts{font-size:16px;color:var(–muted);margin-top:8px;}
-#install-hint{position:fixed;bottom:calc(env(safe-area-inset-bottom,16px) + 8px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:10px 18px;font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap;z-index:100;cursor:pointer;animation:fadeIn 1s 2s both;}
-@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
-@keyframes popIn{0%{transform:scale(0.2);opacity:0}100%{transform:scale(1);opacity:1}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  /* History */
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 20px; }
+  .cal-head { text-align: center; font-size: 9px; color: #444; padding-bottom: 4px; }
+  .cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #444; border: 1px solid #222; background: #1a1a2e; position: relative; }
+  .cal-day.checked { background: #FF6B3522; border-color: #FF6B3544; color: #fff; font-size: 14px; }
+  .cal-day.is-today { border-color: #FF6B35 !important; font-weight: 800; color: #FF6B35; }
+  .today-dot { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: #FF6B35; }
+  .sticker-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sticker-card { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px; padding: 8px 12px; text-align: center; }
+  .sticker-emoji { font-size: 24px; }
+  .sticker-date { font-size: 10px; color: #555; margin-top: 2px; }
+  .empty-msg { color: #555; font-size: 13px; padding: 20px 0; }
+
+  /* Overlay */
+  .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
+  .session-modal { background: #111; border-radius: 24px 24px 0 0; padding: 24px 20px 36px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+  .modal-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-progress { background: #222; border-radius: 99px; height: 4px; margin-bottom: 20px; overflow: hidden; }
+  .modal-progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+  .ex-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .ex-reps { font-size: 13px; color: #888; margin-bottom: 20px; }
+  .sets-dots { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .set-dot { flex: 1; min-width: 36px; padding: 10px 4px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; border: 2px solid #333; background: #1a1a2e; color: #555; transition: all 0.25s; cursor: default; }
+  .set-dot.active { background: #2a2a3e; color: #fff; }
+  .set-dot.done { color: inherit; }
+
+  .work-phase { text-align: center; }
+  .work-label { font-size: 13px; color: #666; margin-bottom: 4px; }
+  .stopwatch { font-size: 52px; font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
+  .done-set-btn { width: 100%; padding: 18px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 16px; font-weight: 900; font-family: inherit; }
+
+  .rest-phase { text-align: center; }
+  .rest-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+  .circle-wrap { position: relative; width: 130px; height: 130px; margin: 0 auto 20px; }
+  .circle-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .circle-time { font-size: 36px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .circle-unit { font-size: 10px; color: #666; }
+  .skip-btn { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #444; background: #2a2a3e; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
+
+  .done-phase { text-align: center; padding: 20px 0; }
+  .done-emoji { font-size: 72px; margin-bottom: 8px; }
+  .done-title { font-size: 24px; font-weight: 900; color: #FFE66D; margin-bottom: 8px; }
+  .done-sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .done-btns { display: flex; gap: 10px; }
+
+  .ex-overview { margin-top: 20px; border-top: 1px solid #1a1a2e; padding-top: 16px; }
+  .ov-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .ov-num { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px solid #333; background: #2a2a3e; }
+  .ov-name { font-size: 12px; }
+  .ov-sets { margin-left: auto; font-size: 11px; color: #555; }
+
+  /* Celebration */
+  .celebration { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); animation: fadeIn 0.3s; }
+  .celeb-emoji { font-size: 96px; animation: bounce 0.5s ease infinite alternate; }
+  .celeb-title { font-size: 28px; font-weight: 900; color: #FFE66D; margin-top: 16px; letter-spacing: 2px; }
+  .celeb-pts { font-size: 15px; color: #aaa; margin-top: 8px; }
+  .celeb-fires { font-size: 38px; margin-top: 12px; }
+  .celeb-streak { color: #FF6B35; font-weight: 700; font-size: 17px; margin-top: 6px; }
+
+  .hidden { display: none !important; }
+
+  @keyframes bounce { from { transform: scale(1) translateY(0); } to { transform: scale(1.1) translateY(-20px); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
-
 </head>
 <body>
-<div id="bg-glow"></div>
-<div class="app" id="app"></div>
 
-<div id="rest-overlay">
-  <div class="rest-type-label" id="rest-type-label">พักระหว่างเซต</div>
-  <div class="rest-context" id="rest-context"></div>
-  <div class="ring-wrap">
-    <svg width="210" height="210" viewBox="0 0 210 210">
-      <circle class="ring-bg" cx="105" cy="105" r="93"/>
-      <circle class="ring-fill" id="ring-fill" cx="105" cy="105" r="93"/>
-    </svg>
-    <div class="ring-center">
-      <div class="ring-time-num" id="rest-countdown">1:00</div>
-      <div class="ring-time-sub">เหลืออีก</div>
+<!-- Celebration -->
+<div class="celebration hidden" id="celebration">
+  <div class="celeb-emoji" id="celebEmoji"></div>
+  <div class="celeb-title">เช็คอินสำเร็จ!</div>
+  <div class="celeb-pts">+10 แต้ม 🎯</div>
+  <div class="celeb-fires" id="celebFires"></div>
+  <div class="celeb-streak" id="celebStreak"></div>
+</div>
+
+<!-- Session Overlay -->
+<div class="overlay hidden" id="sessionOverlay">
+  <div class="session-modal">
+    <div class="modal-topbar">
+      <span style="font-size:11px;color:#666;letter-spacing:2px" id="sessionProgress">ท่า 1/5</span>
+      <button onclick="closeSession()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer">✕</button>
     </div>
+    <div class="modal-progress"><div class="modal-progress-fill" id="modalProgressFill" style="width:0%"></div></div>
+    <div class="ex-title" id="sessionExName"></div>
+    <div class="ex-reps" id="sessionExReps"></div>
+    <div class="sets-dots" id="setsDots"></div>
+
+    <!-- Work Phase -->
+    <div class="work-phase" id="workPhase">
+      <div class="work-label" id="workLabel"></div>
+      <div class="stopwatch" id="stopwatch">0:00</div>
+      <button class="done-set-btn" id="doneSetBtn" onclick="doneSet()">✅ เสร็จแล้ว! เซต 1</button>
+    </div>
+
+    <!-- Rest Phase -->
+    <div class="rest-phase hidden" id="restPhase">
+      <div class="rest-label" id="restLabel"></div>
+      <div class="circle-wrap">
+        <svg width="130" height="130" style="transform:rotate(-90deg)">
+          <circle cx="65" cy="65" r="56" fill="none" stroke="#222" stroke-width="8"/>
+          <circle cx="65" cy="65" r="56" fill="none" id="restCircle" stroke="#FF6B35" stroke-width="8"
+            stroke-dasharray="351.86" stroke-dashoffset="0" stroke-linecap="round"
+            style="transition:stroke-dashoffset 0.8s linear"/>
+        </svg>
+        <div class="circle-center">
+          <div class="circle-time" id="restTimer">60</div>
+          <div class="circle-unit">วินาที</div>
+        </div>
+      </div>
+      <button class="skip-btn" onclick="skipRest()">ข้ามการพัก →</button>
+    </div>
+
+    <!-- Done Phase -->
+    <div class="done-phase hidden" id="donePhase">
+      <div class="done-emoji">🎉</div>
+      <div class="done-title">ทำเสร็จแล้ว!</div>
+      <div class="done-sub">ออกกำลังกายครบทุกท่าแล้ววันนี้</div>
+      <div class="done-btns">
+        <button onclick="closeSession()" style="flex:1;padding:13px;border-radius:12px;border:none;background:#2a2a3e;color:#fff;font-size:14px;cursor:pointer;font-family:inherit;">ปิด</button>
+        <button id="checkinFromSession" style="flex:2;padding:13px;border-radius:12px;border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">🎯 เช็คอินวันนี้</button>
+      </div>
+    </div>
+
+    <div class="ex-overview" id="exOverview"></div>
   </div>
-  <button class="rest-skip-btn" id="rest-skip-btn" onclick="skipRest()">ข้ามการพัก →</button>
-  <div class="rest-next-info" id="rest-next-info"></div>
 </div>
 
-<div id="celebration">
-  <div class="celebration-inner">
-    <span class="celebration-sticker" id="cel-sticker">🏅</span>
-    <div class="celebration-title" id="cel-title">เช็คอินสำเร็จ!</div>
-    <div class="celebration-pts">+10 แต้ม 🎯</div>
-  </div>
-</div>
-<div id="install-hint" onclick="this.remove()">📲 แชร์ → "Add to Home Screen" เพื่อใช้แบบแอป</div>
-
-<script>
-// ===== SCHEDULE =====
-const SCHEDULE = {
-  1:{label:"จันทร์",theme:"อก + แขน + ท้อง",emoji:"💪",color:"#FF6B35",
-    exercises:[{name:"Push up",detail:"15 × 4 sets",sets:4},{name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},{name:"Lateral raise",detail:"12 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Ab wheel",detail:"10–15 × 4 sets",sets:4}]},
-  2:{label:"อังคาร",theme:"ขา + หลัง + core",emoji:"🦵",color:"#4ECDC4",
-    exercises:[{name:"Squat",detail:"20 × 4 sets",sets:4},{name:"Dumbbell row",detail:"12 × 4 sets",sets:4},{name:"Shoulder press",detail:"12 × 4 sets",sets:4},{name:"Reverse crunch",detail:"15 × 4 sets",sets:4},{name:"Side plank",detail:"30–45 วิ × 3",sets:3}]},
-  3:{label:"พุธ",theme:"วันท้อง",emoji:"🔥",color:"#FFE66D",
-    exercises:[{name:"Ab wheel",detail:"12 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Oblique crunch",detail:"15 × 3 / ข้าง",sets:3},{name:"Russian twist",detail:"20 × 3 sets",sets:3},{name:"Plank",detail:"45 วิ × 3 sets",sets:3}]},
-  4:{label:"พฤหัส",theme:"พัก / คาร์ดิโอเบา",emoji:"🚶",color:"#A8DADC",rest:true,
-    exercises:[{name:"เดินเร็ว",detail:"20 นาที",sets:1},{name:"วิ่งอยู่กับที่",detail:"5–10 นาที",sets:1}]},
-  5:{label:"ศุกร์",theme:"อก + ไหล่ + แขน",emoji:"🏋️",color:"#FF6B9D",
-    exercises:[{name:"Push up",detail:"15 × 4 sets",sets:4},{name:"Shoulder press",detail:"12 × 4 sets",sets:4},{name:"Lateral raise",detail:"12 × 4 sets",sets:4},{name:"Dumbbell curl",detail:"12 × 4 sets",sets:4},{name:"Ab wheel",detail:"10–15 × 3 sets",sets:3}]},
-  6:{label:"เสาร์",theme:"หลัง + ขา + ท้องล่าง",emoji:"⚡",color:"#C77DFF",
-    exercises:[{name:"Squat",detail:"20 × 4 sets",sets:4},{name:"Dumbbell row",detail:"12 × 4 sets",sets:4},{name:"Reverse crunch",detail:"15 × 4 sets",sets:4},{name:"Leg raise",detail:"15 × 4 sets",sets:4},{name:"Side plank",detail:"45 วิ × 3 sets",sets:3}]},
-  0:{label:"อาทิตย์",theme:"พักเต็มที่",emoji:"😴",color:"#6C757D",rest:true,
-    exercises:[{name:"เดินเบาๆ",detail:"ตามอัธยาศัย",sets:1},{name:"ยืดกล้าม",detail:"ตามอัธยาศัย",sets:1}]},
-};
-const STICKERS=["🏅","⭐","🔥","💎","👑","🚀","💪","🎯","⚡","🌟"];
-const MILESTONES=[{count:30,label:"ครบเดือน!",sticker:"🚀"},{count:14,label:"สองสัปดาห์!",sticker:"💎"},{count:7,label:"ครบสัปดาห์!",sticker:"👑"},{count:3,label:"สามวันติด!",sticker:"🔥"},{count:1,label:"เริ่มต้นแล้ว!",sticker:"🌱"}];
-const REST_SET=60, REST_EX=90, CIRC=2*Math.PI*93;
-
-// ===== STORAGE =====
-function loadData(){try{const r=localStorage.getItem('workout_v2');return r?JSON.parse(r):{checkIns:{},points:0};}catch{return{checkIns:{},points:0};}}
-function saveData(d){try{localStorage.setItem('workout_v2',JSON.stringify(d));}catch{}}
-function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function calcStreak(c){let s=0;const t=new Date();t.setHours(0,0,0,0);for(let i=0;i<365;i++){const d=new Date(t);d.setDate(d.getDate()-i);const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(c[k])s++;else if(i>0)break;}return s;}
-function getMilestone(n){return MILESTONES.find(m=>n>=m.count)||null;}
-
-// ===== STATE =====
-let data=loadData();
-let activeTab='today';
-const dow=new Date().getDay();
-const sched=SCHEDULE[dow];
-const today=todayKey();
-let setProgress=sched.exercises.map(()=>0);
-
-// ===== STOPWATCH =====
-// sw.laps[exIdx] = array of lap ms for each completed set
-const sw={
-  running:false,
-  startMs:0,
-  elapsed:0,
-  exIdx:0,
-  laps:sched.exercises.map(()=>[]),
-  ticker:null
-};
-
-function swGetMs(){
-  return sw.running ? (Date.now()-sw.startMs+sw.elapsed) : sw.elapsed;
-}
-
-function swStart(exIdx){
-  clearInterval(sw.ticker);
-  sw.exIdx=exIdx;
-  sw.elapsed=0;
-  sw.startMs=Date.now();
-  sw.running=true;
-  sw.ticker=setInterval(()=>{
-    // Direct DOM update — no re-render
-    const ms=swGetMs();
-    const m=Math.floor(ms/60000);
-    const s=Math.floor((ms%60000)/1000);
-    const cs=Math.floor((ms%1000)/10);
-    const elNum=document.getElementById('sw-num');
-    const elCs=document.getElementById('sw-cs');
-    if(elNum) elNum.textContent=`${m}:${String(s).padStart(2,'0')}`;
-    if(elCs)  elCs.textContent=`.${String(cs).padStart(2,'0')}`;
-  },50);
-}
-
-function swPause(){
-  if(!sw.running) return;
-  sw.elapsed+=Date.now()-sw.startMs;
-  sw.running=false;
-  clearInterval(sw.ticker);
-  sw.ticker=null;
-}
-
-function swResume(){
-  if(sw.running) return;
-  sw.startMs=Date.now();
-  sw.running=true;
-  sw.ticker=setInterval(()=>{
-    const ms=swGetMs();
-    const m=Math.floor(ms/60000);
-    const s=Math.floor((ms%60000)/1000);
-    const cs=Math.floor((ms%1000)/10);
-    const elNum=document.getElementById('sw-num');
-    const elCs=document.getElementById('sw-cs');
-    if(elNum) elNum.textContent=`${m}:${String(s).padStart(2,'0')}`;
-    if(elCs)  elCs.textContent=`.${String(cs).padStart(2,'0')}`;
-  },50);
-}
-
-function swToggle(){
-  if(sw.running){swPause();}else{swResume();}
-  const btn=document.getElementById('sw-toggle-btn');
-  if(btn){
-    btn.textContent=sw.running?'⏸ หยุด':'▶ ต่อ';
-    btn.style.background=sw.running?'rgba(255,255,255,0.1)':sched.color;
-    btn.style.color=sw.running?'#fff':'#0A0A0F';
-  }
-}
-
-function swLapRecord(){
-  sw.laps[sw.exIdx].push(swGetMs());
-  // reset for next set
-  sw.elapsed=0;
-  sw.startMs=Date.now();
-}
-
-function fmtMs(ms){
-  const s=Math.floor(ms/1000);
-  const cs=Math.floor((ms%1000)/10);
-  if(s>=60) return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-  return `${s}.${String(cs).padStart(2,'0')}s`;
-}
-
-// ===== REST TIMER =====
-let restIv=null,restRem=0,restTot=0,afterRest=null;
-
-function startRest(dur,typeLabel,ctxHtml,nextHtml,onDone){
-  clearInterval(restIv);
-  restRem=dur;restTot=dur;afterRest=onDone;
-  document.getElementById('rest-type-label').textContent=typeLabel;
-  document.getElementById('rest-context').innerHTML=ctxHtml;
-  document.getElementById('rest-next-info').innerHTML=nextHtml;
-  document.getElementById('rest-skip-btn').style.background=sched.color;
-  const ring=document.getElementById('ring-fill');
-  ring.style.strokeDasharray=CIRC;ring.style.strokeDashoffset=0;ring.style.stroke=sched.color;
-  updateRestUI();
-  document.getElementById('rest-overlay').classList.add('show');
-  restIv=setInterval(()=>{
-    restRem--;updateRestUI();
-    if(restRem<=0){
-      clearInterval(restIv);
-      document.getElementById('rest-overlay').classList.remove('show');
-      if(navigator.vibrate)navigator.vibrate([200,100,200]);
-      if(afterRest){afterRest();afterRest=null;}
-    }
-  },1000);
-}
-
-function updateRestUI(){
-  const m=Math.floor(restRem/60),s=String(restRem%60).padStart(2,'0');
-  document.getElementById('rest-countdown').textContent=`${m}:${s}`;
-  const p=restRem/restTot;
-  const ring=document.getElementById('ring-fill');
-  ring.style.strokeDashoffset=CIRC*(1-p);
-  ring.style.stroke=p>0.5?sched.color:p>0.25?'#FFE66D':'#FF4455';
-}
-
-function skipRest(){
-  clearInterval(restIv);
-  document.getElementById('rest-overlay').classList.remove('show');
-  if(afterRest){afterRest();afterRest=null;}
-}
-
-// ===== TAP SET =====
-function tapSet(exIdx,setIdx){
-  if(setIdx!==setProgress[exIdx])return;
-  const ex=sched.exercises[exIdx];
-
-  // Record lap, keep sw running (reset internally for next set)
-  swLapRecord();
-  // Pause sw during rest
-  swPause();
-
-  setProgress[exIdx]++;
-
-  if(setProgress[exIdx]<ex.sets){
-    render();
-    startRest(REST_SET,'พักระหว่างเซต',
-      `<strong>${ex.name}</strong><br>เสร็จเซต ${setProgress[exIdx]} / ${ex.sets}`,
-      `ต่อไป: เซต ${setProgress[exIdx]+1}`,
-      ()=>{swResume();render();}
-    );
-  } else {
-    const nextIdx=exIdx+1;
-    if(nextIdx<sched.exercises.length){
-      render();
-      startRest(REST_EX,'พักระหว่างท่า',
-        `<strong>${ex.name}</strong> เสร็จครบแล้ว ✓`,
-        `ท่าต่อไป: <strong>${sched.exercises[nextIdx].name}</strong>`,
-        ()=>{swStart(nextIdx);render();}
-      );
-    } else {
-      render();
-      if(!data.checkIns[today])setTimeout(()=>handleCheckIn(),500);
-    }
-  }
-}
-
-// ===== CHECK IN =====
-function handleCheckIn(){
-  if(data.checkIns[today])return;
-  const sticker=STICKERS[Math.floor(Math.random()*STICKERS.length)];
-  data.checkIns[today]={sticker,time:new Date().toISOString()};
-  data.points=(data.points||0)+10;
-  saveData(data);spawnConfetti();showCelebration(sticker);render();
-}
-function showCelebration(sticker){
-  const cel=document.getElementById('celebration');
-  document.getElementById('cel-sticker').textContent=sticker;
-  document.getElementById('cel-title').style.color=sched.color;
-  cel.classList.add('show');setTimeout(()=>cel.classList.remove('show'),2800);
-}
-function spawnConfetti(){
-  const colors=["#FF6B35","#4ECDC4","#FFE66D","#FF6B9D","#C77DFF"];
-  for(let i=0;i<32;i++){
-    const el=document.createElement('div');el.className='confetti-piece';
-    el.style.cssText=`left:${Math.random()*100}%;width:${8+Math.random()*8}px;height:${8+Math.random()*8}px;background:${colors[~~(Math.random()*5)]};animation-delay:${Math.random()*0.6}s;transform:rotate(${Math.random()*360}deg);`;
-    document.body.appendChild(el);setTimeout(()=>el.remove(),3200);
-  }
-}
-
-// ===== RENDER =====
-function render(){
-  const total=Object.keys(data.checkIns).length;
-  const streak=calcStreak(data.checkIns);
-  const milestone=getMilestone(total);
-  const checkedToday=!!data.checkIns[today];
-  const allDone=setProgress.every((p,i)=>p>=sched.exercises[i].sets);
-
-  let h='';
-
-  h+=`<div class="header">
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
     <div class="header-top">
       <div>
-        <div class="header-label">Workout Tracker</div>
-        <div class="header-day">${sched.emoji} วัน${sched.label}</div>
-        <div class="header-theme">${sched.theme}</div>
+        <div class="brand-sub">WORKOUT TRACKER</div>
+        <div class="brand-name">💪 FitStreak</div>
       </div>
-      <div class="points-box"><div class="points-num">${data.points}</div><div class="points-label">POINTS</div></div>
+      <div>
+        <div class="points-label">POINTS</div>
+        <div class="points-val" id="pointsDisplay">0</div>
+      </div>
     </div>
-    <div class="stats">
-      <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value">${streak} 🔥</div><div class="stat-sub">วัน</div></div>
-      <div class="stat-card"><div class="stat-label">Check-ins</div><div class="stat-value">${total}</div><div class="stat-sub">ครั้ง</div></div>
-      <div class="stat-card"><div class="stat-label">Badge</div><div class="stat-value">${milestone?milestone.sticker:'—'}</div><div class="stat-sub">${milestone?milestone.label:'ยังไม่มี'}</div></div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="switchView('home',this)">🏠 หน้าแรก</button>
+      <button class="nav-btn" onclick="switchView('schedule',this)">📋 ตาราง</button>
+      <button class="nav-btn" onclick="switchView('history',this)">📅 ประวัติ</button>
     </div>
-  </div>`;
+  </div>
+</div>
 
-  h+=`<div class="tabs">
-    ${[['today','วันนี้'],['calendar','ปฏิทิน'],['schedule','ตาราง']].map(([id,lbl])=>
-      `<button class="tab ${activeTab===id?'active':''}" onclick="setTab('${id}')" style="${activeTab===id?`background:${sched.color};`:''}"> ${lbl}</button>`
-    ).join('')}
-  </div>`;
+<div class="main">
+  <div id="view-home"></div>
+  <div id="view-schedule" class="hidden"></div>
+  <div id="view-history" class="hidden"></div>
+</div>
 
-  if(activeTab==='today'){
-    h+=`<div class="today-content">`;
-    if(allDone&&!sched.rest){
-      h+=`<div class="workout-done-banner"><div class="workout-done-big">🎉</div>
-        <div class="workout-done-title">ออกกำลังกายเสร็จแล้ว!</div>
-        <div class="workout-done-sub">${checkedToday?`เช็คอินแล้ว ${data.checkIns[today].sticker}`:'กำลังบันทึก...'}</div>
-      </div>`;
-    }
-    if(sched.rest||!allDone||checkedToday){
-      const bs=checkedToday
-        ?`background:rgba(255,255,255,0.07);border:2px solid ${sched.color};color:${sched.color};box-shadow:none;cursor:default;`
-        :`background:linear-gradient(135deg,${sched.color},${sched.color}bb);border:none;color:#0A0A0F;box-shadow:0 8px 30px ${sched.color}44;cursor:pointer;`;
-      h+=`<button class="checkin-btn" style="${bs}" onclick="${checkedToday?'':'handleCheckIn()'}">
-        ${checkedToday?`✓ เช็คอินแล้ววันนี้ ${data.checkIns[today].sticker}`:'⚡ CHECK IN วันนี้'}
-      </button>`;
-    }
-    h+=`<div class="section-label">${sched.rest?'ตัวเลือก':'ท่าออกกำลังกาย'}</div>`;
+<script>
+// ─── Data ─────────────────────────────────────────────────────────────────────
+const SCHEDULE = {
+  1:{day:"จันทร์",focus:"อก + แขน + ท้อง",emoji:"💪",color:"#FF6B35",exercises:[
+    {name:"Push up",sets:4,reps:"15 ครั้ง"},{name:"Dumbbell curl",sets:4,reps:"12 ครั้ง"},
+    {name:"Lateral raise",sets:4,reps:"12 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
+    {name:"Ab wheel",sets:4,reps:"10–15 ครั้ง"}]},
+  2:{day:"อังคาร",focus:"ขา + หลัง + core",emoji:"🦵",color:"#4ECDC4",exercises:[
+    {name:"Squat",sets:4,reps:"20 ครั้ง"},{name:"Dumbbell row",sets:4,reps:"12 ครั้ง"},
+    {name:"Shoulder press",sets:4,reps:"12 ครั้ง"},{name:"Reverse crunch",sets:4,reps:"15 ครั้ง"},
+    {name:"Side plank",sets:3,reps:"30–45 วิ/ข้าง"}]},
+  3:{day:"พุธ",focus:"ท้องล่าง + ข้าง",emoji:"🔥",color:"#FFE66D",exercises:[
+    {name:"Ab wheel",sets:4,reps:"12 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
+    {name:"Oblique crunch",sets:3,reps:"15 ครั้ง/ข้าง"},{name:"Russian twist",sets:3,reps:"20 ครั้ง"},
+    {name:"Plank",sets:3,reps:"45 วิ"}]},
+  4:{day:"พฤหัส",focus:"พัก / คาร์ดิโอเบา",emoji:"🚶",color:"#95E1D3",isRest:true,exercises:[
+    {name:"เดินเร็ว",sets:1,reps:"20 นาที"},{name:"วิ่งอยู่กับที่",sets:1,reps:"5–10 นาที"}]},
+  5:{day:"ศุกร์",focus:"อก + ไหล่ + แขน",emoji:"🏋️",color:"#F38181",exercises:[
+    {name:"Push up",sets:4,reps:"15 ครั้ง"},{name:"Shoulder press",sets:4,reps:"12 ครั้ง"},
+    {name:"Lateral raise",sets:4,reps:"12 ครั้ง"},{name:"Dumbbell curl",sets:4,reps:"12 ครั้ง"},
+    {name:"Ab wheel",sets:3,reps:"10–15 ครั้ง"}]},
+  6:{day:"เสาร์",focus:"หลัง + ขา + ท้องล่าง",emoji:"⚡",color:"#A8E6CF",exercises:[
+    {name:"Squat",sets:4,reps:"20 ครั้ง"},{name:"Dumbbell row",sets:4,reps:"12 ครั้ง"},
+    {name:"Reverse crunch",sets:4,reps:"15 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
+    {name:"Side plank",sets:3,reps:"45 วิ/ข้าง"}]},
+  0:{day:"อาทิตย์",focus:"พักเต็มที่",emoji:"😴",color:"#C3A6FF",isRest:true,exercises:[
+    {name:"เดินเบา ๆ",sets:1,reps:"ตามสบาย"},{name:"ยืดกล้าม",sets:1,reps:"10–15 นาที"}]},
+};
+const STICKERS = ["🌟","🔥","💎","⚡","🏆","💪","🎯","🚀","✨","🌈","👑","🎖️"];
+const STREAK_BADGES=[
+  {days:3,badge:"🥉",label:"3 วันติด!"},
+  {days:7,badge:"🥈",label:"1 สัปดาห์!"},
+  {days:14,badge:"🥇",label:"2 สัปดาห์!"},
+  {days:30,badge:"🏆",label:"1 เดือน!"},
+  {days:60,badge:"👑",label:"2 เดือน!"},
+  {days:100,badge:"💎",label:"100 วัน!"},
+];
+const REST_SET=60, REST_EX=90;
 
-    sched.exercises.forEach((ex,i)=>{
-      const exDone=setProgress[i]>=ex.sets;
-      const prevOk=i===0||setProgress[i-1]>=sched.exercises[i-1].sets;
-      const isActive=!exDone&&prevOk;
+// ─── State ────────────────────────────────────────────────────────────────────
+let checkins={}, points=0;
+try{ checkins=JSON.parse(sessionStorage.getItem("wc")||"{}"); }catch{}
+try{ points=parseInt(sessionStorage.getItem("wp")||"0"); }catch{}
 
-      h+=`<div class="exercise-card ${exDone?'ex-done':''}" style="${isActive?`border-color:${sched.color}70;border-width:1.5px;`:''}">
-        <div class="ex-header">
-          <div class="ex-num" style="background:${sched.color}${exDone?'55':'22'};color:${exDone?'#fff':sched.color};">${exDone?'✓':i+1}</div>
-          <div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail}</div></div>
-          ${exDone?'<span style="font-size:20px">✅</span>':isActive?`<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${sched.color};color:#0A0A0F;">ทำได้เลย</span>`:''}
-        </div>`;
+function save(){ try{ sessionStorage.setItem("wc",JSON.stringify(checkins)); sessionStorage.setItem("wp",String(points)); }catch{} }
 
-      // STOPWATCH for active exercise
-      if(isActive&&!sched.rest){
-        const laps=sw.laps[i];
-        const best=laps.length>1?Math.min(...laps):null;
-        const worst=laps.length>1?Math.max(...laps):null;
-        // snapshot for initial HTML; ticker updates #sw-num/#sw-cs directly
-        const snapMs=swGetMs();
-        const snapM=Math.floor(snapMs/60000);
-        const snapS=Math.floor((snapMs%60000)/1000);
-        const snapCs=Math.floor((snapMs%1000)/10);
+function dateKey(d){ return d.toISOString().split("T")[0]; }
+const today=new Date(), todayKey=dateKey(today), todayDow=today.getDay();
+const todayW=SCHEDULE[todayDow];
 
-        h+=`<div class="sw-bar">
-          <div>
-            <div class="sw-time-wrap">
-              <span class="sw-num" id="sw-num" style="color:${sched.color}">${snapM}:${String(snapS).padStart(2,'0')}</span>
-              <span class="sw-cs" id="sw-cs">.${String(snapCs).padStart(2,'0')}</span>
-            </div>
-            <div class="sw-sublabel">⏱ เวลาเซตปัจจุบัน</div>
-          </div>
-          <button id="sw-toggle-btn" class="sw-toggle" onclick="swToggle()"
-            style="background:${sw.running?'rgba(255,255,255,0.1)':sched.color};color:${sw.running?'#fff':'#0A0A0F'};">
-            ${sw.running?'⏸ หยุด':'▶ ต่อ'}
-          </button>
-        </div>`;
-
-        if(laps.length>0){
-          h+=`<div class="sw-laps">`;
-          laps.forEach((lapMs,li)=>{
-            const isBest=best!==null&&lapMs===best;
-            const isWorst=worst!==null&&lapMs===worst;
-            h+=`<div class="sw-lap ${isBest?'lap-best':isWorst?'lap-worst':''}">เซต${li+1} ${fmtMs(lapMs)}${isBest?' 🏆':isWorst?' 😓':''}</div>`;
-          });
-          h+=`</div>`;
-        }
-      }
-
-      if(!sched.rest&&(isActive||exDone)){
-        h+=`<div class="sets-row">`;
-        for(let s=0;s<ex.sets;s++){
-          const done=s<setProgress[i];
-          const next=s===setProgress[i]&&isActive;
-          let bs='';
-          if(done) bs=`background:${sched.color};border-color:${sched.color};color:#0A0A0F;`;
-          else if(next) bs=`border-color:${sched.color};color:${sched.color};background:${sched.color}18;`;
-          h+=`<button class="set-btn ${done?'set-done':''} ${next?'set-next':''}" style="${bs}"
-            ${next?`onclick="tapSet(${i},${s})"`:' disabled'}>
-            เซต ${s+1}<br>${done?'✓':next?'กด':'·'}
-          </button>`;
-        }
-        h+=`</div>`;
-      } else if(!sched.rest&&!exDone){
-        h+=`<div style="padding:0 16px 14px;font-size:12px;color:#444;">⏳ รอท่าก่อนหน้าเสร็จก่อน</div>`;
-      }
-      h+=`</div>`;
-    });
-    h+=`</div>`;
+function getStreak(){
+  let s=0;
+  for(let i=0;i<365;i++){
+    const d=new Date(today); d.setDate(today.getDate()-i);
+    if(checkins[dateKey(d)]) s++; else if(i>0) break;
   }
-
-  if(activeTab==='calendar'){
-    const now=new Date(),year=now.getFullYear(),month=now.getMonth();
-    const firstDay=new Date(year,month,1).getDay(),dim=new Date(year,month+1,0).getDate();
-    const monthName=now.toLocaleDateString('th-TH',{month:'long',year:'numeric'});
-    let days='';
-    for(let i=0;i<firstDay;i++) days+='<div></div>';
-    for(let d=1;d<=dim;d++){
-      const key=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const ck=data.checkIns[key],isT=key===today;
-      days+=`<div class="cal-day${isT?' today-day':''}${ck?' checked':''}"
-        style="background:${ck?sched.color+'28':isT?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.04)'};border:${isT?`2px solid ${sched.color}`:'1px solid rgba(255,255,255,0.08)'};color:${isT?sched.color:ck?'#fff':'#444'};">
-        <span>${d}</span>${ck?`<span class="sticker">${ck.sticker}</span>`:''}
-      </div>`;
-    }
-    h+=`<div class="calendar-content"><div class="cal-month">${monthName}</div>
-      <div class="cal-grid">${['อา','จ','อ','พ','พฤ','ศ','ส'].map(d=>`<div class="cal-header">${d}</div>`).join('')}${days}</div>
-      <div class="cal-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:${sched.color}28;"></div>เช็คอินแล้ว</div>
-        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.1);border:2px solid ${sched.color};"></div>วันนี้</div>
-      </div></div>`;
-  }
-
-  if(activeTab==='schedule'){
-    h+=`<div class="schedule-content">`;
-    for(const d of [1,2,3,4,5,6,0]){
-      const s=SCHEDULE[d],isT=d===dow;
-      h+=`<div class="sched-card" style="border-color:${isT?s.color:'rgba(255,255,255,0.09)'};background:${isT?s.color+'10':'rgba(255,255,255,0.03)'}">
-        <div class="sched-header"><span class="sched-emoji">${s.emoji}</span>
-          <div><div class="sched-day" style="color:${s.color}">วัน${s.label}</div><div class="sched-theme">${s.theme}</div></div>
-          ${isT?`<span class="today-badge" style="background:${s.color}">TODAY</span>`:''}
-        </div>
-        <div class="sched-exercises">${s.exercises.map((ex,i)=>`<div class="sched-ex">
-          <span class="sched-ex-num" style="color:${s.color}">${i+1}.</span>
-          <span class="sched-ex-name">${ex.name}</span>
-          <span class="sched-ex-detail">${ex.detail}</span>
-        </div>`).join('')}</div>
-      </div>`;
-    }
-    h+=`</div>`;
-  }
-
-  document.getElementById('app').innerHTML=h;
+  return s;
 }
 
-function setTab(id){activeTab=id;render();}
+// ─── Session Engine ───────────────────────────────────────────────────────────
+let sess={ exIdx:0, setIdx:0, phase:"work", timer:0, elapsed:0, completedSets:{}, color:"#FF6B35", exercises:[] };
+let sessInterval=null, sessStartRef=0;
 
-// ===== INIT =====
-document.getElementById('bg-glow').style.background=
-  `radial-gradient(ellipse at 20% 20%,${sched.color}18 0%,transparent 60%),
-   radial-gradient(ellipse at 80% 80%,#C77DFF15 0%,transparent 60%)`;
+function openSession(){
+  sess={ exIdx:0, setIdx:0, phase:"work", timer:0, elapsed:0, completedSets:{}, color:todayW.color, exercises:todayW.exercises };
+  document.getElementById("checkinFromSession").style.background=`linear-gradient(135deg,${todayW.color},${todayW.color}bb)`;
+  document.getElementById("checkinFromSession").onclick=()=>{ doCheckIn(); closeSession(); };
+  document.getElementById("sessionOverlay").classList.remove("hidden");
+  document.getElementById("restCircle").style.stroke=todayW.color;
+  renderSession(); startWork();
+}
+function closeSession(){
+  clearInterval(sessInterval);
+  document.getElementById("sessionOverlay").classList.add("hidden");
+}
 
-if(!sched.rest) swStart(0);
-render();
-setTimeout(()=>{const h=document.getElementById('install-hint');if(h)h.remove();},8000);
+function renderSession(){
+  const ex=sess.exercises[sess.exIdx];
+  const total=sess.exercises.length;
+  document.getElementById("sessionProgress").textContent=`ท่า ${sess.exIdx+1}/${total}`;
+  document.getElementById("sessionExName").textContent=ex.name;
+  document.getElementById("sessionExReps").textContent=ex.reps;
+
+  // Progress bar
+  const totalSets=sess.exercises.reduce((a,e)=>a+e.sets,0);
+  const doneSets=sess.exercises.slice(0,sess.exIdx).reduce((a,e)=>a+e.sets,0)+sess.setIdx;
+  document.getElementById("modalProgressFill").style.width=`${(doneSets/totalSets)*100}%`;
+  document.getElementById("modalProgressFill").style.background=`linear-gradient(90deg,${sess.color},${sess.color}99)`;
+
+  // Set dots
+  const dots=document.getElementById("setsDots"); dots.innerHTML="";
+  for(let i=0;i<ex.sets;i++){
+    const d=document.createElement("div");
+    d.className="set-dot";
+    const isDone=sess.completedSets[`${sess.exIdx}-${i}`];
+    const isActive=i===sess.setIdx && sess.phase==="work";
+    if(isDone){ d.classList.add("done"); d.style.borderColor=sess.color; d.style.background=sess.color+"33"; d.style.color=sess.color; d.textContent="✓"; }
+    else if(isActive){ d.classList.add("active"); d.style.borderColor=sess.color+"88"; }
+    else { d.textContent=`เซต ${i+1}`; }
+    if(!isDone && !isActive) d.textContent=`เซต ${i+1}`;
+    dots.appendChild(d);
+  }
+
+  // Overview
+  const ov=document.getElementById("exOverview"); ov.innerHTML="";
+  sess.exercises.forEach((e,i)=>{
+    const row=document.createElement("div");
+    row.className="ov-row";
+    row.style.opacity=i<sess.exIdx?0.35:i===sess.exIdx?1:0.5;
+    const num=document.createElement("div"); num.className="ov-num";
+    if(i<sess.exIdx){ num.style.background=sess.color+"44"; num.style.borderColor=sess.color; num.textContent="✓"; }
+    else if(i===sess.exIdx){ num.style.background=sess.color; num.style.borderColor=sess.color; num.textContent=i+1; }
+    else { num.textContent=i+1; }
+    const name=document.createElement("span"); name.className="ov-name"; name.textContent=e.name;
+    name.style.color=i===sess.exIdx?"#fff":"#666";
+    const sets=document.createElement("span"); sets.className="ov-sets"; sets.textContent=`${e.sets} เซต`;
+    row.appendChild(num); row.appendChild(name); row.appendChild(sets);
+    ov.appendChild(row);
+  });
+}
+
+function startWork(){
+  sess.phase="work"; sess.elapsed=0;
+  document.getElementById("workPhase").classList.remove("hidden");
+  document.getElementById("restPhase").classList.add("hidden");
+  document.getElementById("donePhase").classList.add("hidden");
+  const ex=sess.exercises[sess.exIdx];
+  document.getElementById("workLabel").textContent=`เซต ${sess.setIdx+1} / ${ex.sets} · กำลังทำอยู่`;
+  document.getElementById("doneSetBtn").textContent=`✅ เสร็จแล้ว! เซต ${sess.setIdx+1}`;
+  document.getElementById("doneSetBtn").style.background=`linear-gradient(135deg,${sess.color},${sess.color}bb)`;
+  document.getElementById("doneSetBtn").style.boxShadow=`0 6px 24px ${sess.color}44`;
+  document.getElementById("stopwatch").style.color=sess.color;
+  clearInterval(sessInterval);
+  sessStartRef=Date.now();
+  sessInterval=setInterval(()=>{
+    sess.elapsed=Math.floor((Date.now()-sessStartRef)/1000);
+    document.getElementById("stopwatch").textContent=fmtTime(sess.elapsed);
+  },500);
+  renderSession();
+}
+
+function doneSet(){
+  clearInterval(sessInterval);
+  const ex=sess.exercises[sess.exIdx];
+  sess.completedSets[`${sess.exIdx}-${sess.setIdx}`]=true;
+  const isLastSet=sess.setIdx===ex.sets-1;
+  const isLastEx=sess.exIdx===sess.exercises.length-1;
+  if(isLastSet && isLastEx){ showDone(); return; }
+  if(isLastSet) startRest("ex");
+  else startRest("set");
+}
+
+function startRest(type){
+  sess.phase=type==="set"?"rest_set":"rest_ex";
+  const duration=type==="set"?REST_SET:REST_EX;
+  sess.timer=duration;
+  document.getElementById("workPhase").classList.add("hidden");
+  document.getElementById("restPhase").classList.remove("hidden");
+  document.getElementById("donePhase").classList.add("hidden");
+  if(type==="set"){
+    const nextSet=sess.setIdx+1;
+    document.getElementById("restLabel").textContent=`พักระหว่างเซต · เซตถัดไป: ${nextSet+1}/${sess.exercises[sess.exIdx].sets}`;
+  } else {
+    document.getElementById("restLabel").textContent=`พักระหว่างท่า · ท่าถัดไป: ${sess.exercises[sess.exIdx+1].name}`;
+  }
+  updateCircle(duration,duration);
+  clearInterval(sessInterval);
+  sessInterval=setInterval(()=>{
+    sess.timer--;
+    updateCircle(sess.timer,duration);
+    if(sess.timer<=0){ clearInterval(sessInterval); advanceAfterRest(); }
+  },1000);
+  renderSession();
+}
+
+function updateCircle(t,total){
+  document.getElementById("restTimer").textContent=fmtTime(t);
+  const pct=t/total;
+  const circ=2*Math.PI*56;
+  document.getElementById("restCircle").style.strokeDashoffset=circ*(1-pct);
+}
+
+function advanceAfterRest(){
+  if(sess.phase==="rest_set"){ sess.setIdx++; startWork(); }
+  else { sess.exIdx++; sess.setIdx=0; startWork(); }
+}
+
+function skipRest(){ clearInterval(sessInterval); advanceAfterRest(); }
+
+function showDone(){
+  document.getElementById("workPhase").classList.add("hidden");
+  document.getElementById("restPhase").classList.add("hidden");
+  document.getElementById("donePhase").classList.remove("hidden");
+  renderSession();
+}
+
+function fmtTime(s){ const m=Math.floor(s/60),sec=s%60; return m>0?`${m}:${sec.toString().padStart(2,"0")}`:String(sec); }
+
+// ─── Check-in ─────────────────────────────────────────────────────────────────
+function doCheckIn(){
+  if(checkins[todayKey]) return;
+  const sticker=STICKERS[Math.floor(Math.random()*STICKERS.length)];
+  checkins[todayKey]={sticker,time:new Date().toISOString()};
+  points+=10; save();
+  const streak=getStreak();
+  const cel=document.getElementById("celebration");
+  document.getElementById("celebEmoji").textContent=sticker;
+  document.getElementById("celebFires").textContent="🔥".repeat(Math.min(streak,7));
+  document.getElementById("celebStreak").textContent=`Streak: ${streak} วัน!`;
+  cel.classList.remove("hidden");
+  setTimeout(()=>{ cel.classList.add("hidden"); renderAll(); },3000);
+  renderAll();
+}
+
+// ─── Views ────────────────────────────────────────────────────────────────────
+function switchView(name,btn){
+  ["home","schedule","history"].forEach(v=>{
+    document.getElementById(`view-${v}`).classList.toggle("hidden",v!==name);
+  });
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function renderAll(){
+  document.getElementById("pointsDisplay").textContent=points;
+  renderHome(); renderSchedule(); renderHistory();
+}
+
+function renderHome(){
+  const el=document.getElementById("view-home");
+  const streak=getStreak();
+  const checked=!!checkins[todayKey];
+  const totalCI=Object.keys(checkins).length;
+  const nextBadge=STREAK_BADGES.find(b=>streak<b.days);
+  const earnedBadges=STREAK_BADGES.filter(b=>streak>=b.days);
+
+  let html=`
+  <div class="stats-row">
+    <div class="stat-card streak"><div class="stat-val">${streak}</div><div class="stat-lbl">🔥 STREAK</div></div>
+    <div class="stat-card plain"><div class="stat-val">${totalCI}</div><div class="stat-lbl">✅ เช็คอิน</div></div>
+    <div class="stat-card plain"><div class="stat-val">${points}</div><div class="stat-lbl">⭐ POINTS</div></div>
+  </div>
+  <div class="today-card" style="border-color:${todayW.color}33">
+    <div class="today-bg-emoji">${todayW.emoji}</div>
+    <div class="today-sub">วันนี้ — ${todayW.day}</div>
+    <div class="today-title">${todayW.emoji} ${todayW.focus}</div>
+    <div class="today-meta">${todayW.isRest?"วันพัก 🌿":`${todayW.exercises.length} ท่า · ${todayW.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
+
+  if(!todayW.isRest && !checked)
+    html+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);box-shadow:0 4px 20px ${todayW.color}44" onclick="openSession()">▶ เริ่มออกกำลังกาย</button>`;
+  else if(!todayW.isRest && checked)
+    html+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
+  else if(todayW.isRest && !checked)
+    html+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);color:#000" onclick="doCheckIn()">🌿 เช็คอินวันพัก</button>`;
+  else
+    html+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
+
+  html+=`</div>`;
+
+  if(!todayW.isRest)
+    html+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
+
+  if(nextBadge) html+=`
+  <div class="badge-progress">
+    <div class="badge-emoji">${nextBadge.badge}</div>
+    <div class="badge-info">
+      <div class="badge-sub">เป้าหมายถัดไป</div>
+      <div class="badge-title">${nextBadge.label}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${(streak/nextBadge.days)*100}%"></div></div>
+      <div class="badge-count">${streak} / ${nextBadge.days} วัน</div>
+    </div>
+  </div>`;
+
+  if(earnedBadges.length){
+    html+=`<div class="badges-section"><div class="section-label">🏅 BADGES</div><div class="badges-grid">`;
+    earnedBadges.forEach(b=>{ html+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`; });
+    html+=`</div></div>`;
+  }
+  el.innerHTML=html;
+}
+
+function renderSchedule(){
+  const el=document.getElementById("view-schedule");
+  let html=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
+  [1,2,3,4,5,6,0].forEach(dow=>{
+    const w=SCHEDULE[dow], isToday=dow===todayDow;
+    html+=`<div class="schedule-day${isToday?" today-day":""}" style="--day-color:${w.color}">
+      <div class="day-header" onclick="toggleDay(${dow})">
+        <div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="day-name">${w.day}</span>
+            ${isToday?`<span class="today-tag" style="background:${w.color}">${w.color==="#FFE66D"?"TODAY":w.color==="#95E1D3"?"TODAY":w.color==="#A8E6CF"?"TODAY":w.color==="#C3A6FF"?"TODAY":"TODAY"}</span>`:""}
+          </div>
+          <div class="day-focus">${w.focus}</div>
+        </div>
+        <div class="day-arrow" id="arrow-${dow}">▼</div>
+      </div>
+      <div class="day-body" id="daybody-${dow}">`;
+    w.exercises.forEach((ex,i)=>{
+      html+=`<div class="ex-row">
+        <div><span class="ex-num">${i+1}.</span><span class="ex-name">${ex.name}</span></div>
+        <div><span class="ex-detail" style="color:${w.color}">${ex.sets} เซต</span><span class="ex-sets">× ${ex.reps}</span></div>
+      </div>`;
+    });
+    html+=`<div class="rest-info">⏱ พักเซต 60 วิ · พักท่า 90 วิ</div></div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function toggleDay(dow){
+  const body=document.getElementById(`daybody-${dow}`);
+  const arrow=document.getElementById(`arrow-${dow}`);
+  body.classList.toggle("open");
+  arrow.textContent=body.classList.contains("open")?"▲":"▼";
+}
+
+function renderHistory(){
+  const el=document.getElementById("view-history");
+  // Build calendar
+  const days=[]; for(let i=34;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); days.push(d); }
+  let html=`<div class="section-label" style="margin-bottom:14px">ประวัติ 35 วัน</div>
+  <div class="cal-grid">
+    <div class="cal-head">อา</div><div class="cal-head">จ</div><div class="cal-head">อ</div>
+    <div class="cal-head">พ</div><div class="cal-head">พฤ</div><div class="cal-head">ศ</div><div class="cal-head">ส</div>`;
+  days.forEach(d=>{
+    const k=dateKey(d), ci=checkins[k], isT=k===todayKey;
+    html+=`<div class="cal-day${ci?" checked":""}${isT?" is-today":""}">
+      ${ci?ci.sticker:d.getDate()}
+      ${isT&&!ci?`<div class="today-dot"></div>`:""}
+    </div>`;
+  });
+  html+=`</div><div class="section-label" style="margin-bottom:10px">สติกเกอร์ที่สะสม</div><div class="sticker-grid">`;
+  const entries=Object.entries(checkins).sort(([a],[b])=>b.localeCompare(a)).slice(0,20);
+  if(entries.length===0) html+=`<div class="empty-msg">ยังไม่มีสติกเกอร์ เริ่มเลย! 🚀</div>`;
+  else entries.forEach(([date,data])=>{
+    const d=new Date(date);
+    html+=`<div class="sticker-card"><div class="sticker-emoji">${data.sticker}</div><div class="sticker-date">${d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})}</div></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderAll();
 </script>
-
 </body>
 </html>
