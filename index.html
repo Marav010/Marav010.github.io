@@ -2,651 +2,1017 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💪 FitStreak</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>💪 WorkOut Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { min-height: 100vh; background: #0A0A0F; font-family: 'Segoe UI', sans-serif; color: #fff; overflow-x: hidden; }
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --accent: #f0ff40;
+    --accent2: #40ffb0;
+    --accent3: #ff4060;
+    --text: #f0f0f8;
+    --muted: #6060a0;
+    --border: #2a2a40;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Prompt', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  .header { background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); padding: 20px 20px 0; border-bottom: 1px solid #222; }
-  .header-inner { max-width: 480px; margin: 0 auto; }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .brand-sub { font-size: 10px; color: #555; letter-spacing: 3px; }
-  .brand-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-  .points-label { font-size: 10px; color: #555; letter-spacing: 2px; text-align: right; }
-  .points-val { font-size: 26px; font-weight: 900; color: #FFE66D; text-align: right; }
+  /* HEADER */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--accent); }
+  .streak-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .streak-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--accent); }
 
-  .nav { display: flex; border-radius: 12px 12px 0 0; overflow: hidden; }
-  .nav-btn { flex: 1; padding: 10px 0; border: none; cursor: pointer; background: transparent; color: #555; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: inherit; }
-  .nav-btn.active { background: #0A0A0F; color: #fff; font-weight: 700; border-radius: 8px 8px 0 0; }
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: none;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); margin-left: 6px; vertical-align: middle; }
 
-  .main { max-width: 480px; margin: 0 auto; padding: 20px 16px 60px; }
+  /* PAGES */
+  .page { display: none; padding: 16px; }
+  .page.active { display: block; }
 
-  .stats-row { display: flex; gap: 10px; margin-bottom: 18px; }
-  .stat-card { flex: 1; border-radius: 14px; padding: 14px 10px; text-align: center; }
-  .stat-card.streak { background: linear-gradient(135deg,#FF6B35,#ff8c42); }
-  .stat-card.plain { background: #1a1a2e; border: 1px solid #2a2a3e; }
-  .stat-val { font-size: 28px; font-weight: 900; }
-  .stat-lbl { font-size: 10px; opacity: 0.7; letter-spacing: 1px; }
+  /* TODAY CARD */
+  .day-hero {
+    background: linear-gradient(135deg, var(--card), #1e1e32);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .day-hero::before {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(240,255,64,0.08), transparent);
+    border-radius: 50%;
+  }
+  .day-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 3px; color: var(--muted); }
+  .day-name { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--accent); line-height: 1; }
+  .day-focus { font-size: 14px; color: var(--accent2); margin-top: 4px; }
+  .progress-bar-wrap { margin-top: 16px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar {
+    height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px; transition: width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .checkin-btn {
+    width: 100%; margin-top: 16px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform .1s, opacity .2s;
+  }
+  .checkin-btn:active { transform: scale(0.97); }
+  .checkin-btn:disabled { opacity: 0.4; cursor: default; }
+  .checkin-btn.done { background: var(--accent2); }
+  .rest-btn {
+    width: 100%; margin-top: 8px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .rest-btn:hover { color: var(--text); border-color: var(--muted); }
 
-  .today-card { background: #1a1a2e; border: 2px solid; border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; }
-  .today-bg-emoji { position: absolute; top: -16px; right: -16px; font-size: 80px; opacity: 0.07; pointer-events: none; }
-  .today-sub { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 4px; }
-  .today-title { font-size: 19px; font-weight: 800; margin-bottom: 2px; }
-  .today-meta { font-size: 12px; color: #555; margin-bottom: 18px; }
-  .big-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 15px; font-weight: 900; font-family: inherit; }
-  .big-btn.done { background: #2a2a3e; color: #888; cursor: default; }
-  .rest-tip { background: #1a1a2e; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 11px; color: #666; display: flex; gap: 8px; }
+  /* EXERCISE LIST */
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin: 16px 0 10px;
+  }
+  .exercise-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .exercise-card.active-ex { border-color: var(--accent); }
+  .exercise-card.completed-ex { border-color: var(--accent2); opacity: 0.7; }
+  .exercise-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px;
+    cursor: pointer;
+  }
+  .ex-num {
+    width: 30px; height: 30px;
+    background: var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .exercise-card.active-ex .ex-num { background: var(--accent); color: var(--bg); }
+  .exercise-card.completed-ex .ex-num { background: var(--accent2); color: var(--bg); }
+  .ex-info { flex: 1; }
+  .ex-name { font-weight: 600; font-size: 15px; }
+  .ex-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .ex-arrow { color: var(--muted); font-size: 18px; transition: transform .2s; }
+  .exercise-card.open .ex-arrow { transform: rotate(180deg); }
 
-  .badge-progress { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a3e; }
-  .badge-emoji { font-size: 34px; }
-  .badge-info { flex: 1; }
-  .badge-sub { font-size: 11px; color: #666; }
-  .badge-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-  .progress-bar { background: #111; border-radius: 99px; height: 5px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#FF6B35,#FFE66D); transition: width 0.5s; }
-  .badge-count { font-size: 10px; color: #555; margin-top: 3px; }
-  .badges-section { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; border: 1px solid #2a2a3e; }
-  .section-label { font-size: 10px; color: #555; letter-spacing: 3px; margin-bottom: 10px; }
-  .badges-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-  .badge-item { background: #111; border-radius: 10px; padding: 8px 10px; text-align: center; }
-  .badge-item-emoji { font-size: 26px; }
-  .badge-item-lbl { font-size: 10px; color: #666; margin-top: 2px; }
+  /* SETS */
+  .sets-panel { display: none; padding: 0 14px 14px; }
+  .exercise-card.open .sets-panel { display: block; }
+  .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .set-btn {
+    background: var(--border);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .set-btn .set-label { font-size: 11px; color: var(--muted); }
+  .set-btn .set-reps { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text); }
+  .set-btn.done-set { background: rgba(64,255,176,0.12); border-color: var(--accent2); }
+  .set-btn.done-set .set-reps { color: var(--accent2); }
+  .set-btn.active-set { border-color: var(--accent); background: rgba(240,255,64,0.08); }
+  .set-btn.active-set .set-reps { color: var(--accent); }
+  .set-btn .check-icon { position: absolute; top: 4px; right: 4px; font-size: 10px; display: none; }
+  .set-btn.done-set .check-icon { display: block; }
+  .timer-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .timer-icon { font-size: 18px; }
+  .timer-label { flex: 1; color: var(--muted); }
+  .timer-countdown {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    min-width: 48px;
+    text-align: right;
+  }
+  .timer-countdown.warning { color: var(--accent3); }
+  .start-timer-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .start-timer-btn.running { background: var(--accent3); }
+  .start-timer-btn.paused { background: var(--accent2); }
 
-  .schedule-day { margin-bottom: 8px; border: 1px solid #2a2a3e; border-radius: 16px; overflow: hidden; background: #1a1a2e; }
-  .day-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
-  .day-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .day-name { font-weight: 700; font-size: 14px; }
-  .today-tag { font-size: 9px; border-radius: 4px; padding: 2px 6px; letter-spacing: 1px; font-weight: 700; color: #000; }
-  .day-focus { font-size: 11px; color: #777; margin-top: 1px; }
-  .day-arrow { font-size: 11px; color: #444; margin-left: auto; }
-  .day-body { padding: 0 16px 14px; border-top: 1px solid #ffffff08; display: none; }
-  .day-body.open { display: block; }
-  .ex-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #ffffff06; align-items: center; }
-  .ex-num { font-size: 11px; color: #555; margin-right: 8px; }
-  .rest-info-box { margin-top: 10px; padding: 7px 10px; background: #ffffff07; border-radius: 8px; font-size: 10px; color: #555; }
+  /* TIMER OVERLAY */
+  .timer-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.92);
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+  }
+  .timer-overlay.show { display: flex; }
+  .timer-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--muted); }
+  .timer-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--accent);
+    transition: color .3s;
+  }
+  .timer-big.warning { color: var(--accent3); }
+  .timer-subtitle { font-size: 14px; color: var(--muted); text-align: center; }
+  .timer-ring {
+    position: relative;
+    width: 200px; height: 200px;
+  }
+  .timer-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  .timer-ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  circle.bg { fill: none; stroke: var(--border); stroke-width: 6; }
+  circle.fg { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .5s linear, stroke .3s; }
+  circle.fg.warning { stroke: var(--accent3); }
+  .timer-actions { display: flex; gap: 12px; }
+  .timer-skip-btn, .timer-stop-btn {
+    border: none; border-radius: 12px;
+    padding: 12px 28px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform .1s;
+  }
+  .timer-skip-btn:active, .timer-stop-btn:active { transform: scale(0.96); }
+  .timer-skip-btn { background: var(--accent); color: var(--bg); }
+  .timer-stop-btn { background: var(--card); color: var(--muted); border: 1px solid var(--border); }
+  .timer-type-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px; color: var(--accent2);
+  }
 
-  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 20px; }
-  .cal-head { text-align: center; font-size: 9px; color: #444; padding-bottom: 4px; }
-  .cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #444; border: 1px solid #222; background: #1a1a2e; position: relative; }
-  .cal-day.checked { background: #FF6B3522; border-color: #FF6B3544; color: #fff; font-size: 14px; }
-  .cal-day.is-today { border-color: #FF6B35 !important; font-weight: 800; color: #FF6B35; }
-  .today-dot { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: #FF6B35; }
-  .sticker-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sticker-card { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px; padding: 8px 12px; text-align: center; }
-  .sticker-emoji { font-size: 24px; }
-  .sticker-date { font-size: 10px; color: #555; margin-top: 2px; }
-  .empty-msg { color: #555; font-size: 13px; padding: 20px 0; }
+  /* CALENDAR */
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; margin-bottom: 16px;
+  }
+  .cal-day-header { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0; }
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    background: var(--card);
+    color: var(--muted);
+    position: relative;
+  }
+  .cal-day.today { border: 2px solid var(--accent); color: var(--accent); }
+  .cal-day.checked { background: rgba(64,255,176,0.15); color: var(--accent2); }
+  .cal-day.checked::after {
+    content: '✓';
+    position: absolute; bottom: 2px; right: 4px;
+    font-size: 9px; color: var(--accent2);
+  }
+  .cal-day.rest-day { background: rgba(96,96,160,0.1); color: var(--muted); }
+  .cal-day.empty { background: transparent; }
+  .cal-month { font-family: 'Bebas Neue', sans-serif; font-size: 20px; margin-bottom: 12px; letter-spacing: 2px; }
 
-  /* ── Session ── */
-  .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
-  .session-modal { background: #111; border-radius: 24px 24px 0 0; padding: 24px 20px 36px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
-  .modal-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .modal-progress-wrap { background: #222; border-radius: 99px; height: 4px; margin-bottom: 18px; overflow: hidden; }
-  .modal-progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-  .ex-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
-  .ex-reps-lbl { font-size: 13px; color: #888; margin-bottom: 16px; }
-  .sets-dots { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .set-dot { flex: 1; min-width: 36px; padding: 10px 4px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; border: 2px solid #333; background: #1a1a2e; color: #555; transition: all 0.2s; }
-  .set-dot.active { background: #2a2a3e; color: #fff; }
+  /* STICKERS */
+  .sticker-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .sticker {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 22px;
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 70px;
+    position: relative;
+  }
+  .sticker.earned { border-color: var(--accent2); background: rgba(64,255,176,0.08); }
+  .sticker.earned::after { content: '✓'; position: absolute; top: 4px; right: 6px; font-size: 10px; color: var(--accent2); }
+  .sticker-label { font-size: 10px; color: var(--muted); margin-top: 4px; text-align: center; }
+  .sticker.earned .sticker-label { color: var(--accent2); }
 
-  /* timers row */
-  .timers-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .t-box { flex: 1; border-radius: 12px; padding: 12px 6px; text-align: center; background: #1a1a2e; border: 1px solid #2a2a3e; }
-  .t-lbl { font-size: 9px; color: #666; letter-spacing: 1px; margin-bottom: 4px; }
-  .t-val { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
-  .t-sub { font-size: 9px; color: #555; margin-top: 2px; }
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 20px;
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 15px;
+    z-index: 300;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .work-label { font-size: 12px; color: #666; text-align: center; margin-bottom: 14px; }
-  .done-set-btn { width: 100%; padding: 18px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 16px; font-weight: 900; font-family: inherit; }
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    z-index: 400;
+    pointer-events: none;
+    animation: confetti-fall 1.5s ease-in forwards;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .points-pop {
+    position: fixed;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    z-index: 300;
+    pointer-events: none;
+    animation: pop-up 1s ease-out forwards;
+  }
+  @keyframes pop-up {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    30% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-60px) scale(1); opacity: 0; }
+  }
 
-  /* rest */
-  .rest-phase { text-align: center; }
-  .rest-label { font-size: 13px; color: #888; margin-bottom: 14px; }
-  .rest-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px; }
-  .circle-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
-  .circle-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .circle-time { font-size: 32px; font-weight: 900; font-variant-numeric: tabular-nums; }
-  .circle-unit { font-size: 10px; color: #666; }
-  .rest-stats { display: flex; flex-direction: column; gap: 8px; }
-  .r-stat { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px; padding: 10px 14px; text-align: left; min-width: 110px; }
-  .r-stat-lbl { font-size: 9px; color: #666; letter-spacing: 2px; margin-bottom: 3px; }
-  .r-stat-val { font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; }
-  .skip-btn { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #444; background: #2a2a3e; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .points-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+  }
 
-  /* done */
-  .done-phase { text-align: center; padding: 16px 0; }
-  .done-emoji-big { font-size: 64px; margin-bottom: 8px; }
-  .done-title { font-size: 22px; font-weight: 900; color: #FFE66D; margin-bottom: 6px; }
-  .done-sub { font-size: 13px; color: #888; margin-bottom: 4px; }
-  .done-total-line { font-size: 13px; color: #aaa; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
-  .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 12px; }
-  .summary-table th { color: #555; font-weight: 600; padding: 6px 8px; text-align: left; border-bottom: 1px solid #2a2a3e; }
-  .summary-table td { padding: 7px 8px; border-bottom: 1px solid #1a1a2e; color: #ccc; font-variant-numeric: tabular-nums; }
-  .summary-table td.hi { color: #fff; font-weight: 700; }
-  .done-btns { display: flex; gap: 10px; }
-
-  .ex-overview { margin-top: 18px; border-top: 1px solid #1a1a2e; padding-top: 14px; }
-  .ov-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
-  .ov-num { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px solid #333; background: #2a2a3e; }
-  .ov-name { font-size: 12px; }
-  .ov-sets { margin-left: auto; font-size: 11px; color: #555; }
-  .ov-time { font-size: 11px; margin-left: 8px; font-variant-numeric: tabular-nums; }
-
-  .celebration { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); animation: fadeIn 0.3s; }
-  .celeb-emoji { font-size: 96px; animation: bounce 0.5s ease infinite alternate; }
-  .celeb-title { font-size: 28px; font-weight: 900; color: #FFE66D; margin-top: 16px; letter-spacing: 2px; }
-  .celeb-pts { font-size: 15px; color: #aaa; margin-top: 8px; }
-  .celeb-fires { font-size: 38px; margin-top: 12px; }
-  .celeb-streak { color: #FF6B35; font-weight: 700; font-size: 17px; margin-top: 6px; }
-  .hidden { display: none !important; }
-  @keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  /* WORKOUT DONE BANNER */
+  .done-banner {
+    background: linear-gradient(135deg, rgba(64,255,176,0.15), rgba(240,255,64,0.08));
+    border: 1px solid var(--accent2);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .done-banner .done-emoji { font-size: 48px; display: block; margin-bottom: 8px; }
+  .done-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent2); letter-spacing: 2px; }
+  .done-banner p { font-size: 13px; color: var(--muted); margin-top: 4px; }
 </style>
 </head>
 <body>
 
-<div class="celebration hidden" id="celebration">
-  <div class="celeb-emoji" id="celebEmoji"></div>
-  <div class="celeb-title">เช็คอินสำเร็จ!</div>
-  <div class="celeb-pts">+10 แต้ม 🎯</div>
-  <div class="celeb-fires" id="celebFires"></div>
-  <div class="celeb-streak" id="celebStreak"></div>
-</div>
-
-<!-- Session overlay -->
-<div class="overlay hidden" id="sessionOverlay">
-  <div class="session-modal">
-    <div class="modal-topbar">
-      <span style="font-size:11px;color:#666;letter-spacing:2px" id="sessProgressLbl"></span>
-      <button onclick="closeSession()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer">✕</button>
-    </div>
-    <div class="modal-progress-wrap"><div class="modal-progress-fill" id="sessBar"></div></div>
-    <div class="ex-title" id="sessExName"></div>
-    <div class="ex-reps-lbl" id="sessExReps"></div>
-    <div class="sets-dots" id="setsDots"></div>
-
-    <!-- WORK -->
-    <div id="workPhase">
-      <div class="timers-row">
-        <div class="t-box" id="tboxSet">
-          <div class="t-lbl">⏱ เซตนี้</div>
-          <div class="t-val" id="tSet">0:00</div>
-          <div class="t-sub">วิ</div>
-        </div>
-        <div class="t-box" id="tboxEx">
-          <div class="t-lbl">📋 ท่านี้</div>
-          <div class="t-val" id="tEx">0:00</div>
-          <div class="t-sub">วิ</div>
-        </div>
-        <div class="t-box" id="tboxTotal">
-          <div class="t-lbl">🏋️ รวม</div>
-          <div class="t-val" id="tTotal">0:00</div>
-          <div class="t-sub">วิ</div>
-        </div>
-      </div>
-      <div class="work-label" id="workLbl"></div>
-      <button class="done-set-btn" id="doneSetBtn" onclick="doneSet()"></button>
-    </div>
-
-    <!-- REST -->
-    <div id="restPhase" class="rest-phase hidden">
-      <div class="rest-label" id="restLbl"></div>
-      <div class="rest-row">
-        <div class="circle-wrap">
-          <svg width="120" height="120" style="transform:rotate(-90deg)">
-            <circle cx="60" cy="60" r="52" fill="none" stroke="#222" stroke-width="8"/>
-            <circle cx="60" cy="60" r="52" fill="none" id="restCircle" stroke-width="8"
-              stroke-dasharray="326.73" stroke-dashoffset="0" stroke-linecap="round"/>
-          </svg>
-          <div class="circle-center">
-            <div class="circle-time" id="restCountdown">1:00</div>
-            <div class="circle-unit">พัก</div>
-          </div>
-        </div>
-        <div class="rest-stats">
-          <div class="r-stat">
-            <div class="r-stat-lbl">📋 ท่านี้</div>
-            <div class="r-stat-val" id="rEx">0:00</div>
-          </div>
-          <div class="r-stat">
-            <div class="r-stat-lbl">🏋️ รวม</div>
-            <div class="r-stat-val" id="rTotal">0:00</div>
-          </div>
-        </div>
-      </div>
-      <button class="skip-btn" onclick="skipRest()">ข้ามการพัก →</button>
-    </div>
-
-    <!-- DONE -->
-    <div id="donePhase" class="done-phase hidden">
-      <div class="done-emoji-big">🎉</div>
-      <div class="done-title">ทำเสร็จแล้ว!</div>
-      <div class="done-sub">ออกกำลังกายครบทุกท่าแล้ววันนี้</div>
-      <div class="done-total-line" id="doneTotalLine"></div>
-      <table class="summary-table" id="summaryTable"></table>
-      <div class="done-btns">
-        <button onclick="closeSession()" style="flex:1;padding:13px;border-radius:12px;border:none;background:#2a2a3e;color:#fff;font-size:14px;cursor:pointer;font-family:inherit">ปิด</button>
-        <button id="checkinBtn" style="flex:2;padding:13px;border-radius:12px;border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">🎯 เช็คอินวันนี้</button>
-      </div>
-    </div>
-
-    <div class="ex-overview" id="exOverview"></div>
-  </div>
-</div>
-
 <div class="header">
-  <div class="header-inner">
-    <div class="header-top">
-      <div><div class="brand-sub">WORKOUT TRACKER</div><div class="brand-name">💪 FitStreak</div></div>
-      <div><div class="points-label">POINTS</div><div class="points-val" id="pointsDisplay">0</div></div>
-    </div>
-    <div class="nav">
-      <button class="nav-btn active" onclick="switchView('home',this)">🏠 หน้าแรก</button>
-      <button class="nav-btn" onclick="switchView('schedule',this)">📋 ตาราง</button>
-      <button class="nav-btn" onclick="switchView('history',this)">📅 ประวัติ</button>
-    </div>
+  <div class="logo">PUMP LOG</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="streak-badge">🔥 <span class="streak-num" id="streakNum">0</span> days</div>
+    <div class="streak-badge">⚡ <span class="points-display" id="pointsDisplay">0</span></div>
   </div>
 </div>
 
-<div class="main">
-  <div id="view-home"></div>
-  <div id="view-schedule" class="hidden"></div>
-  <div id="view-history" class="hidden"></div>
+<div class="tabs" id="tabsBar">
+  <div class="tab active" onclick="switchTab('today')">วันนี้</div>
+  <div class="tab" onclick="switchTab('calendar')">ปฏิทิน</div>
+  <div class="tab" onclick="switchTab('stats')">สถิติ</div>
 </div>
+
+<!-- TODAY PAGE -->
+<div class="page active" id="page-today">
+  <div class="day-hero" id="dayHero">
+    <div class="day-label">TODAY — <span id="todayDate"></span></div>
+    <div class="day-name" id="dayName">–</div>
+    <div class="day-focus" id="dayFocus">–</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span id="progressText">0 / 0 ท่า</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <button class="checkin-btn" id="masterCheckin" onclick="masterCheckinClick()">✓ CHECK IN วันนี้</button>
+    <button class="rest-btn" id="restDayBtn" onclick="markRestDay()" style="display:none">😴 วันพักผ่อน — เช็คอินวันพัก</button>
+  </div>
+
+  <div id="exerciseList"></div>
+</div>
+
+<!-- CALENDAR PAGE -->
+<div class="page" id="page-calendar">
+  <div class="cal-month" id="calMonth"></div>
+  <div class="calendar-grid" id="calGrid"></div>
+  <div class="section-title">สติกเกอร์รางวัล 🏆</div>
+  <div class="sticker-row" id="stickerRow"></div>
+</div>
+
+<!-- STATS PAGE -->
+<div class="page" id="page-stats">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div class="section-title">ประวัติล่าสุด</div>
+  <div id="historyList"></div>
+</div>
+
+<!-- TIMER OVERLAY -->
+<div class="timer-overlay" id="timerOverlay">
+  <div class="timer-type-badge" id="timerTypeBadge">พักระหว่างเซต</div>
+  <div class="timer-ring">
+    <svg viewBox="0 0 200 200" width="200" height="200">
+      <circle class="bg" cx="100" cy="100" r="88"/>
+      <circle class="fg" id="timerCircle" cx="100" cy="100" r="88"
+        stroke-dasharray="553" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-ring-text">
+      <div class="timer-title" id="timerTitle">พักเซต</div>
+      <div class="timer-big" id="timerBig">1:00</div>
+      <div class="timer-subtitle" id="timerSub"></div>
+    </div>
+  </div>
+  <div class="timer-actions">
+    <button class="timer-stop-btn" onclick="stopTimer()">✕ หยุด</button>
+    <button class="timer-skip-btn" onclick="skipTimer()">ข้าม ▶</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const SCHEDULE={
-  1:{day:"จันทร์",focus:"อก + แขน + ท้อง",emoji:"💪",color:"#FF6B35",exercises:[
-    {name:"Push up",sets:4,reps:"15 ครั้ง"},{name:"Dumbbell curl",sets:4,reps:"12 ครั้ง"},
-    {name:"Lateral raise",sets:4,reps:"12 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
-    {name:"Ab wheel",sets:4,reps:"10–15 ครั้ง"}]},
-  2:{day:"อังคาร",focus:"ขา + หลัง + core",emoji:"🦵",color:"#4ECDC4",exercises:[
-    {name:"Squat",sets:4,reps:"20 ครั้ง"},{name:"Dumbbell row",sets:4,reps:"12 ครั้ง"},
-    {name:"Shoulder press",sets:4,reps:"12 ครั้ง"},{name:"Reverse crunch",sets:4,reps:"15 ครั้ง"},
-    {name:"Side plank",sets:3,reps:"30–45 วิ/ข้าง"}]},
-  3:{day:"พุธ",focus:"ท้องล่าง + ข้าง",emoji:"🔥",color:"#FFE66D",exercises:[
-    {name:"Ab wheel",sets:4,reps:"12 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
-    {name:"Oblique crunch",sets:3,reps:"15 ครั้ง/ข้าง"},{name:"Russian twist",sets:3,reps:"20 ครั้ง"},
-    {name:"Plank",sets:3,reps:"45 วิ"}]},
-  4:{day:"พฤหัส",focus:"พัก / คาร์ดิโอเบา",emoji:"🚶",color:"#95E1D3",isRest:true,exercises:[
-    {name:"เดินเร็ว",sets:1,reps:"20 นาที"},{name:"วิ่งอยู่กับที่",sets:1,reps:"5–10 นาที"}]},
-  5:{day:"ศุกร์",focus:"อก + ไหล่ + แขน",emoji:"🏋️",color:"#F38181",exercises:[
-    {name:"Push up",sets:4,reps:"15 ครั้ง"},{name:"Shoulder press",sets:4,reps:"12 ครั้ง"},
-    {name:"Lateral raise",sets:4,reps:"12 ครั้ง"},{name:"Dumbbell curl",sets:4,reps:"12 ครั้ง"},
-    {name:"Ab wheel",sets:3,reps:"10–15 ครั้ง"}]},
-  6:{day:"เสาร์",focus:"หลัง + ขา + ท้องล่าง",emoji:"⚡",color:"#A8E6CF",exercises:[
-    {name:"Squat",sets:4,reps:"20 ครั้ง"},{name:"Dumbbell row",sets:4,reps:"12 ครั้ง"},
-    {name:"Reverse crunch",sets:4,reps:"15 ครั้ง"},{name:"Leg raise",sets:4,reps:"15 ครั้ง"},
-    {name:"Side plank",sets:3,reps:"45 วิ/ข้าง"}]},
-  0:{day:"อาทิตย์",focus:"พักเต็มที่",emoji:"😴",color:"#C3A6FF",isRest:true,exercises:[
-    {name:"เดินเบา ๆ",sets:1,reps:"ตามสบาย"},{name:"ยืดกล้าม",sets:1,reps:"10–15 นาที"}]},
+// ============================================================
+// DATA
+// ============================================================
+const SCHEDULE = {
+  1: { // Monday
+    name: 'จันทร์', focus: 'อก + แขน + ท้อง', isRest: false,
+    exercises: [
+      { name: 'Push Up', sets: 4, reps: '15', detail: '15 × 4 — พัก 60-90 วิ' },
+      { name: 'Dumbbell Curl', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Lateral Raise', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4 — ท้องล่าง' },
+      { name: 'Ab Wheel', sets: 4, reps: '10-15', detail: '10-15 × 4' },
+    ]
+  },
+  2: {
+    name: 'อังคาร', focus: 'ขา + หลัง + Core', isRest: false,
+    exercises: [
+      { name: 'Squat', sets: 4, reps: '20', detail: '20 × 4' },
+      { name: 'Dumbbell Row', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Shoulder Press', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Reverse Crunch', sets: 4, reps: '15', detail: '15 × 4' },
+      { name: 'Side Plank', sets: 3, reps: '30-45วิ', detail: '30-45 วิ × 3 / ข้าง', isTime: true },
+    ]
+  },
+  3: {
+    name: 'พุธ', focus: 'วันท้อง (เน้นท้องล่าง + ข้าง)', isRest: false,
+    exercises: [
+      { name: 'Ab Wheel', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4' },
+      { name: 'Oblique Crunch', sets: 3, reps: '15', detail: '15 × 3 / ข้าง' },
+      { name: 'Russian Twist', sets: 3, reps: '20', detail: '20 × 3' },
+      { name: 'Plank', sets: 3, reps: '45วิ', detail: '45 วิ × 3', isTime: true },
+    ]
+  },
+  4: {
+    name: 'พฤหัส', focus: 'พัก / คาร์ดิโอเบา', isRest: true,
+    exercises: [
+      { name: 'เดินเร็ว 20 นาที', sets: 1, reps: '20นาที', detail: 'เลือกอย่างใดอย่างหนึ่ง', isTime: true },
+      { name: 'วิ่งอยู่กับที่', sets: 1, reps: '5-10นาที', detail: '5-10 นาที', isTime: true },
+    ],
+    note: 'เลือกทำอย่างใดอย่างหนึ่งก็ได้ 🚶'
+  },
+  5: {
+    name: 'ศุกร์', focus: 'อก + ไหล่ + แขน', isRest: false,
+    exercises: [
+      { name: 'Push Up', sets: 4, reps: '15', detail: '15 × 4' },
+      { name: 'Shoulder Press', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Lateral Raise', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Dumbbell Curl', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Ab Wheel', sets: 3, reps: '10-15', detail: '10-15 × 3' },
+    ]
+  },
+  6: {
+    name: 'เสาร์', focus: 'หลัง + ขา + ท้องล่าง', isRest: false,
+    exercises: [
+      { name: 'Squat', sets: 4, reps: '20', detail: '20 × 4' },
+      { name: 'Dumbbell Row', sets: 4, reps: '12', detail: '12 × 4' },
+      { name: 'Reverse Crunch', sets: 4, reps: '15', detail: '15 × 4' },
+      { name: 'Leg Raise', sets: 4, reps: '15', detail: '15 × 4' },
+      { name: 'Side Plank', sets: 3, reps: '45วิ', detail: '45 วิ × 3 / ข้าง', isTime: true },
+    ]
+  },
+  0: {
+    name: 'อาทิตย์', focus: 'พักเต็มที่ 💤', isRest: true,
+    exercises: [
+      { name: 'เดินเบา ๆ (ถ้าอยากทำ)', sets: 1, reps: '–', detail: 'optional' },
+      { name: 'ยืดกล้ามเนื้อ (ถ้าอยากทำ)', sets: 1, reps: '–', detail: 'optional' },
+    ],
+    note: 'วันพักเต็มที่ 😌'
+  }
 };
-const STICKERS=["🌟","🔥","💎","⚡","🏆","💪","🎯","🚀","✨","🌈","👑","🎖️"];
-const STREAK_BADGES=[
-  {days:3,badge:"🥉",label:"3 วันติด!"},{days:7,badge:"🥈",label:"1 สัปดาห์!"},
-  {days:14,badge:"🥇",label:"2 สัปดาห์!"},{days:30,badge:"🏆",label:"1 เดือน!"},
-  {days:60,badge:"👑",label:"2 เดือน!"},{days:100,badge:"💎",label:"100 วัน!"},
+
+const STICKERS = [
+  { emoji: '🌱', label: 'เริ่มต้น', threshold: 1 },
+  { emoji: '🔥', label: '3 วัน', threshold: 3 },
+  { emoji: '⚡', label: '7 วัน', threshold: 7 },
+  { emoji: '💪', label: '14 วัน', threshold: 14 },
+  { emoji: '🏅', label: '21 วัน', threshold: 21 },
+  { emoji: '🥇', label: '30 วัน', threshold: 30 },
+  { emoji: '🚀', label: '50 วัน', threshold: 50 },
+  { emoji: '👑', label: '100 วัน', threshold: 100 },
 ];
-const REST_SET=60, REST_EX=90;
 
-let checkins={},points=0;
-try{checkins=JSON.parse(sessionStorage.getItem("wc")||"{}");}catch{}
-try{points=parseInt(sessionStorage.getItem("wp")||"0");}catch{}
-function save(){try{sessionStorage.setItem("wc",JSON.stringify(checkins));sessionStorage.setItem("wp",String(points));}catch{}}
-
-const today=new Date(),todayKey=today.toISOString().split("T")[0],todayDow=today.getDay();
-const todayW=SCHEDULE[todayDow];
-
-function getStreak(){
-  let s=0;
-  for(let i=0;i<365;i++){const d=new Date(today);d.setDate(today.getDate()-i);if(checkins[d.toISOString().split("T")[0]])s++;else if(i>0)break;}
-  return s;
+// ============================================================
+// STATE
+// ============================================================
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('pumplog_v2') || '{}'); } catch(e) { return {}; }
 }
-function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${m}:${sec.toString().padStart(2,"0")}`;}
+function saveState() { localStorage.setItem('pumplog_v2', JSON.stringify(state)); }
 
-// ── Session state (pure counters, no Date.now tricks needed) ──
-let S = null;   // session object
-let tickID = null;
+let state = loadState();
+if (!state.checkins) state.checkins = {}; // date -> { done, points, sets: {exIdx: [bool]} }
+if (!state.totalPoints) state.totalPoints = 0;
 
-function stopTick(){ if(tickID){clearInterval(tickID);tickID=null;} }
+// ============================================================
+// TIMER STATE
+// ============================================================
+let timer = { id: null, seconds: 0, total: 0, onDone: null, type: '', label: '' };
+const TIMER_SET = 60;    // set rest: 1 min
+const TIMER_EX  = 90;   // exercise rest: 1.5 min
 
-function startWorkTick(){
-  stopTick();
-  tickID = setInterval(()=>{
-    S.totalSec++;
-    S.exSec++;
-    S.setSec++;
-    document.getElementById("tTotal").textContent = fmt(S.totalSec);
-    document.getElementById("tEx").textContent    = fmt(S.exSec);
-    document.getElementById("tSet").textContent   = fmt(S.setSec);
-    // keep rest panels in sync too
-    document.getElementById("rTotal").textContent = fmt(S.totalSec);
-    document.getElementById("rEx").textContent    = fmt(S.exSec);
-  }, 1000);
+// ============================================================
+// HELPERS
+// ============================================================
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
+function todayDow() { return new Date().getDay(); }
+function getSchedule() { return SCHEDULE[todayDow()]; }
+function getCheckin(key) { return state.checkins[key] || { done: false, points: 0, sets: {} }; }
 
-function startRestTick(duration){
-  stopTick();
-  tickID = setInterval(()=>{
-    S.totalSec++;          // total keeps running
-    S.restRemain--;
-    document.getElementById("rTotal").textContent    = fmt(S.totalSec);
-    document.getElementById("restCountdown").textContent = fmt(S.restRemain);
-    updateCircle(S.restRemain, duration);
-    if(S.restRemain <= 0){ stopTick(); advanceAfterRest(); }
-  }, 1000);
+function streak() {
+  let count = 0, d = new Date();
+  while (true) {
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (state.checkins[k] && state.checkins[k].done) { count++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return count;
 }
 
-function updateCircle(remain, total){
-  const circ = 2*Math.PI*52;
-  const offset = circ * (1 - remain/total);
-  document.getElementById("restCircle").style.strokeDashoffset = offset;
-}
+function totalCheckins() { return Object.values(state.checkins).filter(v => v.done).length; }
 
-// ── Open / close ──
-function openSession(){
-  stopTick();
-  S = {
-    exIdx:0, setIdx:0,
-    completedSets:{},
-    exercises: todayW.exercises,
-    color: todayW.color,
-    totalSec:0, exSec:0, setSec:0,
-    restRemain:0,
-    exTimes: new Array(todayW.exercises.length).fill(0),
-  };
-  const c = todayW.color;
-  document.getElementById("restCircle").style.stroke = c;
-  document.getElementById("tboxSet").style.cssText   += `;background:${c}22;border-color:${c}55`;
-  document.getElementById("tboxEx").style.cssText    += `;background:${c}22;border-color:${c}55`;
-  document.getElementById("tboxTotal").style.cssText += `;background:${c}22;border-color:${c}55`;
-  document.getElementById("tSet").style.color   = c;
-  document.getElementById("tEx").style.color    = c;
-  document.getElementById("tTotal").style.color = c;
-  document.getElementById("checkinBtn").style.background = `linear-gradient(135deg,${c},${c}bb)`;
-  document.getElementById("checkinBtn").onclick = ()=>{ doCheckIn(); closeSession(); };
-  document.getElementById("sessionOverlay").classList.remove("hidden");
-  enterWork();
-}
+// ============================================================
+// RENDER TODAY
+// ============================================================
+function renderToday() {
+  const dow = todayDow();
+  const sched = SCHEDULE[dow];
+  const key = todayKey();
+  const checkin = getCheckin(key);
+  const d = new Date();
 
-function closeSession(){
-  stopTick();
-  document.getElementById("sessionOverlay").classList.add("hidden");
-}
+  document.getElementById('todayDate').textContent =
+    d.toLocaleDateString('th-TH', { weekday:'short', day:'numeric', month:'short' });
+  document.getElementById('dayName').textContent = sched.name;
+  document.getElementById('dayFocus').textContent = sched.focus;
 
-// ── Phases ──
-function enterWork(){
-  S.setSec = 0;
-  document.getElementById("workPhase").classList.remove("hidden");
-  document.getElementById("restPhase").classList.add("hidden");
-  document.getElementById("donePhase").classList.add("hidden");
+  // progress
+  const exs = sched.exercises;
+  const setsInfo = checkin.sets || {};
+  let totalSets = 0, doneSets = 0;
+  exs.forEach((ex, i) => {
+    totalSets += ex.sets;
+    const doneArr = setsInfo[i] || [];
+    doneSets += doneArr.filter(Boolean).length;
+  });
+  const pct = totalSets ? Math.round(doneSets/totalSets*100) : 0;
+  document.getElementById('progressText').textContent = `${doneSets} / ${totalSets} เซต`;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
 
-  const ex = S.exercises[S.exIdx];
-  document.getElementById("workLbl").textContent = `เซต ${S.setIdx+1} / ${ex.sets}  ·  กำลังทำอยู่`;
-  document.getElementById("doneSetBtn").textContent = `✅ เสร็จแล้ว!  เซต ${S.setIdx+1}`;
-  document.getElementById("doneSetBtn").style.background = `linear-gradient(135deg,${S.color},${S.color}bb)`;
-  document.getElementById("doneSetBtn").style.boxShadow  = `0 6px 24px ${S.color}44`;
-
-  // reset display
-  document.getElementById("tSet").textContent   = "0:00";
-  document.getElementById("tEx").textContent    = fmt(S.exSec);
-  document.getElementById("tTotal").textContent = fmt(S.totalSec);
-
-  startWorkTick();
-  renderMeta();
-}
-
-function doneSet(){
-  const ex = S.exercises[S.exIdx];
-  S.completedSets[`${S.exIdx}-${S.setIdx}`] = true;
-  const lastSet = S.setIdx === ex.sets-1;
-  const lastEx  = S.exIdx  === S.exercises.length-1;
-  if(lastSet && lastEx){ enterDone(); return; }
-  if(lastSet) enterRest("ex");
-  else        enterRest("set");
-}
-
-function enterRest(type){
-  const duration = (type==="set") ? REST_SET : REST_EX;
-  S.restRemain = duration;
-
-  // save ex time when finishing last set of exercise
-  if(type==="ex") S.exTimes[S.exIdx] = S.exSec;
-
-  document.getElementById("workPhase").classList.add("hidden");
-  document.getElementById("restPhase").classList.remove("hidden");
-  document.getElementById("donePhase").classList.add("hidden");
-
-  const nextName = type==="set"
-    ? `เซตถัดไป: ${S.setIdx+2}/${S.exercises[S.exIdx].sets}`
-    : `ท่าถัดไป: ${S.exercises[S.exIdx+1].name}`;
-  document.getElementById("restLbl").textContent =
-    (type==="set" ? "💤 พักระหว่างเซต  ·  " : "💤 พักระหว่างท่า  ·  ") + nextName;
-
-  document.getElementById("restCountdown").textContent = fmt(duration);
-  document.getElementById("rEx").textContent    = fmt(S.exSec);
-  document.getElementById("rTotal").textContent = fmt(S.totalSec);
-  updateCircle(duration, duration);
-
-  startRestTick(duration);
-  renderMeta();
-}
-
-function skipRest(){ stopTick(); S.restRemain=0; advanceAfterRest(); }
-
-function advanceAfterRest(){
-  // determine which rest type we were in by checking setIdx vs sets
-  const ex = S.exercises[S.exIdx];
-  if(S.setIdx < ex.sets-1){
-    // was set rest
-    S.setIdx++;
-    enterWork();
+  // buttons
+  const masterBtn = document.getElementById('masterCheckin');
+  const restBtn = document.getElementById('restDayBtn');
+  if (checkin.done) {
+    masterBtn.textContent = '✓ เช็คอินแล้ววันนี้!';
+    masterBtn.classList.add('done');
+    masterBtn.disabled = true;
+    restBtn.style.display = 'none';
   } else {
-    // was ex rest
-    S.exIdx++;
-    S.setIdx = 0;
-    S.exSec  = 0;
-    enterWork();
-  }
-}
-
-function enterDone(){
-  stopTick();
-  S.exTimes[S.exIdx] = S.exSec;
-  document.getElementById("workPhase").classList.add("hidden");
-  document.getElementById("restPhase").classList.add("hidden");
-  document.getElementById("donePhase").classList.remove("hidden");
-
-  document.getElementById("doneTotalLine").textContent = `⏱ เวลารวมทั้งหมด: ${fmt(S.totalSec)}`;
-
-  let rows=`<tr><th>ท่า</th><th>เซต</th><th>เวลาท่า</th></tr>`;
-  S.exercises.forEach((ex,i)=>{
-    rows+=`<tr><td>${ex.name}</td><td class="hi">${ex.sets} เซต</td><td class="hi">${fmt(S.exTimes[i]||0)}</td></tr>`;
-  });
-  document.getElementById("summaryTable").innerHTML=rows;
-  renderMeta();
-}
-
-// ── Render dots + overview ──
-function renderMeta(){
-  const ex    = S.exercises[S.exIdx];
-  const total = S.exercises.length;
-  const totalSets = S.exercises.reduce((a,e)=>a+e.sets,0);
-  const doneSets  = S.exercises.slice(0,S.exIdx).reduce((a,e)=>a+e.sets,0)+S.setIdx;
-
-  document.getElementById("sessProgressLbl").textContent = `ท่า ${S.exIdx+1}/${total}`;
-  document.getElementById("sessExName").textContent = ex.name;
-  document.getElementById("sessExReps").textContent = ex.reps;
-  document.getElementById("sessBar").style.width    = `${(doneSets/totalSets)*100}%`;
-  document.getElementById("sessBar").style.background = `linear-gradient(90deg,${S.color},${S.color}99)`;
-
-  // dots
-  const dotsEl = document.getElementById("setsDots"); dotsEl.innerHTML="";
-  for(let i=0;i<ex.sets;i++){
-    const d=document.createElement("div"); d.className="set-dot";
-    const done=S.completedSets[`${S.exIdx}-${i}`];
-    const active=(i===S.setIdx);
-    if(done){ d.style.borderColor=S.color;d.style.background=S.color+"33";d.style.color=S.color;d.textContent="✓"; }
-    else if(active){ d.classList.add("active");d.style.borderColor=S.color+"88";d.textContent=`เซต ${i+1}`; }
-    else { d.textContent=`เซต ${i+1}`; }
-    dotsEl.appendChild(d);
-  }
-
-  // overview
-  const ov=document.getElementById("exOverview"); ov.innerHTML="";
-  S.exercises.forEach((e,i)=>{
-    const row=document.createElement("div"); row.className="ov-row";
-    row.style.opacity=i<S.exIdx?0.4:i===S.exIdx?1:0.5;
-    const num=document.createElement("div"); num.className="ov-num";
-    if(i<S.exIdx){num.style.background=S.color+"44";num.style.borderColor=S.color;num.textContent="✓";}
-    else if(i===S.exIdx){num.style.background=S.color;num.style.borderColor=S.color;num.textContent=i+1;}
-    else{num.textContent=i+1;}
-    const nm=document.createElement("span"); nm.className="ov-name";
-    nm.style.color=i===S.exIdx?"#fff":"#666"; nm.textContent=e.name;
-    const st=document.createElement("span"); st.className="ov-sets"; st.textContent=`${e.sets} เซต`;
-    row.appendChild(num); row.appendChild(nm); row.appendChild(st);
-    if(i<S.exIdx&&S.exTimes[i]){
-      const t=document.createElement("span"); t.className="ov-time";
-      t.style.color=S.color; t.textContent=fmt(S.exTimes[i]);
-      row.appendChild(t);
+    masterBtn.disabled = pct < 100 && !sched.isRest;
+    masterBtn.classList.remove('done');
+    masterBtn.textContent = pct === 100 ? '🎉 เช็คอิน!' : '✓ CHECK IN วันนี้';
+    if (sched.isRest) {
+      restBtn.style.display = 'block';
+      masterBtn.style.display = 'none';
+    } else {
+      restBtn.style.display = 'none';
+      masterBtn.style.display = 'block';
     }
-    ov.appendChild(row);
-  });
-}
-
-// ── Check-in ──
-function doCheckIn(){
-  if(checkins[todayKey])return;
-  const sticker=STICKERS[Math.floor(Math.random()*STICKERS.length)];
-  checkins[todayKey]={sticker,time:new Date().toISOString()};
-  points+=10; save();
-  const streak=getStreak();
-  document.getElementById("celebEmoji").textContent=sticker;
-  document.getElementById("celebFires").textContent="🔥".repeat(Math.min(streak,7));
-  document.getElementById("celebStreak").textContent=`Streak: ${streak} วัน!`;
-  document.getElementById("celebration").classList.remove("hidden");
-  setTimeout(()=>{document.getElementById("celebration").classList.add("hidden");renderAll();},3000);
-  renderAll();
-}
-
-// ── Views ──
-function switchView(name,btn){
-  ["home","schedule","history"].forEach(v=>document.getElementById(`view-${v}`).classList.toggle("hidden",v!==name));
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-function renderAll(){
-  document.getElementById("pointsDisplay").textContent=points;
-  renderHome(); renderSchedule(); renderHistory();
-}
-
-function renderHome(){
-  const el=document.getElementById("view-home");
-  const streak=getStreak(),checked=!!checkins[todayKey],totalCI=Object.keys(checkins).length;
-  const nextBadge=STREAK_BADGES.find(b=>streak<b.days);
-  const earned=STREAK_BADGES.filter(b=>streak>=b.days);
-  let h=`
-  <div class="stats-row">
-    <div class="stat-card streak"><div class="stat-val">${streak}</div><div class="stat-lbl">🔥 STREAK</div></div>
-    <div class="stat-card plain"><div class="stat-val">${totalCI}</div><div class="stat-lbl">✅ เช็คอิน</div></div>
-    <div class="stat-card plain"><div class="stat-val">${points}</div><div class="stat-lbl">⭐ POINTS</div></div>
-  </div>
-  <div class="today-card" style="border-color:${todayW.color}33">
-    <div class="today-bg-emoji">${todayW.emoji}</div>
-    <div class="today-sub">วันนี้ — ${todayW.day}</div>
-    <div class="today-title">${todayW.emoji} ${todayW.focus}</div>
-    <div class="today-meta">${todayW.isRest?"วันพัก 🌿":`${todayW.exercises.length} ท่า · ${todayW.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
-  if(!todayW.isRest&&!checked)
-    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);box-shadow:0 4px 20px ${todayW.color}44" onclick="openSession()">▶ เริ่มออกกำลังกาย</button>`;
-  else if(!todayW.isRest&&checked)
-    h+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
-  else if(todayW.isRest&&!checked)
-    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);color:#000" onclick="doCheckIn()">🌿 เช็คอินวันพัก</button>`;
-  else
-    h+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
-  h+=`</div>`;
-  if(!todayW.isRest)
-    h+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
-  if(nextBadge) h+=`
-  <div class="badge-progress">
-    <div class="badge-emoji">${nextBadge.badge}</div>
-    <div class="badge-info">
-      <div class="badge-sub">เป้าหมายถัดไป</div>
-      <div class="badge-title">${nextBadge.label}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${(streak/nextBadge.days)*100}%"></div></div>
-      <div class="badge-count">${streak} / ${nextBadge.days} วัน</div>
-    </div>
-  </div>`;
-  if(earned.length){
-    h+=`<div class="badges-section"><div class="section-label">🏅 BADGES</div><div class="badges-grid">`;
-    earned.forEach(b=>{h+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`;});
-    h+=`</div></div>`;
   }
-  el.innerHTML=h;
+
+  // exercise list
+  const list = document.getElementById('exerciseList');
+  if (sched.isRest && !checkin.done) {
+    list.innerHTML = `<div class="done-banner">
+      <span class="done-emoji">${dow === 0 ? '🛋️' : '🚶'}</span>
+      <h2>${sched.name === 'พฤหัส' ? 'วันพักเบา' : 'วันพักเต็มที่'}</h2>
+      <p>${sched.note || ''}</p>
+    </div>`;
+    if (sched.note) list.innerHTML += buildExerciseList(sched, checkin, key);
+    return;
+  }
+  if (checkin.done && pct === 100) {
+    list.innerHTML = `<div class="done-banner">
+      <span class="done-emoji">🏆</span>
+      <h2>ทำได้แล้ว!</h2>
+      <p>+${checkin.points} แต้มวันนี้ 🎉</p>
+    </div>` + buildExerciseList(sched, checkin, key);
+  } else {
+    list.innerHTML = buildExerciseList(sched, checkin, key);
+  }
 }
 
-function renderSchedule(){
-  const el=document.getElementById("view-schedule");
-  let h=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
-  [1,2,3,4,5,6,0].forEach(dow=>{
-    const w=SCHEDULE[dow],isToday=dow===todayDow;
-    h+=`<div class="schedule-day" style="${isToday?`border-color:${w.color}`:""}">
-      <div class="day-header" onclick="toggleDay(${dow})">
-        <div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="day-name">${w.day}</span>
-            ${isToday?`<span class="today-tag" style="background:${w.color}">TODAY</span>`:""}
-          </div>
-          <div class="day-focus">${w.focus}</div>
+function buildExerciseList(sched, checkin, key) {
+  let html = `<div class="section-title">ท่าออกกำลังกาย</div>`;
+  sched.exercises.forEach((ex, i) => {
+    const setsInfo = checkin.sets || {};
+    const doneArr = setsInfo[i] || new Array(ex.sets).fill(false);
+    const allDone = doneArr.every(Boolean);
+    const anyDone = doneArr.some(Boolean);
+    const cardClass = allDone ? 'completed-ex' : (anyDone ? 'active-ex' : '');
+    html += `<div class="exercise-card ${cardClass} ${anyDone && !allDone ? 'open' : ''}" id="exCard${i}">
+      <div class="exercise-header" onclick="toggleExCard(${i})">
+        <div class="ex-num">${allDone ? '✓' : i+1}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div>
         </div>
-        <div class="day-arrow" id="arrow-${dow}">▼</div>
+        <div class="ex-arrow">▾</div>
       </div>
-      <div class="day-body" id="daybody-${dow}">`;
-    w.exercises.forEach((ex,i)=>{
-      h+=`<div class="ex-row">
-        <div><span class="ex-num">${i+1}.</span><span style="font-size:13px;color:#ddd">${ex.name}</span></div>
-        <div><span style="font-size:12px;font-weight:600;color:${w.color}">${ex.sets} เซต</span><span style="font-size:11px;color:#555;margin-left:6px">× ${ex.reps}</span></div>
+      <div class="sets-panel" id="setsPanel${i}">
+        <div class="sets-grid">`;
+    for (let s = 0; s < ex.sets; s++) {
+      const done = doneArr[s];
+      const isNext = !done && (s === 0 || doneArr[s-1]);
+      html += `<div class="set-btn ${done ? 'done-set' : (isNext ? 'active-set' : '')}" onclick="toggleSet(${i},${s})">
+        <span class="check-icon">✓</span>
+        <div class="set-label">เซต ${s+1}</div>
+        <div class="set-reps">${ex.reps}</div>
       </div>`;
-    });
-    h+=`<div class="rest-info-box">⏱ พักเซต 60 วิ · พักท่า 90 วิ</div></div></div>`;
-  });
-  el.innerHTML=h;
-}
-
-function toggleDay(dow){
-  document.getElementById(`daybody-${dow}`).classList.toggle("open");
-  document.getElementById(`arrow-${dow}`).textContent=document.getElementById(`daybody-${dow}`).classList.contains("open")?"▲":"▼";
-}
-
-function renderHistory(){
-  const el=document.getElementById("view-history");
-  const days=[];for(let i=34;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);days.push(d);}
-  let h=`<div class="section-label" style="margin-bottom:14px">ประวัติ 35 วัน</div>
-  <div class="cal-grid">
-    <div class="cal-head">อา</div><div class="cal-head">จ</div><div class="cal-head">อ</div>
-    <div class="cal-head">พ</div><div class="cal-head">พฤ</div><div class="cal-head">ศ</div><div class="cal-head">ส</div>`;
-  days.forEach(d=>{
-    const k=d.toISOString().split("T")[0],ci=checkins[k],isT=k===todayKey;
-    h+=`<div class="cal-day${ci?" checked":""}${isT?" is-today":""}">
-      ${ci?ci.sticker:d.getDate()}${isT&&!ci?`<div class="today-dot"></div>`:""}
+    }
+    html += `</div>
+        <div class="timer-row" id="timerRow${i}">
+          <span class="timer-icon">⏱</span>
+          <span class="timer-label" id="timerLabel${i}">พักระหว่างเซต 60 วิ</span>
+          <span class="timer-countdown" id="timerCountdown${i}">1:00</span>
+          <button class="start-timer-btn" id="startTimerBtn${i}" onclick="startSetTimer(${i})">เริ่ม</button>
+        </div>
+      </div>
     </div>`;
   });
-  h+=`</div><div class="section-label" style="margin-bottom:10px">สติกเกอร์ที่สะสม</div><div class="sticker-grid">`;
-  const entries=Object.entries(checkins).sort(([a],[b])=>b.localeCompare(a)).slice(0,20);
-  if(!entries.length) h+=`<div class="empty-msg">ยังไม่มีสติกเกอร์ เริ่มเลย! 🚀</div>`;
-  else entries.forEach(([date,data])=>{
-    const d=new Date(date);
-    h+=`<div class="sticker-card"><div class="sticker-emoji">${data.sticker}</div><div class="sticker-date">${d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})}</div></div>`;
-  });
-  h+=`</div>`;
-  el.innerHTML=h;
+  return html;
 }
 
-renderAll();
+function toggleExCard(i) {
+  const card = document.getElementById(`exCard${i}`);
+  card.classList.toggle('open');
+}
+
+// ============================================================
+// SET LOGIC
+// ============================================================
+function toggleSet(exIdx, setIdx) {
+  const key = todayKey();
+  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
+  const checkin = state.checkins[key];
+  if (!checkin.sets) checkin.sets = {};
+  const sched = getSchedule();
+  const ex = sched.exercises[exIdx];
+  if (!checkin.sets[exIdx]) checkin.sets[exIdx] = new Array(ex.sets).fill(false);
+
+  const wasTrue = checkin.sets[exIdx][setIdx];
+  checkin.sets[exIdx][setIdx] = !wasTrue;
+
+  const justCompleted = !wasTrue;
+  if (justCompleted) {
+    // add points
+    checkin.points = (checkin.points || 0) + 5;
+    state.totalPoints = (state.totalPoints || 0) + 5;
+    showPointsPop('+5');
+    // check if all sets of this exercise done
+    const allSetsDone = checkin.sets[exIdx].every(Boolean);
+    if (allSetsDone) {
+      // check if all exercises done
+      const allExDone = sched.exercises.every((e, i) => {
+        const arr = checkin.sets[i] || [];
+        return arr.filter(Boolean).length >= e.sets;
+      });
+      if (allExDone) {
+        checkin.points += 20;
+        state.totalPoints += 20;
+        // auto check-in
+        checkin.done = true;
+        saveState();
+        updateUI();
+        setTimeout(() => {
+          launchConfetti();
+          showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');
+        }, 300);
+        return;
+      } else {
+        // start exercise rest timer
+        saveState();
+        updateUI();
+        setTimeout(() => {
+          const nextEx = findNextExercise(exIdx, sched, checkin);
+          startExTimer(nextEx ? nextEx.name : 'ท่าถัดไป');
+        }, 100);
+        return;
+      }
+    } else {
+      // start set rest timer
+      saveState();
+      updateUI();
+      setTimeout(() => startSetTimerAuto(exIdx), 100);
+      return;
+    }
+  }
+
+  saveState();
+  updateUI();
+}
+
+function findNextExercise(currentIdx, sched, checkin) {
+  for (let i = currentIdx + 1; i < sched.exercises.length; i++) {
+    const arr = checkin.sets[i] || [];
+    if (arr.filter(Boolean).length < sched.exercises[i].sets) return sched.exercises[i];
+  }
+  return null;
+}
+
+// ============================================================
+// TIMERS
+// ============================================================
+function startSetTimer(exIdx) {
+  startTimerOverlay(TIMER_SET, 'พักระหว่างเซต', `เซต ${exIdx+1} — พักให้หายใจ`, () => {});
+}
+function startSetTimerAuto(exIdx) {
+  startTimerOverlay(TIMER_SET, 'พักระหว่างเซต', 'เซตต่อไปพร้อมยัง?', () => {});
+}
+function startExTimer(nextName) {
+  startTimerOverlay(TIMER_EX, 'พักระหว่างท่า', `ถัดไป: ${nextName}`, () => {});
+}
+
+function startTimerOverlay(seconds, type, subtitle, onDone) {
+  if (timer.id) clearInterval(timer.id);
+  timer = { id: null, seconds, total: seconds, onDone, type, label: subtitle };
+  document.getElementById('timerTypeBadge').textContent = type;
+  document.getElementById('timerTitle').textContent = type;
+  document.getElementById('timerSub').textContent = subtitle;
+  const overlay = document.getElementById('timerOverlay');
+  overlay.classList.add('show');
+  updateTimerDisplay();
+  timer.id = setInterval(() => {
+    timer.seconds--;
+    updateTimerDisplay();
+    if (timer.seconds <= 0) {
+      clearInterval(timer.id); timer.id = null;
+      overlay.classList.remove('show');
+      vibrate();
+      showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
+      if (timer.onDone) timer.onDone();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const s = timer.seconds;
+  const min = Math.floor(s/60);
+  const sec = String(s%60).padStart(2,'0');
+  const txt = `${min}:${sec}`;
+  const big = document.getElementById('timerBig');
+  const circle = document.getElementById('timerCircle');
+  big.textContent = txt;
+  const warn = s <= 10;
+  big.classList.toggle('warning', warn);
+  circle.classList.toggle('warning', warn);
+  const circ = 2 * Math.PI * 88;
+  const offset = circ * (1 - timer.seconds / timer.total);
+  circle.style.strokeDashoffset = offset;
+}
+
+function stopTimer() {
+  if (timer.id) clearInterval(timer.id); timer.id = null;
+  document.getElementById('timerOverlay').classList.remove('show');
+}
+function skipTimer() { stopTimer(); }
+
+function vibrate() { if (navigator.vibrate) navigator.vibrate([200,100,200]); }
+
+// ============================================================
+// CHECK IN
+// ============================================================
+function masterCheckinClick() {
+  const key = todayKey();
+  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
+  state.checkins[key].done = true;
+  state.checkins[key].points = (state.checkins[key].points || 0) + 10;
+  state.totalPoints = (state.totalPoints || 0) + 10;
+  saveState();
+  updateUI();
+  launchConfetti();
+  showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');
+}
+
+function markRestDay() {
+  const key = todayKey();
+  if (!state.checkins[key]) state.checkins[key] = { done: false, points: 0, sets: {} };
+  state.checkins[key].done = true;
+  state.checkins[key].points = (state.checkins[key].points || 0) + 5;
+  state.checkins[key].isRest = true;
+  state.totalPoints = (state.totalPoints || 0) + 5;
+  saveState();
+  updateUI();
+  showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  document.getElementById('calMonth').textContent =
+    now.toLocaleDateString('th-TH', { month:'long', year:'numeric' });
+
+  const headers = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+  let html = headers.map(h => `<div class="cal-day-header">${h}</div>`).join('');
+
+  const firstDay = new Date(year, month, 1).getDay();
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
+  const days = new Date(year, month+1, 0).getDate();
+  for (let d = 1; d <= days; d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const ck = state.checkins[key];
+    const dow = new Date(year, month, d).getDay();
+    const isToday = d === now.getDate();
+    const isRest = SCHEDULE[dow].isRest;
+    let cls = '';
+    if (isToday) cls += ' today';
+    if (ck && ck.done) cls += ' checked';
+    else if (isRest) cls += ' rest-day';
+    html += `<div class="cal-day${cls}">${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+
+  // stickers
+  const total = totalCheckins();
+  let sHtml = '';
+  STICKERS.forEach(s => {
+    const earned = total >= s.threshold;
+    sHtml += `<div class="sticker ${earned ? 'earned' : ''}">
+      <span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span>
+      <div class="sticker-label">${s.label}</div>
+    </div>`;
+  });
+  document.getElementById('stickerRow').innerHTML = sHtml;
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function renderStats() {
+  const total = totalCheckins();
+  const s = streak();
+  const pts = state.totalPoints || 0;
+  const weeks = Math.floor(total / 5);
+  const g = document.getElementById('statsGrid');
+  g.innerHTML = `
+    <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">🗓 วันที่เช็คอิน</div></div>
+    <div class="stat-card"><div class="stat-value">${s}</div><div class="stat-label">🔥 สตรีคปัจจุบัน</div></div>
+    <div class="stat-card"><div class="stat-value">${pts}</div><div class="stat-label">⚡ แต้มสะสม</div></div>
+    <div class="stat-card"><div class="stat-value">${weeks}</div><div class="stat-label">📅 สัปดาห์ที่ครบ</div></div>
+  `;
+
+  // history
+  const entries = Object.entries(state.checkins)
+    .filter(([,v]) => v.done)
+    .sort((a,b) => b[0].localeCompare(a[0]))
+    .slice(0, 14);
+  let hHtml = '';
+  entries.forEach(([k, v]) => {
+    const dd = new Date(k + 'T00:00:00');
+    const dow = dd.getDay();
+    const sched = SCHEDULE[dow];
+    hHtml += `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:12px;margin-bottom:8px;">
+      <div style="font-size:28px">${v.isRest ? '😴' : '✅'}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div>
+        <div style="font-size:12px;color:var(--muted)">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent)">+${v.points||0}</div>
+    </div>`;
+  });
+  document.getElementById('historyList').innerHTML = hHtml || '<div style="color:var(--muted);text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
+}
+
+// ============================================================
+// UI UTILS
+// ============================================================
+function updateUI() {
+  document.getElementById('streakNum').textContent = streak();
+  document.getElementById('pointsDisplay').textContent = state.totalPoints || 0;
+  const active = document.querySelector('.tab.active').getAttribute('onclick').match(/\'(\w+)\'/)[1];
+  if (active === 'today') renderToday();
+  if (active === 'calendar') renderCalendar();
+  if (active === 'stats') renderStats();
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
+  if (name === 'today') renderToday();
+  if (name === 'calendar') renderCalendar();
+  if (name === 'stats') renderStats();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function showPointsPop(text) {
+  const el = document.createElement('div');
+  el.className = 'points-pop';
+  el.textContent = text;
+  el.style.left = (Math.random() * 60 + 20) + '%';
+  el.style.top = '40%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function launchConfetti() {
+  const colors = ['#f0ff40','#40ffb0','#ff4060','#fff','#ffd700'];
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*30}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1.2+Math.random()*0.8}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderToday();
+document.getElementById('streakNum').textContent = streak();
+document.getElementById('pointsDisplay').textContent = state.totalPoints || 0;
 </script>
 </body>
 </html>
