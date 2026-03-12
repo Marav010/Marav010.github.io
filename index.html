@@ -57,9 +57,7 @@
   .badge-item-emoji { font-size: 26px; }
   .badge-item-lbl { font-size: 10px; color: #666; margin-top: 2px; }
 
-  /* Schedule */
   .schedule-day { margin-bottom: 8px; border: 1px solid #2a2a3e; border-radius: 16px; overflow: hidden; background: #1a1a2e; }
-  .schedule-day.today-day { border-color: var(--day-color); }
   .day-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; }
   .day-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .day-name { font-weight: 700; font-size: 14px; }
@@ -70,12 +68,11 @@
   .day-body.open { display: block; }
   .ex-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #ffffff06; align-items: center; }
   .ex-num { font-size: 11px; color: #555; margin-right: 8px; }
-  .ex-name { font-size: 13px; color: #ddd; }
+  .ex-name-s { font-size: 13px; color: #ddd; }
   .ex-detail { font-size: 12px; font-weight: 600; }
   .ex-sets { font-size: 11px; color: #555; margin-left: 6px; }
   .rest-info { margin-top: 10px; padding: 7px 10px; background: #ffffff07; border-radius: 8px; font-size: 10px; color: #555; }
 
-  /* History */
   .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 20px; }
   .cal-head { text-align: center; font-size: 9px; color: #444; padding-bottom: 4px; }
   .cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #444; border: 1px solid #222; background: #1a1a2e; position: relative; }
@@ -88,45 +85,69 @@
   .sticker-date { font-size: 10px; color: #555; margin-top: 2px; }
   .empty-msg { color: #555; font-size: 13px; padding: 20px 0; }
 
-  /* Overlay */
+  /* ── Session overlay ── */
   .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
-  .session-modal { background: #111; border-radius: 24px 24px 0 0; padding: 24px 20px 36px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-  .modal-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .modal-progress { background: #222; border-radius: 99px; height: 4px; margin-bottom: 20px; overflow: hidden; }
+  .session-modal { background: #111; border-radius: 24px 24px 0 0; padding: 24px 20px 36px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .modal-progress-wrap { background: #222; border-radius: 99px; height: 4px; margin-bottom: 18px; overflow: hidden; }
   .modal-progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+
+  /* Timers row shown during work phase */
+  .timers-row { display: flex; gap: 10px; margin-bottom: 18px; }
+  .timer-box { flex: 1; background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .timer-box.accent { border-color: transparent; }
+  .timer-label { font-size: 9px; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .timer-value { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+  .timer-sub { font-size: 9px; color: #555; margin-top: 2px; }
+
   .ex-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
-  .ex-reps { font-size: 13px; color: #888; margin-bottom: 20px; }
-  .sets-dots { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
-  .set-dot { flex: 1; min-width: 36px; padding: 10px 4px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; border: 2px solid #333; background: #1a1a2e; color: #555; transition: all 0.25s; cursor: default; }
+  .ex-reps-lbl { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .sets-dots { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .set-dot { flex: 1; min-width: 36px; padding: 10px 4px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; border: 2px solid #333; background: #1a1a2e; color: #555; transition: all 0.25s; }
   .set-dot.active { background: #2a2a3e; color: #fff; }
-  .set-dot.done { color: inherit; }
 
   .work-phase { text-align: center; }
-  .work-label { font-size: 13px; color: #666; margin-bottom: 4px; }
-  .stopwatch { font-size: 52px; font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
-  .done-set-btn { width: 100%; padding: 18px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 16px; font-weight: 900; font-family: inherit; }
+  .work-label { font-size: 12px; color: #666; margin-bottom: 16px; }
+  .done-set-btn { width: 100%; padding: 18px; border-radius: 14px; border: none; cursor: pointer; color: #fff; font-size: 16px; font-weight: 900; font-family: inherit; transition: transform 0.1s; }
+  .done-set-btn:active { transform: scale(0.97); }
 
   .rest-phase { text-align: center; }
   .rest-label { font-size: 13px; color: #888; margin-bottom: 6px; }
-  .circle-wrap { position: relative; width: 130px; height: 130px; margin: 0 auto 20px; }
+
+  /* Rest circle + total elapsed side by side */
+  .rest-row { display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 18px; }
+  .circle-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
   .circle-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .circle-time { font-size: 36px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .circle-time { font-size: 32px; font-weight: 900; font-variant-numeric: tabular-nums; }
   .circle-unit { font-size: 10px; color: #666; }
+
+  .rest-stats { display: flex; flex-direction: column; gap: 8px; }
+  .rstat { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px; padding: 10px 14px; text-align: left; min-width: 110px; }
+  .rstat-lbl { font-size: 9px; color: #666; letter-spacing: 2px; margin-bottom: 3px; }
+  .rstat-val { font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; }
+
   .skip-btn { width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #444; background: #2a2a3e; color: #fff; font-size: 13px; cursor: pointer; font-family: inherit; }
 
   .done-phase { text-align: center; padding: 20px 0; }
-  .done-emoji { font-size: 72px; margin-bottom: 8px; }
+  .done-emoji-big { font-size: 72px; margin-bottom: 8px; }
   .done-title { font-size: 24px; font-weight: 900; color: #FFE66D; margin-bottom: 8px; }
-  .done-sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .done-sub { font-size: 14px; color: #888; margin-bottom: 8px; }
+  .done-total { font-size: 13px; color: #666; margin-bottom: 24px; }
   .done-btns { display: flex; gap: 10px; }
 
-  .ex-overview { margin-top: 20px; border-top: 1px solid #1a1a2e; padding-top: 16px; }
+  /* Summary table in done phase */
+  .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+  .summary-table th { color: #555; font-weight: 600; padding: 6px 8px; text-align: left; border-bottom: 1px solid #2a2a3e; }
+  .summary-table td { padding: 7px 8px; border-bottom: 1px solid #1a1a2e; color: #ccc; }
+  .summary-table td.val { color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .ex-overview { margin-top: 18px; border-top: 1px solid #1a1a2e; padding-top: 14px; }
   .ov-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
   .ov-num { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px solid #333; background: #2a2a3e; }
   .ov-name { font-size: 12px; }
   .ov-sets { margin-left: auto; font-size: 11px; color: #555; }
+  .ov-time { font-size: 11px; margin-left: 8px; font-variant-numeric: tabular-nums; }
 
-  /* Celebration */
   .celebration { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); animation: fadeIn 0.3s; }
   .celeb-emoji { font-size: 96px; animation: bounce 0.5s ease infinite alternate; }
   .celeb-title { font-size: 28px; font-weight: 900; color: #FFE66D; margin-top: 16px; letter-spacing: 2px; }
@@ -135,7 +156,6 @@
   .celeb-streak { color: #FF6B35; font-weight: 700; font-size: 17px; margin-top: 6px; }
 
   .hidden { display: none !important; }
-
   @keyframes bounce { from { transform: scale(1) translateY(0); } to { transform: scale(1.1) translateY(-20px); } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
@@ -158,31 +178,65 @@
       <span style="font-size:11px;color:#666;letter-spacing:2px" id="sessionProgress">ท่า 1/5</span>
       <button onclick="closeSession()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer">✕</button>
     </div>
-    <div class="modal-progress"><div class="modal-progress-fill" id="modalProgressFill" style="width:0%"></div></div>
+    <div class="modal-progress-wrap"><div class="modal-progress-fill" id="modalProgressFill" style="width:0%"></div></div>
+
     <div class="ex-title" id="sessionExName"></div>
-    <div class="ex-reps" id="sessionExReps"></div>
+    <div class="ex-reps-lbl" id="sessionExReps"></div>
     <div class="sets-dots" id="setsDots"></div>
 
     <!-- Work Phase -->
     <div class="work-phase" id="workPhase">
       <div class="work-label" id="workLabel"></div>
-      <div class="stopwatch" id="stopwatch">0:00</div>
+
+      <!-- 3 timers: set elapsed · total workout · rest countdown placeholder -->
+      <div class="timers-row">
+        <div class="timer-box accent" id="timerBoxSet">
+          <div class="timer-label">⏱ เซตนี้</div>
+          <div class="timer-value" id="timerSet">0:00</div>
+          <div class="timer-sub">เวลาที่ใช้</div>
+        </div>
+        <div class="timer-box accent" id="timerBoxTotal">
+          <div class="timer-label">🏋️ รวม</div>
+          <div class="timer-value" id="timerTotal">0:00</div>
+          <div class="timer-sub">ทั้งหมด</div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-label">📋 ท่านี้</div>
+          <div class="timer-value" id="timerExElapsed">0:00</div>
+          <div class="timer-sub">เวลาท่า</div>
+        </div>
+      </div>
+
       <button class="done-set-btn" id="doneSetBtn" onclick="doneSet()">✅ เสร็จแล้ว! เซต 1</button>
     </div>
 
     <!-- Rest Phase -->
     <div class="rest-phase hidden" id="restPhase">
       <div class="rest-label" id="restLabel"></div>
-      <div class="circle-wrap">
-        <svg width="130" height="130" style="transform:rotate(-90deg)">
-          <circle cx="65" cy="65" r="56" fill="none" stroke="#222" stroke-width="8"/>
-          <circle cx="65" cy="65" r="56" fill="none" id="restCircle" stroke="#FF6B35" stroke-width="8"
-            stroke-dasharray="351.86" stroke-dashoffset="0" stroke-linecap="round"
-            style="transition:stroke-dashoffset 0.8s linear"/>
-        </svg>
-        <div class="circle-center">
-          <div class="circle-time" id="restTimer">60</div>
-          <div class="circle-unit">วินาที</div>
+      <div class="rest-row">
+        <!-- Countdown circle -->
+        <div class="circle-wrap">
+          <svg width="120" height="120" style="transform:rotate(-90deg)">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#222" stroke-width="8"/>
+            <circle cx="60" cy="60" r="52" fill="none" id="restCircle" stroke="#FF6B35" stroke-width="8"
+              stroke-dasharray="326.73" stroke-dashoffset="0" stroke-linecap="round"
+              style="transition:stroke-dashoffset 0.8s linear"/>
+          </svg>
+          <div class="circle-center">
+            <div class="circle-time" id="restTimer">60</div>
+            <div class="circle-unit">วินาที</div>
+          </div>
+        </div>
+        <!-- Side stats during rest -->
+        <div class="rest-stats">
+          <div class="rstat">
+            <div class="rstat-lbl">🏋️ รวม</div>
+            <div class="rstat-val" id="restTotalTimer">0:00</div>
+          </div>
+          <div class="rstat">
+            <div class="rstat-lbl">📋 ท่านี้</div>
+            <div class="rstat-val" id="restExTimer">0:00</div>
+          </div>
         </div>
       </div>
       <button class="skip-btn" onclick="skipRest()">ข้ามการพัก →</button>
@@ -190,9 +244,11 @@
 
     <!-- Done Phase -->
     <div class="done-phase hidden" id="donePhase">
-      <div class="done-emoji">🎉</div>
+      <div class="done-emoji-big">🎉</div>
       <div class="done-title">ทำเสร็จแล้ว!</div>
       <div class="done-sub">ออกกำลังกายครบทุกท่าแล้ววันนี้</div>
+      <div class="done-total" id="doneTotalTime"></div>
+      <table class="summary-table" id="summaryTable"></table>
       <div class="done-btns">
         <button onclick="closeSession()" style="flex:1;padding:13px;border-radius:12px;border:none;background:#2a2a3e;color:#fff;font-size:14px;cursor:pointer;font-family:inherit;">ปิด</button>
         <button id="checkinFromSession" style="flex:2;padding:13px;border-radius:12px;border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">🎯 เช็คอินวันนี้</button>
@@ -231,7 +287,7 @@
 </div>
 
 <script>
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// ─── Schedule data ─────────────────────────────────────────────────────────────
 const SCHEDULE = {
   1:{day:"จันทร์",focus:"อก + แขน + ท้อง",emoji:"💪",color:"#FF6B35",exercises:[
     {name:"Push up",sets:4,reps:"15 ครั้ง"},{name:"Dumbbell curl",sets:4,reps:"12 ครั้ง"},
@@ -258,101 +314,109 @@ const SCHEDULE = {
   0:{day:"อาทิตย์",focus:"พักเต็มที่",emoji:"😴",color:"#C3A6FF",isRest:true,exercises:[
     {name:"เดินเบา ๆ",sets:1,reps:"ตามสบาย"},{name:"ยืดกล้าม",sets:1,reps:"10–15 นาที"}]},
 };
-const STICKERS = ["🌟","🔥","💎","⚡","🏆","💪","🎯","🚀","✨","🌈","👑","🎖️"];
+
+const STICKERS=["🌟","🔥","💎","⚡","🏆","💪","🎯","🚀","✨","🌈","👑","🎖️"];
 const STREAK_BADGES=[
-  {days:3,badge:"🥉",label:"3 วันติด!"},
-  {days:7,badge:"🥈",label:"1 สัปดาห์!"},
-  {days:14,badge:"🥇",label:"2 สัปดาห์!"},
-  {days:30,badge:"🏆",label:"1 เดือน!"},
-  {days:60,badge:"👑",label:"2 เดือน!"},
-  {days:100,badge:"💎",label:"100 วัน!"},
+  {days:3,badge:"🥉",label:"3 วันติด!"},{days:7,badge:"🥈",label:"1 สัปดาห์!"},
+  {days:14,badge:"🥇",label:"2 สัปดาห์!"},{days:30,badge:"🏆",label:"1 เดือน!"},
+  {days:60,badge:"👑",label:"2 เดือน!"},{days:100,badge:"💎",label:"100 วัน!"},
 ];
 const REST_SET=60, REST_EX=90;
 
-// ─── State ────────────────────────────────────────────────────────────────────
+// ─── Persistent state ──────────────────────────────────────────────────────────
 let checkins={}, points=0;
 try{ checkins=JSON.parse(sessionStorage.getItem("wc")||"{}"); }catch{}
 try{ points=parseInt(sessionStorage.getItem("wp")||"0"); }catch{}
-
 function save(){ try{ sessionStorage.setItem("wc",JSON.stringify(checkins)); sessionStorage.setItem("wp",String(points)); }catch{} }
 
-function dateKey(d){ return d.toISOString().split("T")[0]; }
-const today=new Date(), todayKey=dateKey(today), todayDow=today.getDay();
+const today=new Date(), todayKey=today.toISOString().split("T")[0], todayDow=today.getDay();
 const todayW=SCHEDULE[todayDow];
 
 function getStreak(){
   let s=0;
   for(let i=0;i<365;i++){
     const d=new Date(today); d.setDate(today.getDate()-i);
-    if(checkins[dateKey(d)]) s++; else if(i>0) break;
+    if(checkins[d.toISOString().split("T")[0]]) s++; else if(i>0) break;
   }
   return s;
 }
+function fmtTime(s){ const m=Math.floor(s/60),sec=s%60; return `${m}:${sec.toString().padStart(2,"0")}`; }
 
-// ─── Session Engine ───────────────────────────────────────────────────────────
-let sess={ exIdx:0, setIdx:0, phase:"work", timer:0, elapsed:0, completedSets:{}, color:"#FF6B35", exercises:[] };
-let sessInterval=null, sessStartRef=0;
+// ─── Session engine ────────────────────────────────────────────────────────────
+// Timers:
+//   totalElapsed  — entire session wall clock (seconds, counts up always)
+//   setElapsed    — this set only (resets each new set)
+//   exElapsed     — this exercise only (resets each new exercise)
+//   restTimer     — countdown during rest phase
+
+let sess = {
+  exIdx:0, setIdx:0, phase:"work",
+  completedSets:{},
+  exercises:[], color:"#FF6B35",
+  totalElapsed:0, setElapsed:0, exElapsed:0,
+  restTimer:0, restDuration:0,
+  // per-exercise finish times for summary
+  exTimes:[],      // seconds each exercise took (active time only)
+  exStartTotal:0,  // totalElapsed when current exercise started
+};
+let sessInterval=null;
 
 function openSession(){
-  sess={ exIdx:0, setIdx:0, phase:"work", timer:0, elapsed:0, completedSets:{}, color:todayW.color, exercises:todayW.exercises };
+  const exs=todayW.exercises;
+  sess={
+    exIdx:0, setIdx:0, phase:"work",
+    completedSets:{},
+    exercises:exs, color:todayW.color,
+    totalElapsed:0, setElapsed:0, exElapsed:0,
+    restTimer:0, restDuration:0,
+    exTimes: new Array(exs.length).fill(0),
+    exStartTotal:0,
+  };
   document.getElementById("checkinFromSession").style.background=`linear-gradient(135deg,${todayW.color},${todayW.color}bb)`;
   document.getElementById("checkinFromSession").onclick=()=>{ doCheckIn(); closeSession(); };
-  document.getElementById("sessionOverlay").classList.remove("hidden");
   document.getElementById("restCircle").style.stroke=todayW.color;
-  renderSession(); startWork();
+  // color accent on timer boxes
+  document.getElementById("timerBoxSet").style.background=`${todayW.color}22`;
+  document.getElementById("timerBoxSet").style.borderColor=`${todayW.color}55`;
+  document.getElementById("timerBoxTotal").style.background=`${todayW.color}22`;
+  document.getElementById("timerBoxTotal").style.borderColor=`${todayW.color}55`;
+  document.getElementById("timerSet").style.color=todayW.color;
+  document.getElementById("timerTotal").style.color=todayW.color;
+  document.getElementById("timerExElapsed").style.color="#aaa";
+  document.getElementById("sessionOverlay").classList.remove("hidden");
+  renderSession();
+  startWork();
 }
+
 function closeSession(){
   clearInterval(sessInterval);
   document.getElementById("sessionOverlay").classList.add("hidden");
 }
 
-function renderSession(){
-  const ex=sess.exercises[sess.exIdx];
-  const total=sess.exercises.length;
-  document.getElementById("sessionProgress").textContent=`ท่า ${sess.exIdx+1}/${total}`;
-  document.getElementById("sessionExName").textContent=ex.name;
-  document.getElementById("sessionExReps").textContent=ex.reps;
-
-  // Progress bar
-  const totalSets=sess.exercises.reduce((a,e)=>a+e.sets,0);
-  const doneSets=sess.exercises.slice(0,sess.exIdx).reduce((a,e)=>a+e.sets,0)+sess.setIdx;
-  document.getElementById("modalProgressFill").style.width=`${(doneSets/totalSets)*100}%`;
-  document.getElementById("modalProgressFill").style.background=`linear-gradient(90deg,${sess.color},${sess.color}99)`;
-
-  // Set dots
-  const dots=document.getElementById("setsDots"); dots.innerHTML="";
-  for(let i=0;i<ex.sets;i++){
-    const d=document.createElement("div");
-    d.className="set-dot";
-    const isDone=sess.completedSets[`${sess.exIdx}-${i}`];
-    const isActive=i===sess.setIdx && sess.phase==="work";
-    if(isDone){ d.classList.add("done"); d.style.borderColor=sess.color; d.style.background=sess.color+"33"; d.style.color=sess.color; d.textContent="✓"; }
-    else if(isActive){ d.classList.add("active"); d.style.borderColor=sess.color+"88"; }
-    else { d.textContent=`เซต ${i+1}`; }
-    if(!isDone && !isActive) d.textContent=`เซต ${i+1}`;
-    dots.appendChild(d);
-  }
-
-  // Overview
-  const ov=document.getElementById("exOverview"); ov.innerHTML="";
-  sess.exercises.forEach((e,i)=>{
-    const row=document.createElement("div");
-    row.className="ov-row";
-    row.style.opacity=i<sess.exIdx?0.35:i===sess.exIdx?1:0.5;
-    const num=document.createElement("div"); num.className="ov-num";
-    if(i<sess.exIdx){ num.style.background=sess.color+"44"; num.style.borderColor=sess.color; num.textContent="✓"; }
-    else if(i===sess.exIdx){ num.style.background=sess.color; num.style.borderColor=sess.color; num.textContent=i+1; }
-    else { num.textContent=i+1; }
-    const name=document.createElement("span"); name.className="ov-name"; name.textContent=e.name;
-    name.style.color=i===sess.exIdx?"#fff":"#666";
-    const sets=document.createElement("span"); sets.className="ov-sets"; sets.textContent=`${e.sets} เซต`;
-    row.appendChild(num); row.appendChild(name); row.appendChild(sets);
-    ov.appendChild(row);
-  });
+// Master tick — runs every second for all phases
+function startTick(){
+  clearInterval(sessInterval);
+  sessInterval=setInterval(()=>{
+    sess.totalElapsed++;
+    if(sess.phase==="work"){
+      sess.setElapsed++;
+      sess.exElapsed++;
+      document.getElementById("timerSet").textContent=fmtTime(sess.setElapsed);
+      document.getElementById("timerTotal").textContent=fmtTime(sess.totalElapsed);
+      document.getElementById("timerExElapsed").textContent=fmtTime(sess.exElapsed);
+    } else if(sess.phase==="rest_set"||sess.phase==="rest_ex"){
+      sess.restTimer--;
+      document.getElementById("restTotalTimer").textContent=fmtTime(sess.totalElapsed);
+      document.getElementById("restExTimer").textContent=fmtTime(sess.exElapsed);
+      updateCircle(sess.restTimer, sess.restDuration);
+      if(sess.restTimer<=0){ advanceAfterRest(); }
+    }
+  },1000);
 }
 
 function startWork(){
-  sess.phase="work"; sess.elapsed=0;
+  sess.phase="work";
+  sess.setElapsed=0;
   document.getElementById("workPhase").classList.remove("hidden");
   document.getElementById("restPhase").classList.add("hidden");
   document.getElementById("donePhase").classList.add("hidden");
@@ -361,18 +425,15 @@ function startWork(){
   document.getElementById("doneSetBtn").textContent=`✅ เสร็จแล้ว! เซต ${sess.setIdx+1}`;
   document.getElementById("doneSetBtn").style.background=`linear-gradient(135deg,${sess.color},${sess.color}bb)`;
   document.getElementById("doneSetBtn").style.boxShadow=`0 6px 24px ${sess.color}44`;
-  document.getElementById("stopwatch").style.color=sess.color;
-  clearInterval(sessInterval);
-  sessStartRef=Date.now();
-  sessInterval=setInterval(()=>{
-    sess.elapsed=Math.floor((Date.now()-sessStartRef)/1000);
-    document.getElementById("stopwatch").textContent=fmtTime(sess.elapsed);
-  },500);
+  // reset displays
+  document.getElementById("timerSet").textContent="0:00";
+  document.getElementById("timerExElapsed").textContent=fmtTime(sess.exElapsed);
+  document.getElementById("timerTotal").textContent=fmtTime(sess.totalElapsed);
+  startTick();
   renderSession();
 }
 
 function doneSet(){
-  clearInterval(sessInterval);
   const ex=sess.exercises[sess.exIdx];
   sess.completedSets[`${sess.exIdx}-${sess.setIdx}`]=true;
   const isLastSet=sess.setIdx===ex.sets-1;
@@ -385,66 +446,130 @@ function doneSet(){
 function startRest(type){
   sess.phase=type==="set"?"rest_set":"rest_ex";
   const duration=type==="set"?REST_SET:REST_EX;
-  sess.timer=duration;
+  sess.restTimer=duration; sess.restDuration=duration;
   document.getElementById("workPhase").classList.add("hidden");
   document.getElementById("restPhase").classList.remove("hidden");
   document.getElementById("donePhase").classList.add("hidden");
   if(type==="set"){
-    const nextSet=sess.setIdx+1;
-    document.getElementById("restLabel").textContent=`พักระหว่างเซต · เซตถัดไป: ${nextSet+1}/${sess.exercises[sess.exIdx].sets}`;
+    document.getElementById("restLabel").textContent=`💤 พักระหว่างเซต · เซตถัดไป: ${sess.setIdx+2}/${sess.exercises[sess.exIdx].sets}`;
   } else {
-    document.getElementById("restLabel").textContent=`พักระหว่างท่า · ท่าถัดไป: ${sess.exercises[sess.exIdx+1].name}`;
+    // record exercise time before moving
+    sess.exTimes[sess.exIdx]=sess.exElapsed;
+    document.getElementById("restLabel").textContent=`💤 พักระหว่างท่า · ท่าถัดไป: ${sess.exercises[sess.exIdx+1].name}`;
   }
   updateCircle(duration,duration);
-  clearInterval(sessInterval);
-  sessInterval=setInterval(()=>{
-    sess.timer--;
-    updateCircle(sess.timer,duration);
-    if(sess.timer<=0){ clearInterval(sessInterval); advanceAfterRest(); }
-  },1000);
+  document.getElementById("restTotalTimer").textContent=fmtTime(sess.totalElapsed);
+  document.getElementById("restExTimer").textContent=fmtTime(sess.exElapsed);
+  startTick();
   renderSession();
 }
 
 function updateCircle(t,total){
   document.getElementById("restTimer").textContent=fmtTime(t);
-  const pct=t/total;
-  const circ=2*Math.PI*56;
-  document.getElementById("restCircle").style.strokeDashoffset=circ*(1-pct);
+  const circ=2*Math.PI*52;
+  document.getElementById("restCircle").style.strokeDashoffset=circ*(1-(t/total));
 }
 
 function advanceAfterRest(){
-  if(sess.phase==="rest_set"){ sess.setIdx++; startWork(); }
-  else { sess.exIdx++; sess.setIdx=0; startWork(); }
+  if(sess.phase==="rest_set"){
+    sess.setIdx++;
+    startWork();
+  } else {
+    sess.exIdx++;
+    sess.setIdx=0;
+    sess.exElapsed=0;
+    startWork();
+  }
 }
-
-function skipRest(){ clearInterval(sessInterval); advanceAfterRest(); }
+function skipRest(){ sess.restTimer=0; advanceAfterRest(); }
 
 function showDone(){
+  clearInterval(sessInterval);
+  // record last exercise time
+  sess.exTimes[sess.exIdx]=sess.exElapsed;
   document.getElementById("workPhase").classList.add("hidden");
   document.getElementById("restPhase").classList.add("hidden");
   document.getElementById("donePhase").classList.remove("hidden");
+  document.getElementById("doneTotalTime").textContent=`⏱ เวลารวมทั้งหมด: ${fmtTime(sess.totalElapsed)}`;
+  // build summary table
+  let rows=`<tr><th>ท่า</th><th>เซต</th><th>เวลาท่า</th></tr>`;
+  sess.exercises.forEach((ex,i)=>{
+    const t=sess.exTimes[i]||0;
+    rows+=`<tr><td>${ex.name}</td><td class="val">${ex.sets} เซต</td><td class="val">${fmtTime(t)}</td></tr>`;
+  });
+  document.getElementById("summaryTable").innerHTML=rows;
   renderSession();
 }
 
-function fmtTime(s){ const m=Math.floor(s/60),sec=s%60; return m>0?`${m}:${sec.toString().padStart(2,"0")}`:String(sec); }
+// Render set dots + overview (called often)
+function renderSession(){
+  const ex=sess.exercises[sess.exIdx];
+  const total=sess.exercises.length;
+  document.getElementById("sessionProgress").textContent=`ท่า ${sess.exIdx+1}/${total}`;
+  document.getElementById("sessionExName").textContent=ex.name;
+  document.getElementById("sessionExReps").textContent=ex.reps;
 
-// ─── Check-in ─────────────────────────────────────────────────────────────────
+  const totalSets=sess.exercises.reduce((a,e)=>a+e.sets,0);
+  const doneSets=sess.exercises.slice(0,sess.exIdx).reduce((a,e)=>a+e.sets,0)+sess.setIdx;
+  document.getElementById("modalProgressFill").style.width=`${(doneSets/totalSets)*100}%`;
+  document.getElementById("modalProgressFill").style.background=`linear-gradient(90deg,${sess.color},${sess.color}99)`;
+
+  // Set dots
+  const dots=document.getElementById("setsDots"); dots.innerHTML="";
+  for(let i=0;i<ex.sets;i++){
+    const d=document.createElement("div"); d.className="set-dot";
+    const isDone=sess.completedSets[`${sess.exIdx}-${i}`];
+    const isActive=i===sess.setIdx&&(sess.phase==="work");
+    if(isDone){
+      d.style.borderColor=sess.color; d.style.background=sess.color+"33";
+      d.style.color=sess.color; d.textContent="✓";
+    } else if(isActive){
+      d.classList.add("active"); d.style.borderColor=sess.color+"88"; d.textContent=`เซต ${i+1}`;
+    } else {
+      d.textContent=`เซต ${i+1}`;
+    }
+    dots.appendChild(d);
+  }
+
+  // Overview
+  const ov=document.getElementById("exOverview"); ov.innerHTML="";
+  sess.exercises.forEach((e,i)=>{
+    const row=document.createElement("div"); row.className="ov-row";
+    row.style.opacity=i<sess.exIdx?0.4:i===sess.exIdx?1:0.5;
+    const num=document.createElement("div"); num.className="ov-num";
+    if(i<sess.exIdx){ num.style.background=sess.color+"44"; num.style.borderColor=sess.color; num.textContent="✓"; }
+    else if(i===sess.exIdx){ num.style.background=sess.color; num.style.borderColor=sess.color; num.textContent=i+1; }
+    else { num.textContent=i+1; }
+    const name=document.createElement("span"); name.className="ov-name";
+    name.style.color=i===sess.exIdx?"#fff":"#666"; name.textContent=e.name;
+    const sets=document.createElement("span"); sets.className="ov-sets"; sets.textContent=`${e.sets} เซต`;
+    row.appendChild(num); row.appendChild(name); row.appendChild(sets);
+    // show elapsed time for completed exercises
+    if(i<sess.exIdx && sess.exTimes[i]){
+      const t=document.createElement("span"); t.className="ov-time";
+      t.style.color=sess.color; t.textContent=fmtTime(sess.exTimes[i]);
+      row.appendChild(t);
+    }
+    ov.appendChild(row);
+  });
+}
+
+// ─── Check-in ──────────────────────────────────────────────────────────────────
 function doCheckIn(){
   if(checkins[todayKey]) return;
   const sticker=STICKERS[Math.floor(Math.random()*STICKERS.length)];
   checkins[todayKey]={sticker,time:new Date().toISOString()};
   points+=10; save();
   const streak=getStreak();
-  const cel=document.getElementById("celebration");
   document.getElementById("celebEmoji").textContent=sticker;
   document.getElementById("celebFires").textContent="🔥".repeat(Math.min(streak,7));
   document.getElementById("celebStreak").textContent=`Streak: ${streak} วัน!`;
-  cel.classList.remove("hidden");
-  setTimeout(()=>{ cel.classList.add("hidden"); renderAll(); },3000);
+  document.getElementById("celebration").classList.remove("hidden");
+  setTimeout(()=>{ document.getElementById("celebration").classList.add("hidden"); renderAll(); },3000);
   renderAll();
 }
 
-// ─── Views ────────────────────────────────────────────────────────────────────
+// ─── Views ─────────────────────────────────────────────────────────────────────
 function switchView(name,btn){
   ["home","schedule","history"].forEach(v=>{
     document.getElementById(`view-${v}`).classList.toggle("hidden",v!==name);
@@ -460,12 +585,9 @@ function renderAll(){
 
 function renderHome(){
   const el=document.getElementById("view-home");
-  const streak=getStreak();
-  const checked=!!checkins[todayKey];
-  const totalCI=Object.keys(checkins).length;
+  const streak=getStreak(), checked=!!checkins[todayKey], totalCI=Object.keys(checkins).length;
   const nextBadge=STREAK_BADGES.find(b=>streak<b.days);
   const earnedBadges=STREAK_BADGES.filter(b=>streak>=b.days);
-
   let html=`
   <div class="stats-row">
     <div class="stat-card streak"><div class="stat-val">${streak}</div><div class="stat-lbl">🔥 STREAK</div></div>
@@ -478,20 +600,18 @@ function renderHome(){
     <div class="today-title">${todayW.emoji} ${todayW.focus}</div>
     <div class="today-meta">${todayW.isRest?"วันพัก 🌿":`${todayW.exercises.length} ท่า · ${todayW.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
 
-  if(!todayW.isRest && !checked)
+  if(!todayW.isRest&&!checked)
     html+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);box-shadow:0 4px 20px ${todayW.color}44" onclick="openSession()">▶ เริ่มออกกำลังกาย</button>`;
-  else if(!todayW.isRest && checked)
+  else if(!todayW.isRest&&checked)
     html+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
-  else if(todayW.isRest && !checked)
+  else if(todayW.isRest&&!checked)
     html+=`<button class="big-btn" style="background:linear-gradient(135deg,${todayW.color},${todayW.color}bb);color:#000" onclick="doCheckIn()">🌿 เช็คอินวันพัก</button>`;
   else
     html+=`<div class="big-btn done">✅ เช็คอินแล้ว ${checkins[todayKey]?.sticker||""}</div>`;
 
   html+=`</div>`;
-
   if(!todayW.isRest)
     html+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
-
   if(nextBadge) html+=`
   <div class="badge-progress">
     <div class="badge-emoji">${nextBadge.badge}</div>
@@ -502,7 +622,6 @@ function renderHome(){
       <div class="badge-count">${streak} / ${nextBadge.days} วัน</div>
     </div>
   </div>`;
-
   if(earnedBadges.length){
     html+=`<div class="badges-section"><div class="section-label">🏅 BADGES</div><div class="badges-grid">`;
     earnedBadges.forEach(b=>{ html+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`; });
@@ -516,13 +635,13 @@ function renderSchedule(){
   let html=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
   [1,2,3,4,5,6,0].forEach(dow=>{
     const w=SCHEDULE[dow], isToday=dow===todayDow;
-    html+=`<div class="schedule-day${isToday?" today-day":""}" style="--day-color:${w.color}">
+    html+=`<div class="schedule-day${isToday?" today-day":""}" style="${isToday?`border-color:${w.color}`:""}">
       <div class="day-header" onclick="toggleDay(${dow})">
         <div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div>
         <div>
           <div style="display:flex;align-items:center;gap:8px">
             <span class="day-name">${w.day}</span>
-            ${isToday?`<span class="today-tag" style="background:${w.color}">${w.color==="#FFE66D"?"TODAY":w.color==="#95E1D3"?"TODAY":w.color==="#A8E6CF"?"TODAY":w.color==="#C3A6FF"?"TODAY":"TODAY"}</span>`:""}
+            ${isToday?`<span class="today-tag" style="background:${w.color}">TODAY</span>`:""}
           </div>
           <div class="day-focus">${w.focus}</div>
         </div>
@@ -531,7 +650,7 @@ function renderSchedule(){
       <div class="day-body" id="daybody-${dow}">`;
     w.exercises.forEach((ex,i)=>{
       html+=`<div class="ex-row">
-        <div><span class="ex-num">${i+1}.</span><span class="ex-name">${ex.name}</span></div>
+        <div><span class="ex-num">${i+1}.</span><span class="ex-name-s">${ex.name}</span></div>
         <div><span class="ex-detail" style="color:${w.color}">${ex.sets} เซต</span><span class="ex-sets">× ${ex.reps}</span></div>
       </div>`;
     });
@@ -541,22 +660,19 @@ function renderSchedule(){
 }
 
 function toggleDay(dow){
-  const body=document.getElementById(`daybody-${dow}`);
-  const arrow=document.getElementById(`arrow-${dow}`);
-  body.classList.toggle("open");
-  arrow.textContent=body.classList.contains("open")?"▲":"▼";
+  document.getElementById(`daybody-${dow}`).classList.toggle("open");
+  document.getElementById(`arrow-${dow}`).textContent=document.getElementById(`daybody-${dow}`).classList.contains("open")?"▲":"▼";
 }
 
 function renderHistory(){
   const el=document.getElementById("view-history");
-  // Build calendar
   const days=[]; for(let i=34;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); days.push(d); }
   let html=`<div class="section-label" style="margin-bottom:14px">ประวัติ 35 วัน</div>
   <div class="cal-grid">
     <div class="cal-head">อา</div><div class="cal-head">จ</div><div class="cal-head">อ</div>
     <div class="cal-head">พ</div><div class="cal-head">พฤ</div><div class="cal-head">ศ</div><div class="cal-head">ส</div>`;
   days.forEach(d=>{
-    const k=dateKey(d), ci=checkins[k], isT=k===todayKey;
+    const k=d.toISOString().split("T")[0], ci=checkins[k], isT=k===todayKey;
     html+=`<div class="cal-day${ci?" checked":""}${isT?" is-today":""}">
       ${ci?ci.sticker:d.getDate()}
       ${isT&&!ci?`<div class="today-dot"></div>`:""}
@@ -564,7 +680,7 @@ function renderHistory(){
   });
   html+=`</div><div class="section-label" style="margin-bottom:10px">สติกเกอร์ที่สะสม</div><div class="sticker-grid">`;
   const entries=Object.entries(checkins).sort(([a],[b])=>b.localeCompare(a)).slice(0,20);
-  if(entries.length===0) html+=`<div class="empty-msg">ยังไม่มีสติกเกอร์ เริ่มเลย! 🚀</div>`;
+  if(!entries.length) html+=`<div class="empty-msg">ยังไม่มีสติกเกอร์ เริ่มเลย! 🚀</div>`;
   else entries.forEach(([date,data])=>{
     const d=new Date(date);
     html+=`<div class="sticker-card"><div class="sticker-emoji">${data.sticker}</div><div class="sticker-date">${d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})}</div></div>`;
@@ -573,7 +689,6 @@ function renderHistory(){
   el.innerHTML=html;
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
 renderAll();
 </script>
 </body>
