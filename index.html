@@ -360,6 +360,28 @@ function totalCheckins(){return Object.values(state.checkins).filter(v=>v.done).
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${m}:${String(sec).padStart(2,'0')}`;}
 function vibrate(){if(navigator.vibrate)navigator.vibrate([200,100,200]);}
 
+function playAlertSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const beeps=[
+      {freq:880,start:0,   dur:0.15},
+      {freq:880,start:0.2, dur:0.15},
+      {freq:1100,start:0.4,dur:0.3},
+    ];
+    beeps.forEach(b=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=b.freq;
+      gain.gain.setValueAtTime(0,ctx.currentTime+b.start);
+      gain.gain.linearRampToValueAtTime(0.6,ctx.currentTime+b.start+0.02);
+      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+b.start+b.dur);
+      osc.start(ctx.currentTime+b.start);
+      osc.stop(ctx.currentTime+b.start+b.dur+0.05);
+    });
+  }catch(e){}
+}
+
 // ── Timer ──
 let timer={id:null,seconds:0,total:0,onDone:null,type:'',label:''};
 
@@ -378,6 +400,7 @@ function startTimerOverlay(seconds,type,subtitle,onDone){
       clearInterval(timer.id);timer.id=null;
       document.getElementById('timerOverlay').classList.remove('show');
       vibrate();
+      playAlertSound();
       showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
       if(timer.onDone)timer.onDone();
     }
