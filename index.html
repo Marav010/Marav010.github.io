@@ -6,196 +6,317 @@
 <title>💪 FitStreak</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { min-height: 100vh; background: #0A0A0F; font-family: 'Prompt','Segoe UI',sans-serif; color: #fff; overflow-x: hidden; }
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { min-height:100vh; background:#0A0A0F; font-family:'Prompt','Segoe UI',sans-serif; color:#fff; overflow-x:hidden; }
 
-  /* ── HEADER ── */
-  .header { background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); padding: 16px 20px 0; border-bottom: 1px solid #222; position: sticky; top:0; z-index:100; backdrop-filter:blur(12px); }
-  .header-inner { max-width: 480px; margin: 0 auto; }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .brand-sub { font-size: 10px; color: #555; letter-spacing: 3px; }
-  .brand-name { font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-  .header-right { display:flex; gap:10px; align-items:center; }
-  .streak-chip { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:5px 12px; font-size:13px; display:flex; align-items:center; gap:5px; }
-  .streak-chip-val { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; }
-  .points-wrap { text-align:right; }
-  .points-label { font-size: 10px; color: #555; letter-spacing: 2px; }
-  .points-val { font-size: 24px; font-weight: 900; color: #FFE66D; font-family:'Bebas Neue',sans-serif; }
+.header { background:linear-gradient(135deg,#1a1a2e,#16213e); padding:16px 20px 0; border-bottom:1px solid #222; position:sticky; top:0; z-index:100; backdrop-filter:blur(12px); }
+.header-inner { max-width:480px; margin:0 auto; }
+.header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.brand-sub { font-size:10px; color:#555; letter-spacing:3px; }
+.brand-name { font-size:22px; font-weight:900; letter-spacing:1px; }
+.header-right { display:flex; gap:10px; align-items:center; }
+.streak-chip { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:5px 12px; font-size:13px; display:flex; align-items:center; gap:5px; }
+.streak-chip-val { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; }
+.points-wrap { text-align:right; }
+.points-label { font-size:10px; color:#555; letter-spacing:2px; }
+.points-val { font-size:24px; font-weight:900; color:#FFE66D; font-family:'Bebas Neue',sans-serif; }
+.nav { display:flex; border-radius:12px 12px 0 0; overflow:hidden; }
+.nav-btn { flex:1; padding:9px 0; border:none; cursor:pointer; background:transparent; color:#555; font-size:10px; letter-spacing:1px; text-transform:uppercase; font-family:inherit; transition:all .2s; }
+.nav-btn.active { background:#0A0A0F; color:#fff; font-weight:700; border-radius:8px 8px 0 0; }
 
-  /* ── NAV TABS ── */
-  .nav { display: flex; border-radius: 12px 12px 0 0; overflow: hidden; }
-  .nav-btn { flex: 1; padding: 10px 0; border: none; cursor: pointer; background: transparent; color: #555; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: inherit; transition:all .2s; }
-  .nav-btn.active { background: #0A0A0F; color: #fff; font-weight: 700; border-radius: 8px 8px 0 0; }
+.main { max-width:480px; margin:0 auto; padding:20px 16px 80px; }
+.page { display:none; }
+.page.active { display:block; }
 
-  /* ── MAIN ── */
-  .main { max-width: 480px; margin: 0 auto; padding: 20px 16px 80px; }
-  .page { display:none; }
-  .page.active { display:block; }
+.stats-row { display:flex; gap:10px; margin-bottom:18px; }
+.stat-card-home { flex:1; border-radius:14px; padding:14px 10px; text-align:center; }
+.stat-card-home.s-streak { background:linear-gradient(135deg,#FF6B35,#ff8c42); }
+.stat-card-home.s-plain { background:#1a1a2e; border:1px solid #2a2a3e; }
+.stat-val { font-size:28px; font-weight:900; font-family:'Bebas Neue',sans-serif; }
+.stat-lbl { font-size:10px; opacity:.7; letter-spacing:1px; margin-top:2px; }
 
-  /* ── STATS ROW ── */
-  .stats-row { display: flex; gap: 10px; margin-bottom: 18px; }
-  .stat-card-home { flex: 1; border-radius: 14px; padding: 14px 10px; text-align: center; }
-  .stat-card-home.s-streak { background: linear-gradient(135deg,#FF6B35,#ff8c42); }
-  .stat-card-home.s-plain { background: #1a1a2e; border: 1px solid #2a2a3e; }
-  .stat-val { font-size: 28px; font-weight: 900; font-family:'Bebas Neue',sans-serif; }
-  .stat-lbl { font-size: 10px; opacity: 0.7; letter-spacing: 1px; margin-top:2px; }
+.today-card { background:#1a1a2e; border:2px solid; border-radius:20px; padding:20px; margin-bottom:14px; position:relative; overflow:hidden; }
+.today-bg-emoji { position:absolute; top:-16px; right:-16px; font-size:80px; opacity:.07; pointer-events:none; }
+.today-sub { font-size:10px; color:#555; letter-spacing:2px; margin-bottom:4px; }
+.today-title { font-size:19px; font-weight:800; margin-bottom:2px; }
+.today-meta { font-size:12px; color:#555; margin-bottom:12px; }
+.today-progress-wrap { margin-bottom:14px; }
+.today-progress-labels { display:flex; justify-content:space-between; font-size:11px; color:#555; margin-bottom:5px; }
+.today-progress-bar { background:#111; border-radius:99px; height:5px; overflow:hidden; }
+.today-progress-fill { height:100%; border-radius:99px; transition:width .5s; }
+.big-btn { width:100%; padding:16px; border-radius:14px; border:none; cursor:pointer; font-size:15px; font-weight:900; font-family:inherit; }
+.big-btn:disabled { opacity:.4; cursor:default; }
+.big-btn.done-btn { background:#2a2a3e; color:#888; cursor:default; }
+.rest-tip { background:#1a1a2e; border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:11px; color:#666; display:flex; gap:8px; }
 
-  /* ── TODAY CARD ── */
-  .today-card { background: #1a1a2e; border: 2px solid; border-radius: 20px; padding: 20px; margin-bottom: 14px; position: relative; overflow: hidden; }
-  .today-bg-emoji { position: absolute; top: -16px; right: -16px; font-size: 80px; opacity: 0.07; pointer-events: none; }
-  .today-sub { font-size: 10px; color: #555; letter-spacing: 2px; margin-bottom: 4px; }
-  .today-title { font-size: 19px; font-weight: 800; margin-bottom: 2px; }
-  .today-meta { font-size: 12px; color: #555; margin-bottom: 12px; }
-  .today-progress-wrap { margin-bottom: 14px; }
-  .today-progress-labels { display:flex; justify-content:space-between; font-size:11px; color:#555; margin-bottom:5px; }
-  .today-progress-bar { background:#111; border-radius:99px; height:5px; overflow:hidden; }
-  .today-progress-fill { height:100%; border-radius:99px; transition:width .5s; }
-  .big-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; cursor: pointer; font-size: 15px; font-weight: 900; font-family: inherit; transition:opacity .2s; }
-  .big-btn:disabled { opacity:0.4; cursor:default; }
-  .big-btn.done-btn { background: #2a2a3e; color: #888; cursor: default; }
-  .rest-tip { background: #1a1a2e; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 11px; color: #666; display: flex; gap: 8px; }
+.badge-progress { background:#1a1a2e; border-radius:16px; padding:14px 16px; margin-bottom:12px; display:flex; align-items:center; gap:14px; border:1px solid #2a2a3e; }
+.badge-emoji-big { font-size:34px; }
+.badge-info { flex:1; }
+.badge-sub-lbl { font-size:11px; color:#666; }
+.badge-title-lbl { font-size:14px; font-weight:700; margin-bottom:6px; }
+.badge-bar { background:#111; border-radius:99px; height:5px; overflow:hidden; }
+.badge-bar-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#FF6B35,#FFE66D); transition:width .5s; }
+.badge-count-lbl { font-size:10px; color:#555; margin-top:3px; }
+.badges-section { background:#1a1a2e; border-radius:16px; padding:14px 16px; border:1px solid #2a2a3e; margin-bottom:14px; }
+.section-label { font-size:10px; color:#555; letter-spacing:3px; margin-bottom:10px; }
+.badges-grid { display:flex; flex-wrap:wrap; gap:8px; }
+.badge-item { background:#111; border-radius:10px; padding:8px 10px; text-align:center; }
+.badge-item-emoji { font-size:26px; }
+.badge-item-lbl { font-size:10px; color:#666; margin-top:2px; }
 
-  /* ── BADGE PROGRESS ── */
-  .badge-progress { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a3e; }
-  .badge-emoji-big { font-size: 34px; }
-  .badge-info { flex: 1; }
-  .badge-sub-lbl { font-size: 11px; color: #666; }
-  .badge-title-lbl { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-  .badge-bar { background: #111; border-radius: 99px; height: 5px; overflow: hidden; }
-  .badge-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#FF6B35,#FFE66D); transition: width 0.5s; }
-  .badge-count-lbl { font-size: 10px; color: #555; margin-top: 3px; }
-  .badges-section { background: #1a1a2e; border-radius: 16px; padding: 14px 16px; border: 1px solid #2a2a3e; margin-bottom:14px; }
-  .section-label { font-size: 10px; color: #555; letter-spacing: 3px; margin-bottom: 10px; }
-  .badges-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-  .badge-item { background: #111; border-radius: 10px; padding: 8px 10px; text-align: center; }
-  .badge-item-emoji { font-size: 26px; }
-  .badge-item-lbl { font-size: 10px; color: #666; margin-top: 2px; }
+.ex-section-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; color:#555; margin:16px 0 10px; }
+.exercise-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; margin-bottom:10px; overflow:hidden; transition:border-color .2s; }
+.exercise-card.active-ex { border-color:#FF6B35; }
+.exercise-card.completed-ex { border-color:#4ECDC4; opacity:.75; }
+.exercise-header { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; }
+.ex-num-box { width:30px; height:30px; background:#2a2a3e; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:16px; color:#555; flex-shrink:0; transition:all .2s; }
+.exercise-card.active-ex .ex-num-box { background:#FF6B35; color:#000; }
+.exercise-card.completed-ex .ex-num-box { background:#4ECDC4; color:#000; }
+.ex-info { flex:1; }
+.ex-name { font-weight:700; font-size:15px; }
+.ex-detail { font-size:11px; color:#555; margin-top:2px; }
+.ex-arrow { color:#444; font-size:16px; transition:transform .2s; }
+.exercise-card.open .ex-arrow { transform:rotate(180deg); }
+.sets-panel { display:none; padding:0 14px 14px; }
+.exercise-card.open .sets-panel { display:block; }
+.sets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:8px; margin-bottom:12px; }
+.set-btn { background:#111; border:2px solid #2a2a3e; border-radius:10px; padding:10px 6px; text-align:center; cursor:pointer; transition:all .15s; position:relative; }
+.set-btn .set-lbl { font-size:10px; color:#555; }
+.set-btn .set-reps { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#ccc; }
+.set-btn.done-set { background:rgba(78,205,196,.12); border-color:#4ECDC4; }
+.set-btn.done-set .set-reps { color:#4ECDC4; }
+.set-btn.active-set { border-color:#FF6B35; background:rgba(255,107,53,.08); }
+.set-btn.active-set .set-reps { color:#FF6B35; }
+.set-btn .check-icon { position:absolute; top:3px; right:5px; font-size:9px; display:none; color:#4ECDC4; }
+.set-btn.done-set .check-icon { display:block; }
+.timer-row { display:flex; align-items:center; gap:8px; background:#111; border-radius:10px; padding:10px 12px; font-size:12px; }
+.timer-icon { font-size:16px; }
+.timer-label { flex:1; color:#555; }
+.timer-countdown { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; min-width:44px; text-align:right; }
+.timer-countdown.warning { color:#ff4060; }
+.start-timer-btn { background:#FF6B35; color:#000; border:none; border-radius:8px; padding:5px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; cursor:pointer; }
 
-  /* ── EXERCISE CARDS (file 1) ── */
-  .ex-section-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; color:#555; margin:16px 0 10px; }
-  .exercise-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; margin-bottom:10px; overflow:hidden; transition:border-color .2s; }
-  .exercise-card.active-ex { border-color:#FF6B35; }
-  .exercise-card.completed-ex { border-color:#4ECDC4; opacity:0.75; }
-  .exercise-header { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; }
-  .ex-num-box { width:30px; height:30px; background:#2a2a3e; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:16px; color:#555; flex-shrink:0; transition:all .2s; }
-  .exercise-card.active-ex .ex-num-box { background:#FF6B35; color:#000; }
-  .exercise-card.completed-ex .ex-num-box { background:#4ECDC4; color:#000; }
-  .ex-info { flex:1; }
-  .ex-name { font-weight:700; font-size:15px; }
-  .ex-detail { font-size:11px; color:#555; margin-top:2px; }
-  .ex-arrow { color:#444; font-size:16px; transition:transform .2s; }
-  .exercise-card.open .ex-arrow { transform:rotate(180deg); }
-  .sets-panel { display:none; padding:0 14px 14px; }
-  .exercise-card.open .sets-panel { display:block; }
-  .sets-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:8px; margin-bottom:12px; }
-  .set-btn { background:#111; border:2px solid #2a2a3e; border-radius:10px; padding:10px 6px; text-align:center; cursor:pointer; transition:all .15s; position:relative; }
-  .set-btn .set-lbl { font-size:10px; color:#555; }
-  .set-btn .set-reps { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#ccc; }
-  .set-btn.done-set { background:rgba(78,205,196,0.12); border-color:#4ECDC4; }
-  .set-btn.done-set .set-reps { color:#4ECDC4; }
-  .set-btn.active-set { border-color:#FF6B35; background:rgba(255,107,53,0.08); }
-  .set-btn.active-set .set-reps { color:#FF6B35; }
-  .set-btn .check-icon { position:absolute; top:3px; right:5px; font-size:9px; display:none; color:#4ECDC4; }
-  .set-btn.done-set .check-icon { display:block; }
+.timer-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.93); flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+.timer-overlay.show { display:flex; }
+.timer-type-badge { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 16px; font-size:12px; color:#4ECDC4; }
+.timer-ring { position:relative; width:200px; height:200px; }
+.timer-ring svg { position:absolute; top:0; left:0; transform:rotate(-90deg); }
+.timer-ring-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.timer-title-txt { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:3px; color:#555; }
+.timer-big { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:1; color:#FF6B35; transition:color .3s; }
+.timer-big.warning { color:#ff4060; }
+.timer-subtitle { font-size:12px; color:#555; text-align:center; padding:0 16px; }
+.timer-actions { display:flex; gap:12px; }
+.timer-skip-btn { background:#FF6B35; color:#000; border:none; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
+.timer-stop-btn { background:#1a1a2e; color:#555; border:1px solid #2a2a3e; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
+circle.bg { fill:none; stroke:#222; stroke-width:6; }
+circle.fg { fill:none; stroke:#FF6B35; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset .5s linear,stroke .3s; }
+circle.fg.warning { stroke:#ff4060; }
 
-  /* ── TIMER ROW inside card (file 1) ── */
-  .timer-row { display:flex; align-items:center; gap:8px; background:#111; border-radius:10px; padding:10px 12px; font-size:12px; }
-  .timer-icon { font-size:16px; }
-  .timer-label { flex:1; color:#555; }
-  .timer-countdown { font-family:'Bebas Neue',sans-serif; font-size:20px; color:#FF6B35; min-width:44px; text-align:right; }
-  .timer-countdown.warning { color:#ff4060; }
-  .start-timer-btn { background:#FF6B35; color:#000; border:none; border-radius:8px; padding:5px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:1px; cursor:pointer; }
-  .start-timer-btn.running { background:#ff4060; }
+.done-banner { background:linear-gradient(135deg,rgba(78,205,196,.12),rgba(255,230,109,.06)); border:1px solid #4ECDC4; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
+.done-banner .done-emoji { font-size:48px; display:block; margin-bottom:8px; }
+.done-banner h2 { font-family:'Bebas Neue',sans-serif; font-size:26px; color:#4ECDC4; letter-spacing:2px; }
+.done-banner p { font-size:12px; color:#666; margin-top:4px; }
 
-  /* ── TIMER OVERLAY (file 1) ── */
-  .timer-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.93); flex-direction:column; align-items:center; justify-content:center; gap:20px; }
-  .timer-overlay.show { display:flex; }
-  .timer-type-badge { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 16px; font-size:12px; color:#4ECDC4; }
-  .timer-ring { position:relative; width:200px; height:200px; }
-  .timer-ring svg { position:absolute; top:0; left:0; transform:rotate(-90deg); }
-  .timer-ring-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .timer-title-txt { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:3px; color:#555; }
-  .timer-big { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:1; color:#FF6B35; transition:color .3s; }
-  .timer-big.warning { color:#ff4060; }
-  .timer-subtitle { font-size:12px; color:#555; text-align:center; padding:0 16px; }
-  .timer-actions { display:flex; gap:12px; }
-  .timer-skip-btn { background:#FF6B35; color:#000; border:none; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
-  .timer-stop-btn { background:#1a1a2e; color:#555; border:1px solid #2a2a3e; border-radius:12px; padding:12px 28px; font-family:'Bebas Neue',sans-serif; font-size:18px; cursor:pointer; }
-  circle.bg { fill:none; stroke:#222; stroke-width:6; }
-  circle.fg { fill:none; stroke:#FF6B35; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset .5s linear,stroke .3s; }
-  circle.fg.warning { stroke:#ff4060; }
+.cal-month { font-family:'Bebas Neue',sans-serif; font-size:20px; margin-bottom:12px; letter-spacing:2px; color:#FF6B35; }
+.calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
+.cal-day-header { text-align:center; font-size:11px; color:#555; padding:4px 0; }
+.cal-day { aspect-ratio:1; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; background:#1a1a2e; color:#444; border:1px solid #222; position:relative; }
+.cal-day.today { border:2px solid #FF6B35; color:#FF6B35; }
+.cal-day.checked { background:rgba(255,107,53,.15); color:#FF6B35; border-color:rgba(255,107,53,.4); }
+.cal-day.checked::after { content:'✓'; position:absolute; bottom:2px; right:4px; font-size:9px; color:#FF6B35; }
+.cal-day.rest-day { background:rgba(96,96,160,.1); color:#444; }
+.cal-day.empty { background:transparent; border-color:transparent; }
+.sticker-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.sticker { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:10px 14px; font-size:22px; display:flex; flex-direction:column; align-items:center; min-width:70px; position:relative; }
+.sticker.earned { border-color:#4ECDC4; background:rgba(78,205,196,.08); }
+.sticker.earned::after { content:'✓'; position:absolute; top:4px; right:6px; font-size:10px; color:#4ECDC4; }
+.sticker-label { font-size:10px; color:#555; margin-top:4px; text-align:center; }
+.sticker.earned .sticker-label { color:#4ECDC4; }
 
-  /* ── DONE BANNER ── */
-  .done-banner { background:linear-gradient(135deg,rgba(78,205,196,0.12),rgba(255,230,109,0.06)); border:1px solid #4ECDC4; border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; }
-  .done-banner .done-emoji { font-size:48px; display:block; margin-bottom:8px; }
-  .done-banner h2 { font-family:'Bebas Neue',sans-serif; font-size:26px; color:#4ECDC4; letter-spacing:2px; }
-  .done-banner p { font-size:12px; color:#666; margin-top:4px; }
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.stat-card-stats { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; padding:16px; }
+.stat-value { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#FF6B35; line-height:1; }
+.stat-label-stats { font-size:12px; color:#555; margin-top:4px; }
 
-  /* ── CALENDAR (file 1) ── */
-  .cal-month { font-family:'Bebas Neue',sans-serif; font-size:20px; margin-bottom:12px; letter-spacing:2px; color:#FF6B35; }
-  .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:16px; }
-  .cal-day-header { text-align:center; font-size:11px; color:#555; padding:4px 0; }
-  .cal-day { aspect-ratio:1; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; background:#1a1a2e; color:#444; border:1px solid #222; position:relative; }
-  .cal-day.today { border:2px solid #FF6B35; color:#FF6B35; }
-  .cal-day.checked { background:rgba(255,107,53,0.15); color:#FF6B35; border-color:rgba(255,107,53,0.4); }
-  .cal-day.checked::after { content:'✓'; position:absolute; bottom:2px; right:4px; font-size:9px; color:#FF6B35; }
-  .cal-day.rest-day { background:rgba(96,96,160,0.1); color:#444; }
-  .cal-day.empty { background:transparent; border-color:transparent; }
+.schedule-day { margin-bottom:8px; border:1px solid #2a2a3e; border-radius:16px; overflow:hidden; background:#1a1a2e; }
+.day-header-row { display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; }
+.day-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.day-name-txt { font-weight:700; font-size:14px; }
+.today-tag { font-size:9px; border-radius:4px; padding:2px 6px; letter-spacing:1px; font-weight:700; color:#000; }
+.day-focus-txt { font-size:11px; color:#777; margin-top:1px; }
+.day-arrow-sch { font-size:11px; color:#444; margin-left:auto; }
+.day-body { padding:0 16px 14px; border-top:1px solid #ffffff08; display:none; }
+.day-body.open { display:block; }
+.sch-ex-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ffffff06; align-items:center; }
+.sch-ex-num { font-size:11px; color:#555; margin-right:8px; }
+.rest-info-box { margin-top:10px; padding:7px 10px; background:#ffffff07; border-radius:8px; font-size:10px; color:#555; }
+.day-note { margin-top:8px; padding:7px 10px; background:rgba(255,107,53,.08); border-radius:8px; font-size:11px; color:#FF6B35; }
 
-  /* ── STICKERS (file 1 threshold) ── */
-  .sticker-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
-  .sticker { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:10px 14px; font-size:22px; display:flex; flex-direction:column; align-items:center; min-width:70px; position:relative; }
-  .sticker.earned { border-color:#4ECDC4; background:rgba(78,205,196,0.08); }
-  .sticker.earned::after { content:'✓'; position:absolute; top:4px; right:6px; font-size:10px; color:#4ECDC4; }
-  .sticker-label { font-size:10px; color:#555; margin-top:4px; text-align:center; }
-  .sticker.earned .sticker-label { color:#4ECDC4; }
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NUTRITION PAGE — redesigned
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-  /* ── STATS (file 1) ── */
-  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-  .stat-card-stats { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; padding:16px; }
-  .stat-value { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#FF6B35; line-height:1; }
-  .stat-label-stats { font-size:12px; color:#555; margin-top:4px; }
+/* Day banner */
+.nutr-day-banner {
+  border-radius:16px; padding:14px 16px;
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:12px;
+}
+.nutr-day-emoji { font-size:32px; flex-shrink:0; }
+.nutr-day-label { font-size:10px; color:rgba(255,255,255,.5); letter-spacing:2px; }
+.nutr-day-title { font-size:15px; font-weight:700; }
 
-  /* ── SCHEDULE ── */
-  .schedule-day { margin-bottom:8px; border:1px solid #2a2a3e; border-radius:16px; overflow:hidden; background:#1a1a2e; }
-  .day-header-row { display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; }
-  .day-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-  .day-name-txt { font-weight:700; font-size:14px; }
-  .today-tag { font-size:9px; border-radius:4px; padding:2px 6px; letter-spacing:1px; font-weight:700; color:#000; }
-  .day-focus-txt { font-size:11px; color:#777; margin-top:1px; }
-  .day-arrow-sch { font-size:11px; color:#444; margin-left:auto; }
-  .day-body { padding:0 16px 14px; border-top:1px solid #ffffff08; display:none; }
-  .day-body.open { display:block; }
-  .sch-ex-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ffffff06; align-items:center; }
-  .sch-ex-num { font-size:11px; color:#555; margin-right:8px; }
-  .rest-info-box { margin-top:10px; padding:7px 10px; background:#ffffff07; border-radius:8px; font-size:10px; color:#555; }
+/* Big calorie ring */
+.nutr-cal-section {
+  background:#1a1a2e; border:1px solid #2a2a3e;
+  border-radius:20px; padding:20px 16px;
+  margin-bottom:12px;
+}
+.nutr-cal-top {
+  display:flex; align-items:center; gap:16px; margin-bottom:16px;
+}
+.nutr-ring-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
+.nutr-ring-wrap svg { transform:rotate(-90deg); }
+.nutr-ring-center {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.nutr-ring-val { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; color:#FF6B35; }
+.nutr-ring-unit { font-size:9px; color:#555; letter-spacing:1px; margin-top:2px; }
+.nutr-cal-info { flex:1; }
+.nutr-cal-eaten { font-family:'Bebas Neue',sans-serif; font-size:38px; line-height:1; color:#FF6B35; }
+.nutr-cal-eaten-lbl { font-size:11px; color:#555; margin-bottom:8px; }
+.nutr-cal-row { display:flex; gap:6px; flex-wrap:wrap; }
+.nutr-cal-chip {
+  background:#111; border-radius:8px; padding:5px 10px;
+  font-size:11px; font-weight:600; border:1px solid #2a2a3e;
+}
+.nutr-cal-chip span { font-family:'Bebas Neue',sans-serif; font-size:15px; }
 
-  /* ── TOAST ── */
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#FF6B35; color:#000; border-radius:20px; padding:12px 24px; font-weight:700; font-size:14px; z-index:400; transition:transform .3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; pointer-events:none; }
-  .toast.show { transform:translateX(-50%) translateY(0); }
+/* Macro 4-cards */
+.nutr-macro-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.nmacro {
+  border-radius:14px; padding:12px 8px;
+  text-align:center; border:1px solid transparent;
+  position:relative; overflow:hidden;
+  background:#111;
+}
+.nmacro-track {
+  position:absolute; bottom:0; left:0; right:0;
+  height:3px; background:#222;
+}
+.nmacro-fill { height:100%; border-radius:99px; transition:width .5s; }
+.nmacro-icon { font-size:18px; margin-bottom:4px; }
+.nmacro-eaten { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; }
+.nmacro-unit { font-size:9px; color:#555; }
+.nmacro-goal { font-size:10px; color:#444; margin-top:3px; }
+.nmacro-rem { font-size:10px; margin-top:4px; font-weight:700; }
+.nmacro.done { border-color:rgba(78,205,196,.3); }
 
-  /* ── CONFETTI + POINTS POP ── */
-  .confetti-piece { position:fixed; width:8px; height:8px; border-radius:2px; z-index:400; pointer-events:none; animation:confetti-fall 1.5s ease-in forwards; }
-  .points-pop { position:fixed; font-family:'Bebas Neue',sans-serif; font-size:26px; color:#FFE66D; z-index:300; pointer-events:none; animation:pop-up 1s ease-out forwards; }
+/* Water */
+.nutr-water-card {
+  background:#1a1a2e; border:1px solid #2a2a3e;
+  border-radius:16px; padding:14px 16px;
+  margin-top:12px; margin-bottom:16px;
+  display:flex; align-items:center; gap:12px;
+}
+.nutr-water-left { flex:1; }
+.nutr-water-title { font-size:13px; font-weight:700; margin-bottom:4px; }
+.nutr-water-sub { font-size:11px; color:#555; }
+.nutr-water-bar-wrap { background:#111; border-radius:99px; height:8px; overflow:hidden; margin-top:8px; }
+.nutr-water-bar-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#74b9ff,#0984e3); transition:width .5s; }
+.nutr-water-btns { display:flex; flex-direction:column; gap:5px; }
+.nutr-water-btn {
+  background:#74b9ff22; border:1px solid #74b9ff44;
+  border-radius:10px; padding:6px 12px; color:#74b9ff;
+  font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+  white-space:nowrap;
+}
+.nutr-water-reset { font-size:10px; color:#444; background:none; border:none; cursor:pointer; font-family:inherit; margin-top:4px; text-align:center; }
 
-  /* ── CELEBRATION ── */
-  .celebration { position:fixed; inset:0; z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.88); animation:fadeIn .3s; }
-  .celeb-emoji { font-size:96px; animation:bounce .5s ease infinite alternate; }
-  .celeb-title { font-size:28px; font-weight:900; color:#FFE66D; margin-top:16px; letter-spacing:2px; }
-  .celeb-pts { font-size:15px; color:#aaa; margin-top:8px; }
-  .celeb-fires { font-size:38px; margin-top:12px; }
-  .celeb-streak { color:#FF6B35; font-weight:700; font-size:17px; margin-top:6px; }
-  .hidden { display:none !important; }
+/* Food log */
+.nutr-log-card {
+  background:#1a1a2e; border:1px solid #2a2a3e;
+  border-radius:20px; padding:16px;
+  margin-bottom:16px;
+}
+.nutr-log-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.nutr-log-title { font-size:14px; font-weight:700; }
+.nutr-log-clear { background:none; border:1px solid #2a2a3e; border-radius:8px; padding:4px 10px; color:#666; font-size:11px; cursor:pointer; font-family:inherit; }
 
-  @keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-  @keyframes pop-up { 0%{transform:translateY(0) scale(.5);opacity:0} 30%{transform:translateY(-20px) scale(1.2);opacity:1} 100%{transform:translateY(-60px) scale(1);opacity:0} }
-  @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+.nutr-log-item {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid #ffffff06;
+}
+.nutr-log-item:last-of-type { border-bottom:none; }
+.nutr-log-dot { width:8px; height:8px; border-radius:50%; background:#FF6B35; flex-shrink:0; }
+.nutr-log-name { flex:1; font-size:13px; }
+.nutr-log-kcal { font-family:'Bebas Neue',sans-serif; font-size:17px; color:#FF6B35; }
+.nutr-log-del { background:none; border:none; color:#333; cursor:pointer; font-size:16px; padding:0 4px; }
+.nutr-log-empty { color:#444; font-size:12px; text-align:center; padding:14px 0; }
+
+.nutr-add-row { display:flex; gap:6px; margin-top:10px; }
+.nutr-add-select {
+  flex:1; background:#111; border:1px solid #2a2a3e; border-radius:10px;
+  padding:9px 10px; color:#fff; font-size:12px; font-family:inherit; outline:none;
+}
+.nutr-add-btn {
+  background:#FF6B35; color:#000; border:none; border-radius:10px;
+  padding:9px 14px; font-weight:900; font-size:13px; cursor:pointer; font-family:inherit;
+}
+
+/* AI Search */
+.nutr-search-box { display:flex; gap:8px; margin-bottom:10px; }
+.nutr-input { flex:1; background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:12px 14px; color:#fff; font-size:14px; font-family:inherit; outline:none; }
+.nutr-input:focus { border-color:#FF6B35; }
+.nutr-ask-btn { background:linear-gradient(135deg,#FF6B35,#ff8c42); color:#000; border:none; border-radius:12px; padding:12px 16px; font-weight:900; font-size:13px; font-family:inherit; cursor:pointer; white-space:nowrap; }
+.nutr-ask-btn:disabled { opacity:.5; cursor:default; }
+.nutr-quick-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.nutr-quick-chip { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 12px; font-size:11px; color:#aaa; cursor:pointer; font-family:inherit; }
+.nutr-meal-chip { background:rgba(255,107,53,.08) !important; border-color:#FF6B3544 !important; color:#FF6B35 !important; }
+.nutr-result-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:16px; padding:16px; margin-bottom:12px; }
+.nutr-result-food { font-size:16px; font-weight:800; margin-bottom:12px; }
+.nutr-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.nutr-result-item { background:#111; border-radius:10px; padding:10px 12px; }
+.nutr-result-label { font-size:10px; color:#555; letter-spacing:1px; margin-bottom:3px; }
+.nutr-result-val { font-family:'Bebas Neue',sans-serif; font-size:22px; }
+.nutr-result-note { font-size:11px; color:#666; line-height:1.5; border-top:1px solid #2a2a3e; padding-top:10px; }
+.nutr-result-add-btn { width:100%; margin-top:10px; padding:10px; border-radius:10px; border:1px solid #4ECDC444; background:rgba(78,205,196,.12); color:#4ECDC4; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+.nutr-vs-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.nutr-vs-lbl { font-size:11px; color:#555; width:60px; flex-shrink:0; }
+.nutr-vs-bar-wrap { flex:1; background:#111; border-radius:99px; height:5px; overflow:hidden; }
+.nutr-vs-bar-fill { height:100%; border-radius:99px; transition:width .5s; }
+.nutr-vs-pct { font-size:10px; color:#555; width:36px; text-align:right; flex-shrink:0; }
+.nutr-loading { text-align:center; padding:30px; color:#555; font-size:14px; }
+.nutr-loading-spinner { font-size:32px; animation:spin 1s linear infinite; display:block; margin-bottom:8px; }
+.nutr-hist-item { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.nutr-hist-icon { font-size:24px; }
+.nutr-hist-name { font-size:13px; font-weight:700; }
+.nutr-hist-cal { font-size:11px; color:#FF6B35; margin-top:2px; }
+.nutr-error { background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3); border-radius:12px; padding:14px; color:#ff8a9a; font-size:13px; margin-bottom:12px; }
+
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#FF6B35; color:#000; border-radius:20px; padding:12px 24px; font-weight:700; font-size:14px; z-index:400; transition:transform .3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; pointer-events:none; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.confetti-piece { position:fixed; width:8px; height:8px; border-radius:2px; z-index:400; pointer-events:none; animation:confetti-fall 1.5s ease-in forwards; }
+.points-pop { position:fixed; font-family:'Bebas Neue',sans-serif; font-size:26px; color:#FFE66D; z-index:300; pointer-events:none; animation:pop-up 1s ease-out forwards; }
+.celebration { position:fixed; inset:0; z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,.88); animation:fadeIn .3s; }
+.celeb-emoji { font-size:96px; animation:bounce .5s ease infinite alternate; }
+.celeb-title { font-size:28px; font-weight:900; color:#FFE66D; margin-top:16px; letter-spacing:2px; }
+.celeb-pts { font-size:15px; color:#aaa; margin-top:8px; }
+.celeb-fires { font-size:38px; margin-top:12px; }
+.celeb-streak { color:#FF6B35; font-weight:700; font-size:17px; margin-top:6px; }
+.hidden { display:none !important; }
+
+@keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes pop-up { 0%{transform:translateY(0) scale(.5);opacity:0} 30%{transform:translateY(-20px) scale(1.2);opacity:1} 100%{transform:translateY(-60px) scale(1);opacity:0} }
+@keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 </style>
 </head>
 <body>
 
-<!-- Celebration -->
 <div class="celebration hidden" id="celebration">
   <div class="celeb-emoji" id="celebEmoji"></div>
   <div class="celeb-title">เช็คอินสำเร็จ!</div>
@@ -204,7 +325,6 @@
   <div class="celeb-streak" id="celebStreak"></div>
 </div>
 
-<!-- Timer Overlay -->
 <div class="timer-overlay" id="timerOverlay">
   <div class="timer-type-badge" id="timerTypeBadge">พักระหว่างเซต</div>
   <div class="timer-ring">
@@ -224,20 +344,13 @@
   </div>
 </div>
 
-<!-- Header -->
 <div class="header">
   <div class="header-inner">
     <div class="header-top">
-      <div>
-        <div class="brand-sub">WORKOUT TRACKER</div>
-        <div class="brand-name">💪 FitStreak</div>
-      </div>
+      <div><div class="brand-sub">WORKOUT TRACKER</div><div class="brand-name">💪 FitStreak</div></div>
       <div class="header-right">
         <div class="streak-chip">🔥 <span class="streak-chip-val" id="streakNum">0</span></div>
-        <div class="points-wrap">
-          <div class="points-label">POINTS</div>
-          <div class="points-val" id="pointsDisplay">0</div>
-        </div>
+        <div class="points-wrap"><div class="points-label">POINTS</div><div class="points-val" id="pointsDisplay">0</div></div>
       </div>
     </div>
     <div class="nav">
@@ -245,106 +358,137 @@
       <button class="nav-btn" onclick="switchTab('calendar',this)">📅 ปฏิทิน</button>
       <button class="nav-btn" onclick="switchTab('schedule',this)">📋 ตาราง</button>
       <button class="nav-btn" onclick="switchTab('stats',this)">📊 สถิติ</button>
+      <button class="nav-btn" onclick="switchTab('nutrition',this)">🥗 โภชนา</button>
     </div>
   </div>
 </div>
 
 <div class="main">
   <div class="page active" id="page-today"></div>
-
   <div class="page" id="page-calendar">
     <div class="cal-month" id="calMonth"></div>
     <div class="calendar-grid" id="calGrid"></div>
     <div class="ex-section-title">สติกเกอร์รางวัล 🏆</div>
     <div class="sticker-row" id="stickerRow"></div>
   </div>
-
   <div class="page" id="page-schedule"></div>
-
   <div class="page" id="page-stats">
     <div class="stats-grid" id="statsGrid"></div>
     <div class="ex-section-title">ประวัติล่าสุด</div>
     <div id="historyList"></div>
   </div>
+  <div class="page" id="page-nutrition"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 const SCHEDULE = {
-  1:{name:'จันทร์',focus:'อก + แขน + ท้อง',emoji:'💪',color:'#FF6B35',isRest:false,exercises:[
-    {name:'Push Up',sets:4,reps:'15',detail:'15 × 4 — พัก 60-90 วิ'},
-    {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Lateral Raise',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4 — ท้องล่าง'},
-    {name:'Ab Wheel',sets:4,reps:'10-15',detail:'10-15 × 4'},
-  ]},
-  2:{name:'อังคาร',focus:'ขา + หลัง + Core',emoji:'🦵',color:'#4ECDC4',isRest:false,exercises:[
-    {name:'Squat',sets:4,reps:'20',detail:'20 × 4'},
-    {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Reverse Crunch',sets:4,reps:'15',detail:'15 × 4'},
-    {name:'Side Plank',sets:3,reps:'30-45วิ',detail:'30-45 วิ × 3 / ข้าง',isTime:true},
-  ]},
-  3:{name:'พุธ',focus:'วันท้อง (เน้นท้องล่าง + ข้าง)',emoji:'🔥',color:'#FFE66D',isRest:false,exercises:[
-    {name:'Ab Wheel',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
-    {name:'Oblique Crunch',sets:3,reps:'15',detail:'15 × 3 / ข้าง'},
-    {name:'Russian Twist',sets:3,reps:'20',detail:'20 × 3'},
-    {name:'Plank',sets:3,reps:'45วิ',detail:'45 วิ × 3',isTime:true},
-  ]},
-  4:{name:'พฤหัส',focus:'พัก / คาร์ดิโอเบา',emoji:'🚶',color:'#95E1D3',isRest:true,exercises:[
-    {name:'เดินเร็ว 20 นาที',sets:1,reps:'20นาที',detail:'เลือกอย่างใดอย่างหนึ่ง',isTime:true},
-    {name:'วิ่งอยู่กับที่',sets:1,reps:'5-10นาที',detail:'5-10 นาที',isTime:true},
-  ],note:'เลือกทำอย่างใดอย่างหนึ่งก็ได้ 🚶'},
-  5:{name:'ศุกร์',focus:'อก + ไหล่ + แขน',emoji:'🏋️',color:'#F38181',isRest:false,exercises:[
-    {name:'Push Up',sets:4,reps:'15',detail:'15 × 4'},
-    {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Lateral Raise',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Ab Wheel',sets:3,reps:'10-15',detail:'10-15 × 3'},
-  ]},
-  6:{name:'เสาร์',focus:'หลัง + ขา + ท้องล่าง',emoji:'⚡',color:'#A8E6CF',isRest:false,exercises:[
-    {name:'Squat',sets:4,reps:'20',detail:'20 × 4'},
-    {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
-    {name:'Reverse Crunch',sets:4,reps:'15',detail:'15 × 4'},
-    {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
-    {name:'Side Plank',sets:3,reps:'45วิ',detail:'45 วิ × 3 / ข้าง',isTime:true},
-  ]},
-  0:{name:'อาทิตย์',focus:'พักเต็มที่ 💤',emoji:'😴',color:'#C3A6FF',isRest:true,exercises:[
-    {name:'เดินเบา ๆ (ถ้าอยากทำ)',sets:1,reps:'–',detail:'optional'},
-    {name:'ยืดกล้ามเนื้อ (ถ้าอยากทำ)',sets:1,reps:'–',detail:'optional'},
-  ],note:'วันพักเต็มที่ 😌'},
+  1:{name:'จันทร์',dayType:'A',focus:'Day A — อก + ไหล่ + ท้อง',emoji:'🟢',color:'#4ECDC4',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',
+    exercises:[
+      {name:'Push Up',sets:4,reps:'20',detail:'20 × 4'},
+      {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},
+      {name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},
+      {name:'Leg Raise',sets:3,reps:'15',detail:'15 × 3'},
+    ]},
+  2:{name:'อังคาร',dayType:'B',focus:'Day B — ขา + หลัง + Core',emoji:'🔵',color:'#74b9ff',isRest:false,
+    exercises:[
+      {name:'Squat',sets:4,reps:'25',detail:'25 × 4'},
+      {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Plank',sets:3,reps:'60วิ',detail:'60 วิ × 3',isTime:true},
+      {name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true},
+    ]},
+  3:{name:'พุธ',dayType:'C',focus:'Day C — ท้อง + คาร์ดิโอเบา',emoji:'🟡',color:'#FFE66D',isRest:false,note:'🚶‍♂️ เดิน 20–30 นาที',
+    exercises:[
+      {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
+      {name:'Bicycle Crunch',sets:3,reps:'20',detail:'20 × 3'},
+      {name:'Russian Twist',sets:3,reps:'20',detail:'20 × 3'},
+      {name:'Mountain Climber',sets:3,reps:'30วิ',detail:'30 วิ × 3',isTime:true},
+    ]},
+  4:{name:'พฤหัส',dayType:'A+',focus:'Day A (หนักขึ้น)',emoji:'🔴',color:'#F38181',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',
+    exercises:[
+      {name:'Push Up (ยกเท้า)',sets:4,reps:'15',detail:'15 × 4'},
+      {name:'Dumbbell Curl (เพิ่มน้ำหนัก)',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},
+      {name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},
+      {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
+    ]},
+  5:{name:'ศุกร์',dayType:'B+',focus:'Day B (หนักขึ้น)',emoji:'🟣',color:'#C3A6FF',isRest:false,
+    exercises:[
+      {name:'Squat',sets:4,reps:'25',detail:'25 × 4'},
+      {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
+      {name:'Plank',sets:3,reps:'60-75วิ',detail:'60–75 วิ × 3',isTime:true},
+      {name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true},
+    ]},
+  6:{name:'เสาร์',dayType:'C',focus:'Day C — เบา + เผาไขมัน',emoji:'🟠',color:'#FDCB6E',isRest:false,note:'🚶‍♂️ เดิน 30–45 นาที หรือ HIIT 5–10 นาที',
+    exercises:[
+      {name:'Leg Raise',sets:3,reps:'12',detail:'12 × 3'},
+      {name:'Bicycle Crunch',sets:3,reps:'15',detail:'15 × 3'},
+    ]},
+  0:{name:'อาทิตย์',dayType:'REST',focus:'REST — พักเต็มที่',emoji:'⚫',color:'#636e72',isRest:true,note:'✔️ เดินเบา ๆ 10–20 นาที + ยืดเหยียด',
+    exercises:[
+      {name:'เดินเบา ๆ',sets:1,reps:'10-20 นาที',detail:'เบา ๆ',isTime:true},
+      {name:'ยืดเหยียด',sets:1,reps:'ตามสบาย',detail:'ทั้งตัว'},
+    ]},
+};
+
+const NUTR_GOALS = {
+  'A':  {label:'วันเวทหนัก (A)',  cal:2000,protein:140,fat:58,carb:240},
+  'A+': {label:'วันเวทหนัก (A+)', cal:2000,protein:140,fat:58,carb:240},
+  'B':  {label:'วันเวทหนัก (B)',  cal:2000,protein:140,fat:58,carb:240},
+  'B+': {label:'วันเวทหนัก (B+)', cal:2000,protein:140,fat:58,carb:240},
+  'C':  {label:'วัน Core+คาร์ดิโอ (C)', cal:1900,protein:140,fat:60,carb:190},
+  'REST':{label:'วันพัก',          cal:1800,protein:140,fat:67,carb:160},
 };
 
 const STICKERS=[
-  {emoji:'🌱',label:'เริ่มต้น',threshold:1},
-  {emoji:'🔥',label:'3 วัน',threshold:3},
-  {emoji:'⚡',label:'7 วัน',threshold:7},
-  {emoji:'💪',label:'14 วัน',threshold:14},
-  {emoji:'🏅',label:'21 วัน',threshold:21},
-  {emoji:'🥇',label:'30 วัน',threshold:30},
-  {emoji:'🚀',label:'50 วัน',threshold:50},
-  {emoji:'👑',label:'100 วัน',threshold:100},
+  {emoji:'🌱',label:'เริ่มต้น',threshold:1},{emoji:'🔥',label:'3 วัน',threshold:3},
+  {emoji:'⚡',label:'7 วัน',threshold:7},{emoji:'💪',label:'14 วัน',threshold:14},
+  {emoji:'🏅',label:'21 วัน',threshold:21},{emoji:'🥇',label:'30 วัน',threshold:30},
+  {emoji:'🚀',label:'50 วัน',threshold:50},{emoji:'👑',label:'100 วัน',threshold:100},
 ];
-
 const STREAK_BADGES=[
   {days:3,badge:'🥉',label:'3 วันติด!'},{days:7,badge:'🥈',label:'1 สัปดาห์!'},
   {days:14,badge:'🥇',label:'2 สัปดาห์!'},{days:30,badge:'🏆',label:'1 เดือน!'},
   {days:60,badge:'👑',label:'2 เดือน!'},{days:100,badge:'💎',label:'100 วัน!'},
 ];
 
+const MY_MEALS=[
+  {food:'ข้าวผัดกรอบไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:750,protein:28,fat:38,carbs:72,fiber:1.5,sugar:3,note:'ไขมันสูงจากหมูกรอบทอดและไข่ดาว คาร์บจากข้าวผัด'},
+  {food:'ข้าวมันไก่ต้ม พิเศษ',serving:'1 จาน (~400g)',calories:650,protein:35,fat:22,carbs:75,fiber:1,sugar:2,note:'โปรตีนดีจากไก่ต้ม ไขมันพอดี เป็นมื้อที่สมดุลดี'},
+  {food:'ข้าวมันไก่ทอด พิเศษ',serving:'1 จาน (~420g)',calories:780,protein:38,fat:38,carbs:75,fiber:1,sugar:2,note:'ไขมันสูงกว่าต้มเพราะทอด โปรตีนดี ระวังไขมัน'},
+  {food:'ข้าวหมูทอดกระเทียมพริกไทยไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:820,protein:32,fat:42,carbs:75,fiber:1.5,sugar:2,note:'ไขมันสูงจากการทอดและไข่ดาว'},
+  {food:'ข้าวผัดหมูชิ้นไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:680,protein:30,fat:30,carbs:72,fiber:1.5,sugar:3,note:'สมดุลดีกว่าหมูกรอบ โปรตีนพอใช้ ไขมันปานกลาง'},
+  {food:'ข้าวกระเพราหมูกรอบไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:800,protein:30,fat:42,carbs:70,fiber:2,sugar:3,note:'ไขมันสูงจากหมูกรอบและไข่ดาว กะเพรามีสรรพคุณช่วยย่อย'},
+  {food:'ข้าวกระเพราหมูชิ้นไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:680,protein:32,fat:28,carbs:70,fiber:2,sugar:3,note:'ดีกว่าหมูกรอบ ไขมันต่ำกว่า โปรตีนพอดี'},
+  {food:'สปาเกตตี้คาโบนาร่า EzyGo (7-11)',serving:'1 กล่อง (210g)',calories:520,protein:18,fat:22,carbs:62,fiber:2,sugar:4,note:'แคลปานกลาง โปรตีนต่ำ ควรกินคู่กับโปรตีนเสริม'},
+  {food:'ค็อกเทลชีส 120g (7-11)',serving:'1 ถุง (120g)',calories:340,protein:24,fat:25,carbs:4,fiber:0,sugar:2,note:'โปรตีนสูง คาร์บต่ำ เหมาะเป็นของว่างโปรตีนสูง ระวังโซเดียม'},
+  {food:'นม Sunshine Dairy High Protein 340ml',serving:'1 ขวด (340ml)',calories:250,protein:33,fat:7,carbs:10,fiber:0,sugar:2,note:'โปรตีนสูงมาก Lactose-free ไม่เติมน้ำตาล เหมาะดื่มหลังออกกำลังกาย'},
+  {food:'ผัดซีอิ๊วหมูชิ้น',serving:'1 จาน (~400g)',calories:580,protein:28,fat:22,carbs:68,fiber:2,sugar:6,note:'โปรตีนพอดี ซีอิ๊วมีโซเดียมสูง'},
+  {food:'ผัดซีอิ๊วหมูกรอบไข่ดาว พิเศษ',serving:'1 จาน (~450g)',calories:720,protein:28,fat:36,carbs:68,fiber:2,sugar:6,note:'ไขมันสูงจากหมูกรอบและไข่ดาว โซเดียมสูง'},
+  {food:'ก๋วยเตี๋ยวเส้นเล็กหมู พิเศษ',serving:'1 ชาม (~500g)',calories:480,protein:28,fat:12,carbs:65,fiber:2,sugar:3,note:'ไขมันต่ำ โปรตีนดี น้ำซุปมีโซเดียมสูง'},
+  {food:'ก๋วยเตี๋ยวต้มยำหมู พิเศษ',serving:'1 ชาม (~500g)',calories:520,protein:26,fat:18,carbs:62,fiber:2,sugar:4,note:'รสเผ็ดช่วยเผาผลาญ น้ำต้มยำมีโซเดียมค่อนข้างสูง'},
+  {food:'สเต็กหมูพริกไทยดำ (พร้อมสลัด)',serving:'1 จาน (~300g)',calories:550,protein:42,fat:28,carbs:22,fiber:2,sugar:3,note:'โปรตีนสูงมาก ไขมันปานกลาง คาร์บต่ำ เหมาะมากสำหรับลีน'},
+  {food:'ข้าวหมูทงคัตสึ (พร้อมข้าว)',serving:'1 จาน (~450g)',calories:750,protein:38,fat:28,carbs:82,fiber:2,sugar:4,note:'โปรตีนสูงดี คาร์บสูง เหมาะกินก่อนเวท'},
+  {food:'น้ำเปล่า 600ml',serving:'1 ขวด (600ml)',calories:0,protein:0,fat:0,carbs:0,fiber:0,sugar:0,isWater:true,waterMl:600,note:'ไม่มีแคลอรี่ ช่วย hydration และการเผาผลาญ'},
+  {food:'อกไก่นุ่มกระเทียมพริกไท CP (7-11)',serving:'1 ชิ้น (80g)',calories:80,protein:15,fat:1,carbs:2.7,fiber:0,sugar:0,note:'โปรตีนสูงมากเมื่อเทียบกับแคลอรี่ ไขมันต่ำมาก เหมาะเป็น snack หลังออกกำลังกาย'},
+];
+
 const TIMER_SET=60, TIMER_EX=90;
+const WATER_GOAL_ML = 2500;
 
-// ── State ──
-function loadState(){try{return JSON.parse(localStorage.getItem('fitstreak_v2')||'{}');}catch{return {};}}
-function saveState(){localStorage.setItem('fitstreak_v2',JSON.stringify(state));}
+function loadState(){try{return JSON.parse(localStorage.getItem('fitstreak_v4')||'{}');}catch{return {};}}
+function saveState(){localStorage.setItem('fitstreak_v4',JSON.stringify(state));}
 let state=loadState();
-if(!state.checkins) state.checkins={};
+if(!state.checkins)    state.checkins={};
 if(!state.totalPoints) state.totalPoints=0;
+if(!state.foodLog)     state.foodLog={};
+if(!state.waterLog)    state.waterLog={};
 
-// ── Helpers ──
-function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function todayKeyFn(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function todayDow(){return new Date().getDay();}
 function getSchedule(){return SCHEDULE[todayDow()];}
 function getCheckin(key){if(!state.checkins[key])state.checkins[key]={done:false,points:0,sets:{}};return state.checkins[key];}
@@ -353,8 +497,7 @@ function streak(){
   while(true){
     const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     if(state.checkins[k]&&state.checkins[k].done){count++;d.setDate(d.getDate()-1);}else break;
-  }
-  return count;
+  }return count;
 }
 function totalCheckins(){return Object.values(state.checkins).filter(v=>v.done).length;}
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${m}:${String(sec).padStart(2,'0')}`;}
@@ -363,70 +506,84 @@ function vibrate(){if(navigator.vibrate)navigator.vibrate([200,100,200]);}
 function playAlertSound(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const beeps=[
-      {freq:880,start:0,   dur:0.15},
-      {freq:880,start:0.2, dur:0.15},
-      {freq:1100,start:0.4,dur:0.3},
-    ];
-    beeps.forEach(b=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.type='sine';osc.frequency.value=b.freq;
+    [{freq:880,start:0,dur:.15},{freq:880,start:.2,dur:.15},{freq:1100,start:.4,dur:.3}].forEach(b=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=b.freq;
       gain.gain.setValueAtTime(0,ctx.currentTime+b.start);
-      gain.gain.linearRampToValueAtTime(0.6,ctx.currentTime+b.start+0.02);
+      gain.gain.linearRampToValueAtTime(.6,ctx.currentTime+b.start+.02);
       gain.gain.linearRampToValueAtTime(0,ctx.currentTime+b.start+b.dur);
-      osc.start(ctx.currentTime+b.start);
-      osc.stop(ctx.currentTime+b.start+b.dur+0.05);
+      osc.start(ctx.currentTime+b.start);osc.stop(ctx.currentTime+b.start+b.dur+.05);
     });
-  }catch(e){}
+  }catch{}
+}
+function playSetDoneSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [{freq:660,start:0,dur:.1},{freq:880,start:.12,dur:.15}].forEach(b=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=b.freq;
+      gain.gain.setValueAtTime(0,ctx.currentTime+b.start);
+      gain.gain.linearRampToValueAtTime(.4,ctx.currentTime+b.start+.02);
+      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+b.start+b.dur);
+      osc.start(ctx.currentTime+b.start);osc.stop(ctx.currentTime+b.start+b.dur+.05);
+    });
+  }catch{}
 }
 
-// ── Timer ──
-let timer={id:null,seconds:0,total:0,onDone:null,type:'',label:''};
+// ── TIMER (wall-clock based — survives backgrounding) ──
+let timer={id:null,seconds:0,total:0,onDone:null,type:'',label:'',startWallTime:null};
 
 function startTimerOverlay(seconds,type,subtitle,onDone){
   if(timer.id)clearInterval(timer.id);
-  timer={id:null,seconds,total:seconds,onDone,type,label:subtitle};
+  timer={id:null,seconds,total:seconds,onDone,type,label:subtitle,startWallTime:Date.now()};
+  localStorage.setItem('activeTimer',JSON.stringify({startWallTime:Date.now(),total:seconds,type,subtitle}));
   document.getElementById('timerTypeBadge').textContent=type;
   document.getElementById('timerTitle').textContent=type;
   document.getElementById('timerSub').textContent=subtitle;
   document.getElementById('timerOverlay').classList.add('show');
   updateTimerDisplay();
-  timer.id=setInterval(()=>{
-    timer.seconds--;
-    updateTimerDisplay();
-    if(timer.seconds<=0){
-      clearInterval(timer.id);timer.id=null;
-      document.getElementById('timerOverlay').classList.remove('show');
-      vibrate();
-      playAlertSound();
-      showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
-      if(timer.onDone)timer.onDone();
-    }
-  },1000);
+  timer.id=setInterval(timerTick,500);
 }
-
+function timerTick(){
+  const elapsed=Math.floor((Date.now()-timer.startWallTime)/1000);
+  timer.seconds=Math.max(0,timer.total-elapsed);
+  updateTimerDisplay();
+  if(timer.seconds<=0){
+    clearInterval(timer.id);timer.id=null;
+    localStorage.removeItem('activeTimer');
+    document.getElementById('timerOverlay').classList.remove('show');
+    vibrate();playAlertSound();showToast('⏰ หมดเวลาพัก — เริ่มได้เลย!');
+    if(timer.onDone)timer.onDone();
+  }
+}
 function updateTimerDisplay(){
   const s=timer.seconds;
-  const big=document.getElementById('timerBig');
-  const circle=document.getElementById('timerCircle');
-  big.textContent=fmt(s);
-  const warn=s<=10;
-  big.classList.toggle('warning',warn);
-  circle.classList.toggle('warning',warn);
+  const big=document.getElementById('timerBig'),circle=document.getElementById('timerCircle');
+  big.textContent=fmt(s);const warn=s<=10;
+  big.classList.toggle('warning',warn);circle.classList.toggle('warning',warn);
   circle.style.strokeDashoffset=(2*Math.PI*88)*(1-timer.seconds/timer.total);
 }
-
-function stopTimer(){if(timer.id)clearInterval(timer.id);timer.id=null;document.getElementById('timerOverlay').classList.remove('show');}
+function stopTimer(){if(timer.id)clearInterval(timer.id);timer.id=null;localStorage.removeItem('activeTimer');document.getElementById('timerOverlay').classList.remove('show');}
 function skipTimer(){stopTimer();}
 function startSetTimer(exIdx){startTimerOverlay(TIMER_SET,'พักระหว่างเซต',`เซต ${exIdx+1} — พักให้หายใจ`,()=>{});}
 function startSetTimerAuto(){startTimerOverlay(TIMER_SET,'พักระหว่างเซต','เซตต่อไปพร้อมยัง?',()=>{});}
 function startExTimer(nextName){startTimerOverlay(TIMER_EX,'พักระหว่างท่า',`ถัดไป: ${nextName}`,()=>{});}
 
-// ── Render Today ──
+// Resume timer
+(function(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('activeTimer')||'null');
+    if(!saved)return;
+    const remaining=saved.total-Math.floor((Date.now()-saved.startWallTime)/1000);
+    if(remaining>0)startTimerOverlay(remaining,saved.type,saved.subtitle,()=>{});
+    else localStorage.removeItem('activeTimer');
+  }catch{}
+})();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&timer.id)timerTick();});
+
+// ── TODAY ──
 function renderToday(){
-  const dow=todayDow(),sched=SCHEDULE[dow],key=todayKey(),checkin=getCheckin(key);
+  const dow=todayDow(),sched=SCHEDULE[dow],key=todayKeyFn(),checkin=getCheckin(key);
   const d=new Date(),s_=streak(),totalCI=totalCheckins(),pts=state.totalPoints||0;
   const setsInfo=checkin.sets||{};
   let totalSets=0,doneSets=0;
@@ -444,192 +601,117 @@ function renderToday(){
     <div class="today-bg-emoji">${sched.emoji}</div>
     <div class="today-sub">วันนี้ — ${sched.name} | ${d.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</div>
     <div class="today-title">${sched.emoji} ${sched.focus}</div>
-    <div class="today-meta">${sched.isRest?'วันพัก 🌿':`${sched.exercises.length} ท่า · ${sched.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
-
+    <div class="today-meta">${sched.isRest?'วันพัก':`${sched.exercises.length} ท่า · ${sched.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
   if(!sched.isRest){
     h+=`<div class="today-progress-wrap">
       <div class="today-progress-labels"><span>${doneSets} / ${totalSets} เซต</span><span>${pct}%</span></div>
       <div class="today-progress-bar"><div class="today-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${sched.color},${sched.color}88)"></div></div>
     </div>`;
   }
-
   if(checkin.done){
     h+=`<button class="big-btn done-btn">✓ เช็คอินแล้ววันนี้!</button>`;
   } else if(sched.isRest){
-    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000" onclick="markRestDay()">😌 เช็คอินวันพัก (+5 แต้ม)</button>`;
+    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#fff" onclick="markRestDay()">😌 เช็คอินวันพัก (+5 แต้ม)</button>`;
   } else {
     h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000;box-shadow:0 4px 20px ${sched.color}44" ${pct>=100?'':'disabled'} onclick="masterCheckinClick()">${pct>=100?'🎉 เช็คอิน!':'✓ CHECK IN วันนี้'}</button>`;
   }
   h+=`</div>`;
-
-  if(!sched.isRest) h+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
-
-  // done/rest banners
-  if(sched.isRest&&!checkin.done){
-    h+=`<div class="done-banner"><span class="done-emoji">${dow===0?'🛋️':'🚶'}</span><h2>${sched.name==='พฤหัส'?'วันพักเบา':'วันพักเต็มที่'}</h2><p>${sched.note||''}</p></div>`;
-  } else if(checkin.done&&pct>=100){
-    h+=`<div class="done-banner"><span class="done-emoji">🏆</span><h2>ทำได้แล้ว!</h2><p>+${checkin.points||0} แต้มวันนี้ 🎉</p></div>`;
-  }
-
+  if(!sched.isRest)h+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
+  if(sched.isRest&&!checkin.done)h+=`<div class="done-banner"><span class="done-emoji">😴</span><h2>วันพักเต็มที่</h2><p>${sched.note||''}</p></div>`;
+  else if(checkin.done&&pct>=100)h+=`<div class="done-banner"><span class="done-emoji">🏆</span><h2>ทำได้แล้ว!</h2><p>+${checkin.points||0} แต้มวันนี้ 🎉</p></div>`;
   h+=buildExerciseList(sched,checkin);
-
-  if(nextBadge) h+=`<div class="badge-progress">
-    <div class="badge-emoji-big">${nextBadge.badge}</div>
-    <div class="badge-info">
-      <div class="badge-sub-lbl">เป้าหมายถัดไป</div>
-      <div class="badge-title-lbl">${nextBadge.label}</div>
-      <div class="badge-bar"><div class="badge-bar-fill" style="width:${Math.min((s_/nextBadge.days)*100,100)}%"></div></div>
-      <div class="badge-count-lbl">${s_} / ${nextBadge.days} วัน</div>
-    </div>
-  </div>`;
-
-  if(earnedBadges.length){
-    h+=`<div class="badges-section"><div class="section-label">🏅 BADGES EARNED</div><div class="badges-grid">`;
-    earnedBadges.forEach(b=>{h+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`;});
-    h+=`</div></div>`;
-  }
-
+  if(nextBadge)h+=`<div class="badge-progress"><div class="badge-emoji-big">${nextBadge.badge}</div><div class="badge-info"><div class="badge-sub-lbl">เป้าหมายถัดไป</div><div class="badge-title-lbl">${nextBadge.label}</div><div class="badge-bar"><div class="badge-bar-fill" style="width:${Math.min((s_/nextBadge.days)*100,100)}%"></div></div><div class="badge-count-lbl">${s_} / ${nextBadge.days} วัน</div></div></div>`;
+  if(earnedBadges.length){h+=`<div class="badges-section"><div class="section-label">🏅 BADGES</div><div class="badges-grid">`;earnedBadges.forEach(b=>{h+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`;});h+=`</div></div>`;}
   document.getElementById('page-today').innerHTML=h;
   updateHeaderStats();
 }
 
-// ── Build Exercise List (file 1) ──
 function buildExerciseList(sched,checkin){
   const setsInfo=checkin.sets||{};
   let html=`<div class="ex-section-title">ท่าออกกำลังกายวันนี้</div>`;
   sched.exercises.forEach((ex,i)=>{
     const doneArr=setsInfo[i]||new Array(ex.sets).fill(false);
-    const allDone=doneArr.every(Boolean);
-    const anyDone=doneArr.some(Boolean);
-    const cardClass=allDone?'completed-ex':(anyDone?'active-ex':'');
-    html+=`<div class="exercise-card ${cardClass} ${anyDone&&!allDone?'open':''}" id="exCard${i}">
+    const allDone=doneArr.every(Boolean),anyDone=doneArr.some(Boolean);
+    html+=`<div class="exercise-card ${allDone?'completed-ex':(anyDone?'active-ex':'')} ${anyDone&&!allDone?'open':''}" id="exCard${i}">
       <div class="exercise-header" onclick="toggleExCard(${i})">
         <div class="ex-num-box">${allDone?'✓':i+1}</div>
-        <div class="ex-info">
-          <div class="ex-name">${ex.name}</div>
-          <div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div>
-        </div>
+        <div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div></div>
         <div class="ex-arrow">▾</div>
       </div>
-      <div class="sets-panel" id="setsPanel${i}">
-        <div class="sets-grid">`;
+      <div class="sets-panel" id="setsPanel${i}"><div class="sets-grid">`;
     for(let s=0;s<ex.sets;s++){
-      const done=doneArr[s];
-      const isNext=!done&&(s===0||doneArr[s-1]);
-      html+=`<div class="set-btn ${done?'done-set':(isNext?'active-set':'')}" onclick="toggleSet(${i},${s})">
-        <span class="check-icon">✓</span>
-        <div class="set-lbl">เซต ${s+1}</div>
-        <div class="set-reps">${ex.reps}</div>
-      </div>`;
+      const done=doneArr[s],isNext=!done&&(s===0||doneArr[s-1]);
+      html+=`<div class="set-btn ${done?'done-set':(isNext?'active-set':'')}" onclick="toggleSet(${i},${s})"><span class="check-icon">✓</span><div class="set-lbl">เซต ${s+1}</div><div class="set-reps">${ex.reps}</div></div>`;
     }
-    html+=`</div>
-        <div class="timer-row" id="timerRow${i}">
-          <span class="timer-icon">⏱</span>
-          <span class="timer-label" id="timerLabel${i}">พักระหว่างเซต 60 วิ</span>
-          <span class="timer-countdown" id="timerCountdown${i}">1:00</span>
-          <button class="start-timer-btn" id="startTimerBtn${i}" onclick="startSetTimer(${i})">เริ่ม</button>
-        </div>
-      </div>
-    </div>`;
+    html+=`</div><div class="timer-row"><span class="timer-icon">⏱</span><span class="timer-label">พักระหว่างเซต 60 วิ</span><span class="timer-countdown">1:00</span><button class="start-timer-btn" onclick="startSetTimer(${i})">เริ่ม</button></div></div></div>`;
   });
   return html;
 }
-
 function toggleExCard(i){document.getElementById(`exCard${i}`).classList.toggle('open');}
 
-// ── Set Logic (file 1) ──
 function toggleSet(exIdx,setIdx){
-  const key=todayKey(),checkin=getCheckin(key),sched=getSchedule(),ex=sched.exercises[exIdx];
+  const key=todayKeyFn(),checkin=getCheckin(key),sched=getSchedule(),ex=sched.exercises[exIdx];
   if(!checkin.sets[exIdx])checkin.sets[exIdx]=new Array(ex.sets).fill(false);
   const wasTrue=checkin.sets[exIdx][setIdx];
   checkin.sets[exIdx][setIdx]=!wasTrue;
   if(!wasTrue){
-    checkin.points=(checkin.points||0)+5;
-    state.totalPoints=(state.totalPoints||0)+5;
-    showPointsPop('+5');
+    checkin.points=(checkin.points||0)+5;state.totalPoints=(state.totalPoints||0)+5;
+    showPointsPop('+5');playSetDoneSound();
+    if(navigator.vibrate)navigator.vibrate([50,30,50]);
     const allSetsDone=checkin.sets[exIdx].every(Boolean);
     if(allSetsDone){
       const allExDone=sched.exercises.every((e,i)=>(checkin.sets[i]||[]).filter(Boolean).length>=e.sets);
-      if(allExDone){
-        checkin.points+=20;state.totalPoints+=20;checkin.done=true;
-        saveState();updateUI();
-        setTimeout(()=>{launchConfetti();showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');showCelebration(checkin.points,'done');},300);
-        return;
-      } else {
-        saveState();updateUI();
-        setTimeout(()=>{
-          const nxt=findNextExercise(exIdx,sched,checkin);
-          startExTimer(nxt?nxt.name:'ท่าถัดไป');
-        },100);
-        return;
-      }
-    } else {
-      saveState();updateUI();
-      setTimeout(()=>startSetTimerAuto(),100);
-      return;
-    }
+      if(allExDone){checkin.points+=20;state.totalPoints+=20;checkin.done=true;saveState();updateUI();setTimeout(()=>{launchConfetti();showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');showCelebration(checkin.points,'done');},300);return;}
+      else{saveState();updateUI();setTimeout(()=>{const nxt=findNextExercise(exIdx,sched,checkin);startExTimer(nxt?nxt.name:'ท่าถัดไป');},100);return;}
+    } else {saveState();updateUI();setTimeout(()=>startSetTimerAuto(),100);return;}
   }
   saveState();updateUI();
 }
-
 function findNextExercise(idx,sched,checkin){
-  for(let i=idx+1;i<sched.exercises.length;i++){
-    if((checkin.sets[i]||[]).filter(Boolean).length<sched.exercises[i].sets)return sched.exercises[i];
-  }
+  for(let i=idx+1;i<sched.exercises.length;i++)if((checkin.sets[i]||[]).filter(Boolean).length<sched.exercises[i].sets)return sched.exercises[i];
   return null;
 }
-
-// ── Check-in (file 1) ──
 function masterCheckinClick(){
-  const key=todayKey(),checkin=getCheckin(key);
+  const key=todayKeyFn(),checkin=getCheckin(key);
   checkin.done=true;checkin.points=(checkin.points||0)+10;state.totalPoints=(state.totalPoints||0)+10;
   saveState();updateUI();launchConfetti();showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');showCelebration(checkin.points,'workout');
 }
 function markRestDay(){
-  const key=todayKey(),checkin=getCheckin(key);
+  const key=todayKeyFn(),checkin=getCheckin(key);
   checkin.done=true;checkin.points=(checkin.points||0)+5;checkin.isRest=true;state.totalPoints=(state.totalPoints||0)+5;
   saveState();updateUI();showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');showCelebration(checkin.points,'rest');
 }
 function showCelebration(pts,type){
   const s=streak(),el=document.getElementById('celebration');
-  const emojis=['🌟','🔥','💎','⚡','🏆','💪','🎯','🚀'];
-  document.getElementById('celebEmoji').textContent=type==='rest'?'😌':(type==='done'?'🏆':emojis[Math.floor(Math.random()*emojis.length)]);
+  const em=['🌟','🔥','💎','⚡','🏆','💪','🎯','🚀'];
+  document.getElementById('celebEmoji').textContent=type==='rest'?'😌':(type==='done'?'🏆':em[Math.floor(Math.random()*em.length)]);
   document.getElementById('celebPts').textContent=`+${pts} แต้ม 🎯`;
   document.getElementById('celebFires').textContent='🔥'.repeat(Math.min(s,7));
   document.getElementById('celebStreak').textContent=`Streak: ${s} วัน!`;
-  el.classList.remove('hidden');
-  setTimeout(()=>el.classList.add('hidden'),3000);
+  el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),3000);
 }
 
-// ── Calendar (file 1) ──
 function renderCalendar(){
   const now=new Date(),year=now.getFullYear(),month=now.getMonth();
   document.getElementById('calMonth').textContent=now.toLocaleDateString('th-TH',{month:'long',year:'numeric'});
   const headers=['อา','จ','อ','พ','พฤ','ศ','ส'];
   let html=headers.map(h=>`<div class="cal-day-header">${h}</div>`).join('');
   const firstDay=new Date(year,month,1).getDay();
-  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
-  const days=new Date(year,month+1,0).getDate();
-  for(let d=1;d<=days;d++){
+  for(let i=0;i<firstDay;i++)html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=new Date(year,month+1,0).getDate();d++){
     const key=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const ck=state.checkins[key],dow=new Date(year,month,d).getDay(),isToday=d===now.getDate(),isRest=SCHEDULE[dow].isRest;
-    let cls='';
-    if(isToday)cls+=' today';
-    if(ck&&ck.done)cls+=' checked';
-    else if(isRest)cls+=' rest-day';
+    let cls='';if(isToday)cls+=' today';if(ck&&ck.done)cls+=' checked';else if(isRest)cls+=' rest-day';
     html+=`<div class="cal-day${cls}">${d}</div>`;
   }
   document.getElementById('calGrid').innerHTML=html;
   const total=totalCheckins();
-  let sHtml='';
-  STICKERS.forEach(s=>{
+  document.getElementById('stickerRow').innerHTML=STICKERS.map(s=>{
     const earned=total>=s.threshold;
-    sHtml+=`<div class="sticker ${earned?'earned':''}"><span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span><div class="sticker-label">${s.label}</div></div>`;
-  });
-  document.getElementById('stickerRow').innerHTML=sHtml;
+    return`<div class="sticker ${earned?'earned':''}"><span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span><div class="sticker-label">${s.label}</div></div>`;
+  }).join('');
 }
 
-// ── Schedule ──
 function renderSchedule(){
   const el=document.getElementById('page-schedule'),dow=todayDow();
   let h=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
@@ -643,6 +725,7 @@ function renderSchedule(){
       </div>
       <div class="day-body" id="daybody-${d}">`;
     w.exercises.forEach((ex,i)=>{h+=`<div class="sch-ex-row"><div><span class="sch-ex-num">${i+1}.</span><span style="font-size:13px;color:#ddd">${ex.name}</span></div><div><span style="font-size:12px;font-weight:700;color:${w.color}">${ex.sets} เซต</span><span style="font-size:11px;color:#555;margin-left:6px">× ${ex.reps}</span></div></div>`;});
+    if(w.note)h+=`<div class="day-note">${w.note}</div>`;
     h+=`<div class="rest-info-box">⏱ พักเซต 60 วิ · พักท่า 90 วิ</div></div></div>`;
   });
   el.innerHTML=h;
@@ -654,7 +737,6 @@ function toggleDay(d){
   b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▲':'▼';
 }
 
-// ── Stats (file 1) ──
 function renderStats(){
   const total=totalCheckins(),s=streak(),pts=state.totalPoints||0,weeks=Math.floor(total/5);
   document.getElementById('statsGrid').innerHTML=`
@@ -663,42 +745,324 @@ function renderStats(){
     <div class="stat-card-stats"><div class="stat-value">${pts}</div><div class="stat-label-stats">⚡ แต้มสะสม</div></div>
     <div class="stat-card-stats"><div class="stat-value">${weeks}</div><div class="stat-label-stats">📅 สัปดาห์ที่ครบ</div></div>`;
   const entries=Object.entries(state.checkins).filter(([,v])=>v.done).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
-  let hHtml='';
-  entries.forEach(([k,v])=>{
+  document.getElementById('historyList').innerHTML=entries.length?entries.map(([k,v])=>{
     const dd=new Date(k+'T00:00:00'),dow=dd.getDay(),sched=SCHEDULE[dow];
-    hHtml+=`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:8px;">
+    return`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:8px;">
       <div style="font-size:28px">${v.isRest?'😴':'✅'}</div>
       <div style="flex:1"><div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div><div style="font-size:12px;color:#555">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div></div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35">+${v.points||0}</div>
     </div>`;
-  });
-  document.getElementById('historyList').innerHTML=hHtml||'<div style="color:#555;text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
+  }).join(''):'<div style="color:#555;text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
 }
 
-// ── UI ──
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NUTRITION — redesigned
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let nutrQueryHistory=[];
+let currentNutrResult=null;
+
+function getTodayGoals(){return NUTR_GOALS[SCHEDULE[todayDow()].dayType]||NUTR_GOALS['A'];}
+
+function getFoodLog(){const k=todayKeyFn();if(!state.foodLog[k])state.foodLog[k]=[];return state.foodLog[k];}
+function getWaterMl(){const k=todayKeyFn();return state.waterLog[k]||0;}
+function addWaterMl(ml){
+  const k=todayKeyFn();
+  state.waterLog[k]=(state.waterLog[k]||0)+ml;
+  saveState();renderNutrition();
+  const total=state.waterLog[k];
+  if(total>=WATER_GOAL_ML)showToast('💧 ดื่มน้ำครบเป้าวันนี้! 🎉');
+  else showToast(`💧 +${ml}ml — รวม ${total}ml วันนี้`);
+}
+function resetWater(){state.waterLog[todayKeyFn()]=0;saveState();renderNutrition();}
+
+function getEaten(){
+  const log=getFoodLog();
+  return{
+    cal: log.reduce((a,f)=>a+(f.calories||0),0),
+    protein: log.reduce((a,f)=>a+(f.protein||0),0),
+    fat: log.reduce((a,f)=>a+(f.fat||0),0),
+    carb: log.reduce((a,f)=>a+(f.carbs||0),0),
+  };
+}
+
+function renderNutrition(){
+  const el=document.getElementById('page-nutrition');
+  const dow=todayDow(),sched=SCHEDULE[dow];
+  const goals=getTodayGoals();
+  const eaten=getEaten();
+  const log=getFoodLog();
+  const waterMl=getWaterMl();
+
+  const remCal=goals.cal-eaten.cal;
+  const pctCal=Math.min(Math.round((eaten.cal/goals.cal)*100),100);
+
+  // Color helpers
+  const macroColor=(eaten,goal)=>eaten>=goal?'#4ECDC4':(eaten>=goal*0.8?'#FFE66D':'#FF6B35');
+  const remStr=(rem)=>rem>0?`เหลือ ${rem}`:rem===0?'✓ ครบ':`⚠ เกิน ${Math.abs(rem)}`;
+  const remCol=(rem)=>rem>0?'#555':rem===0?'#4ECDC4':'#ff4060';
+
+  // Ring SVG circumference r=46
+  const CIRC=2*Math.PI*46;
+  const calOffset=CIRC*(1-pctCal/100);
+  const calRingColor=pctCal>=100?'#4ECDC4':(pctCal>=80?'#FFE66D':'#FF6B35');
+
+  // Macro pct for mini bars
+  const mp=(v,g)=>Math.min(Math.round((v/g)*100),100);
+
+  const mealOpts=MY_MEALS.filter(m=>!m.isWater).map((m,i)=>`<option value="${i}">${m.food} (${m.calories} kcal · P${m.protein}g)</option>`).join('');
+
+  let h=`
+  <!-- Day banner -->
+  <div class="nutr-day-banner" style="background:${sched.color}15;border:1px solid ${sched.color}33">
+    <div class="nutr-day-emoji">${sched.emoji}</div>
+    <div>
+      <div class="nutr-day-label">เป้าหมายวันนี้ · ${sched.name}</div>
+      <div class="nutr-day-title">${goals.label}</div>
+    </div>
+  </div>
+
+  <!-- Calories + Macros hero -->
+  <div class="nutr-cal-section">
+    <div class="nutr-cal-top">
+      <!-- Donut ring -->
+      <div class="nutr-ring-wrap">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#222" stroke-width="8"/>
+          <circle cx="50" cy="50" r="46" fill="none" stroke="${calRingColor}" stroke-width="8"
+            stroke-linecap="round"
+            stroke-dasharray="${CIRC}"
+            stroke-dashoffset="${calOffset}"
+            style="transition:stroke-dashoffset .5s,stroke .3s"
+            transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="nutr-ring-center">
+          <div class="nutr-ring-val" style="color:${calRingColor}">${pctCal}%</div>
+          <div class="nutr-ring-unit">แคล</div>
+        </div>
+      </div>
+      <!-- Cal numbers -->
+      <div class="nutr-cal-info">
+        <div class="nutr-cal-eaten" style="color:${calRingColor}">${eaten.cal}</div>
+        <div class="nutr-cal-eaten-lbl">/ ${goals.cal} kcal</div>
+        <div class="nutr-cal-row">
+          <div class="nutr-cal-chip" style="color:${remCol(remCal)};border-color:${remCol(remCal)}33">
+            <span style="color:${remCol(remCal)}">${Math.abs(remCal)}</span> kcal ${remCal>=0?'เหลือ':'เกิน!'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Macro cards -->
+    <div class="nutr-macro-grid">
+      ${macroCard('🥩','โปรตีน',eaten.protein,goals.protein,'g','#4ECDC4')}
+      ${macroCard('🥑','ไขมัน',eaten.fat,goals.fat,'g','#FFE66D')}
+      ${macroCard('🍚','คาร์บ',eaten.carb,goals.carb,'g','#A8E6CF')}
+      ${macroCard('💊','รวม',eaten.cal,goals.cal,'cal','#FF6B35')}
+    </div>
+  </div>
+
+  <!-- Water tracker -->
+  <div class="nutr-water-card">
+    <div class="nutr-water-left">
+      <div class="nutr-water-title">💧 น้ำเปล่า</div>
+      <div style="display:flex;align-items:baseline;gap:4px;margin:4px 0">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${waterMl>=WATER_GOAL_ML?'#4ECDC4':'#74b9ff'}">${waterMl}</span>
+        <span style="font-size:11px;color:#555">/ ${WATER_GOAL_ML} ml</span>
+        ${waterMl>=WATER_GOAL_ML?'<span style="font-size:12px;color:#4ECDC4;font-weight:700">✅</span>':''}
+      </div>
+      <div class="nutr-water-bar-wrap">
+        <div class="nutr-water-bar-fill" style="width:${Math.min(Math.round((waterMl/WATER_GOAL_ML)*100),100)}%"></div>
+      </div>
+      <div style="font-size:10px;color:#555;margin-top:5px">เหลือ ${Math.max(0,WATER_GOAL_ML-waterMl)} ml · เป้า ${WATER_GOAL_ML/1000} ลิตร</div>
+    </div>
+    <div class="nutr-water-btns">
+      <button class="nutr-water-btn" onclick="addWaterMl(600)">+600ml 🍶</button>
+      <button class="nutr-water-btn" onclick="addWaterMl(250)">+250ml 🥛</button>
+      <button class="nutr-water-reset" onclick="resetWater()">รีเซ็ต</button>
+    </div>
+  </div>
+
+  <!-- Food log -->
+  <div class="nutr-log-card">
+    <div class="nutr-log-head">
+      <span class="nutr-log-title">🍽️ บันทึกที่กินวันนี้</span>
+      <button class="nutr-log-clear" onclick="clearFoodLog()">ล้างทั้งหมด</button>
+    </div>`;
+
+  if(!log.length){
+    h+=`<div class="nutr-log-empty">ยังไม่มีรายการ — เพิ่มด้านล่าง 👇</div>`;
+  } else {
+    log.forEach((f,i)=>{
+      h+=`<div class="nutr-log-item">
+        <div class="nutr-log-dot" style="background:${f.calories>600?'#ff4060':f.calories>400?'#FFE66D':'#4ECDC4'}"></div>
+        <div class="nutr-log-name">${f.food}</div>
+        <div class="nutr-log-kcal">${f.calories}</div>
+        <button class="nutr-log-del" onclick="removeFoodLog(${i})">✕</button>
+      </div>`;
+    });
+  }
+  h+=`
+    <div class="nutr-add-row">
+      <select class="nutr-add-select" id="foodSelect"><option value="">— เลือกเมนูที่กิน —</option>${mealOpts}</select>
+      <button class="nutr-add-btn" onclick="addFoodFromSelect()">+ เพิ่ม</button>
+    </div>
+  </div>
+
+  <!-- AI Ask -->
+  <div class="ex-section-title">ถามข้อมูลสารอาหาร AI</div>
+  <div class="nutr-search-box">
+    <input class="nutr-input" id="nutrInput" type="text" placeholder="เช่น ข้าวผัดกุ้ง 1 จาน..." onkeydown="if(event.key==='Enter')askNutrition()"/>
+    <button class="nutr-ask-btn" id="nutrAskBtn" onclick="askNutrition()">ถาม AI</button>
+  </div>
+  <div class="section-label" style="margin-bottom:8px">⭐ เมนูที่กินบ่อย</div>
+  <div class="nutr-quick-row">`;
+  MY_MEALS.forEach((m,i)=>{
+    h+=`<button class="nutr-quick-chip nutr-meal-chip" onclick="showMealInfo(${i})">${m.isWater?'💧':''} ${m.food.slice(0,12)}${m.food.length>12?'...':''}</button>`;
+  });
+  h+=`</div>
+  <div id="nutrResult"></div>
+  <div id="nutrHistoryWrap" style="display:none">
+    <div class="ex-section-title" style="margin-top:4px">ที่ถามล่าสุด</div>
+    <div id="nutrHistory"></div>
+  </div>`;
+
+  el.innerHTML=h;
+  if(nutrQueryHistory.length)renderNutrHistory();
+}
+
+function macroCard(icon,label,eaten,goal,unit,color){
+  const pct=Math.min(Math.round((eaten/goal)*100),100);
+  const rem=goal-eaten;
+  const done=eaten>=goal;
+  return`<div class="nmacro${done?' done':''}" style="${done?`border-color:${color}44`:``}">
+    <div class="nmacro-icon">${icon}</div>
+    <div class="nmacro-eaten" style="color:${done?color:'#ccc'}">${eaten}</div>
+    <div class="nmacro-unit">${unit}</div>
+    <div class="nmacro-goal">/ ${goal}${unit}</div>
+    <div class="nmacro-rem" style="color:${done?color:rem<goal*0.2?'#FFE66D':'#555'}">${done?'✅ ครบ':rem+unit+' เหลือ'}</div>
+    <div class="nmacro-track"><div class="nmacro-fill" style="width:${pct}%;background:${color}"></div></div>
+  </div>`;
+}
+
+function addFoodFromSelect(){
+  const sel=document.getElementById('foodSelect');
+  if(!sel||sel.value==='')return;
+  const meal=MY_MEALS[parseInt(sel.value)];
+  if(meal.isWater){addWaterMl(meal.waterMl||600);return;}
+  const k=todayKeyFn();
+  if(!state.foodLog[k])state.foodLog[k]=[];
+  state.foodLog[k].push({food:meal.food,calories:meal.calories,protein:meal.protein,fat:meal.fat,carbs:meal.carbs});
+  saveState();showToast(`✅ เพิ่ม ${meal.food} แล้ว`);renderNutrition();
+}
+function addCurrentMealToLog(){
+  if(!currentNutrResult)return;
+  const m=currentNutrResult;
+  if(m.isWater){addWaterMl(m.waterMl||600);return;}
+  const k=todayKeyFn();
+  if(!state.foodLog[k])state.foodLog[k]=[];
+  state.foodLog[k].push({food:m.food,calories:m.calories,protein:m.protein,fat:m.fat,carbs:m.carbs});
+  saveState();showToast(`✅ เพิ่ม ${m.food} ลงบันทึกแล้ว`);renderNutrition();
+}
+function removeFoodLog(idx){const k=todayKeyFn();if(!state.foodLog[k])return;state.foodLog[k].splice(idx,1);saveState();renderNutrition();}
+function clearFoodLog(){state.foodLog[todayKeyFn()]=[];saveState();renderNutrition();}
+
+function quickAsk(text){document.getElementById('nutrInput').value=text;askNutrition();}
+async function askNutrition(){
+  const input=document.getElementById('nutrInput'),btn=document.getElementById('nutrAskBtn');
+  const query=input.value.trim();if(!query)return;
+  const resultEl=document.getElementById('nutrResult');
+  btn.disabled=true;btn.textContent='⏳';
+  resultEl.innerHTML=`<div class="nutr-loading"><span class="nutr-loading-spinner">⚙️</span>กำลังวิเคราะห์...</div>`;
+  const prompt=`คุณคือผู้เชี่ยวชาญด้านโภชนาการ วิเคราะห์สารอาหารของ: "${query}"
+ตอบเป็น JSON เท่านั้น:
+{"food":"ชื่ออาหาร","serving":"ขนาด","calories":0,"protein":0.0,"fat":0.0,"carbs":0.0,"fiber":0.0,"sugar":0.0,"note":"หมายเหตุ 1-2 ประโยค"}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const raw=data.content[0].text.replace(/```json|```/g,'').trim();
+    const info=JSON.parse(raw);
+    currentNutrResult=info;displayNutrResult(info);
+    nutrQueryHistory.unshift(info);if(nutrQueryHistory.length>10)nutrQueryHistory.pop();
+    renderNutrHistory();input.value='';
+  }catch{resultEl.innerHTML=`<div class="nutr-error">❌ เกิดข้อผิดพลาด กรุณาลองใหม่</div>`;}
+  btn.disabled=false;btn.textContent='ถาม AI';
+}
+function showMealInfo(idx){
+  currentNutrResult=MY_MEALS[idx];
+  displayNutrResult(MY_MEALS[idx]);
+  nutrQueryHistory.unshift(MY_MEALS[idx]);if(nutrQueryHistory.length>10)nutrQueryHistory.pop();
+  renderNutrHistory();
+  setTimeout(()=>document.getElementById('nutrResult').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+function displayNutrResult(info){
+  const el=document.getElementById('nutrResult');if(!el)return;
+  const goals=getTodayGoals();
+  const pctCal=Math.min(Math.round((info.calories/goals.cal)*100),999);
+  const pctP=Math.min(Math.round(((info.protein||0)/goals.protein)*100),999);
+  const pctF=Math.min(Math.round(((info.fat||0)/goals.fat)*100),999);
+  const pctC=Math.min(Math.round(((info.carbs||0)/goals.carb)*100),999);
+  const isW=info.isWater;
+  el.innerHTML=`<div class="nutr-result-card">
+    <div class="nutr-result-food">${isW?'💧':'🍽️'} ${info.food} <span style="font-size:11px;color:#555;font-weight:400">(${info.serving||''})</span></div>
+    ${isW?`<div style="text-align:center;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#74b9ff">${info.waterMl}ml</div>
+      <div style="font-size:12px;color:#555">ไม่มีแคลอรี่ — นับยอดน้ำ</div>
+    </div>`:
+    `<div class="nutr-result-grid">
+      <div class="nutr-result-item"><div class="nutr-result-label">🔥 แคลอรี่</div><div class="nutr-result-val" style="color:#FF6B35">${info.calories} <span style="font-size:13px">kcal</span></div></div>
+      <div class="nutr-result-item"><div class="nutr-result-label">🥩 โปรตีน</div><div class="nutr-result-val" style="color:#4ECDC4">${info.protein} <span style="font-size:13px">g</span></div></div>
+      <div class="nutr-result-item"><div class="nutr-result-label">🥑 ไขมัน</div><div class="nutr-result-val" style="color:#FFE66D">${info.fat} <span style="font-size:13px">g</span></div></div>
+      <div class="nutr-result-item"><div class="nutr-result-label">🍚 คาร์บ</div><div class="nutr-result-val" style="color:#A8E6CF">${info.carbs} <span style="font-size:13px">g</span></div></div>
+      <div class="nutr-result-item"><div class="nutr-result-label">🌾 ไฟเบอร์</div><div class="nutr-result-val" style="color:#C3A6FF">${info.fiber||0} <span style="font-size:13px">g</span></div></div>
+      <div class="nutr-result-item"><div class="nutr-result-label">🍬 น้ำตาล</div><div class="nutr-result-val" style="color:#F38181">${info.sugar||0} <span style="font-size:13px">g</span></div></div>
+    </div>
+    <div class="nutr-result-note">${info.note||''}</div>
+    <div class="nutr-vs-goal" style="margin-top:14px">
+      <div style="font-size:10px;color:#555;letter-spacing:2px;margin-bottom:8px">% ของเป้าหมายวันนี้</div>
+      ${['แคลอรี่','โปรตีน','ไขมัน','คาร์บ'].map((l,i)=>{
+        const p=[pctCal,pctP,pctF,pctC][i],c=['#FF6B35','#4ECDC4','#FFE66D','#A8E6CF'][i];
+        return`<div class="nutr-vs-row"><span class="nutr-vs-lbl">${l}</span><div class="nutr-vs-bar-wrap"><div class="nutr-vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="nutr-vs-pct">${p}%</span></div>`;
+      }).join('')}`}
+    <button class="nutr-result-add-btn" onclick="addCurrentMealToLog()">+ บันทึกลงรายการวันนี้</button>
+  </div>`;
+}
+function renderNutrHistory(){
+  const wrap=document.getElementById('nutrHistoryWrap'),el=document.getElementById('nutrHistory');
+  if(!wrap||!el)return;
+  if(!nutrQueryHistory.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  el.innerHTML=nutrQueryHistory.map((info,i)=>`
+    <div class="nutr-hist-item" onclick="currentNutrResult=nutrQueryHistory[${i}];displayNutrResult(nutrQueryHistory[${i}])">
+      <div class="nutr-hist-icon">${info.isWater?'💧':'🍽️'}</div>
+      <div><div class="nutr-hist-name">${info.food}</div>
+      <div class="nutr-hist-cal">${info.isWater?info.waterMl+'ml น้ำ':info.calories+' kcal · P '+info.protein+'g'}</div></div>
+    </div>`).join('');
+}
+
 function updateHeaderStats(){
   document.getElementById('streakNum').textContent=streak();
   document.getElementById('pointsDisplay').textContent=state.totalPoints||0;
 }
 function updateUI(){
   updateHeaderStats();
-  const active=document.querySelector('.page.active');
-  if(!active)return;
+  const active=document.querySelector('.page.active');if(!active)return;
   const id=active.id;
-  if(id==='page-today')    renderToday();
-  if(id==='page-calendar') renderCalendar();
-  if(id==='page-schedule') renderSchedule();
-  if(id==='page-stats')    renderStats();
+  if(id==='page-today')     renderToday();
+  if(id==='page-calendar')  renderCalendar();
+  if(id==='page-schedule')  renderSchedule();
+  if(id==='page-stats')     renderStats();
+  if(id==='page-nutrition') renderNutrition();
 }
 function switchTab(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  if(name==='today')    renderToday();
-  if(name==='calendar') renderCalendar();
-  if(name==='schedule') renderSchedule();
-  if(name==='stats')    renderStats();
+  if(name==='today')     renderToday();
+  if(name==='calendar')  renderCalendar();
+  if(name==='schedule')  renderSchedule();
+  if(name==='stats')     renderStats();
+  if(name==='nutrition') renderNutrition();
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function showPointsPop(text){const el=document.createElement('div');el.className='points-pop';el.textContent=text;el.style.left=(Math.random()*60+20)+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1100);}
@@ -707,7 +1071,6 @@ function launchConfetti(){
   for(let i=0;i<40;i++){const el=document.createElement('div');el.className='confetti-piece';el.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${1.2+Math.random()*.8}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),2500);}
 }
 
-// ── Init ──
 renderToday();
 updateHeaderStats();
 </script>
