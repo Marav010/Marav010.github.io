@@ -1081,6 +1081,44 @@ function renderNutrition(){
   el.innerHTML=h;
   if(nutrQueryHistory.length)renderNutrHistory();
 }
+  function suggestDailyMenu(numMeals = 3) {
+  // 1. ดึงเป้าหมายโภชนาการ (ดึงจากตัวแปรในระบบเดิม)
+  const goalCals = userProfile.goalCalories || 2000;
+  const goalProtein = userProfile.goalProtein || 140;
+  
+  // 2. แยกกลุ่มอาหารจาก MY_MEALS (ที่มีอยู่ในโค้ดเดิมของคุณ)
+  const heavyMeals = MY_MEALS.filter(m => ['🍚 ข้าว', '🍱 ข้าวกล่อง', '🍜 เส้น'].includes(m.cat));
+  const proteinBoosters = MY_MEALS.filter(m => m.cat === '🥛 เครื่องดื่มโปรตีน' || m.protein > 20);
+  const snacks = MY_MEALS.filter(m => ['🍎 ผลไม้', '🍿 ขนม', '🍞 ขนมปัง'].includes(m.cat));
+
+  let suggestions = [];
+
+  if (numMeals === 3) {
+    // แผน 3 มื้อ: เช้า (ตามสั่ง) / กลางวัน (ตามสั่ง) / เย็น (เน้นโปรตีนก่อนเวท)
+    suggestions.push({ label: '☀️ มื้อเช้า', ...heavyMeals[Math.floor(Math.random() * heavyMeals.length)] });
+    suggestions.push({ label: '🌤️ มื้อกลางวัน', ...heavyMeals.filter(m => m.protein > 25)[Math.floor(Math.random() * 3)] || heavyMeals[0] });
+    suggestions.push({ label: '🌙 มื้อเย็น (ก่อนออกกำลังกาย)', ...proteinBoosters[Math.floor(Math.random() * proteinBoosters.length)] });
+  } else {
+    // แผน 2 มื้อ: มื้อควบ (หนัก) / มื้อก่อนเวท (เน้นคาร์บ+โปรตีน)
+    suggestions.push({ label: '🍴 มื้อควบ (หนักจัดเต็ม)', ...heavyMeals.filter(m => m.calories > 500)[0] || heavyMeals[0] });
+    suggestions.push({ label: '🌙 มื้อก่อนออกกำลังกาย', ...proteinBoosters[Math.floor(Math.random() * proteinBoosters.length)] });
+    suggestions.push({ label: '🍌 ของว่างเติมพลัง', ...snacks[0] });
+  }
+
+  // 3. แสดงผลใน Console หรือจะเอาไปทำ UI เพิ่มก็ได้
+  console.log(`%c 💡 แผนแนะนำวันนี้ (${numMeals} มื้อ) `, 'background: #FF6B35; color: #000; font-weight: bold;');
+  let totalP = 0, totalC = 0;
+  suggestions.forEach(s => {
+    console.log(`${s.label}: ${s.emoji} ${s.food} (P: ${s.protein}g | ${s.calories} kcal)`);
+    totalP += s.protein;
+    totalC += s.calories;
+  });
+  
+  console.log(`📊 รวม: ${totalC}/${goalCals} kcal | โปรตีน: ${totalP}/${goalProtein}g`);
+  
+  // ถ้าอยากให้โชว์เป็น Alert กุ๊บๆ กิ๊บๆ บนหน้าจอ
+  showToast(`แนะนำ: ${suggestions[0].food} และ ${suggestions[1].food}`);
+}
 
 function macroCard(icon,label,eaten,goal,unit,color){
   const pct=Math.min(Math.round((eaten/goal)*100),100);
