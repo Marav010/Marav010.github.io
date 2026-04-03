@@ -439,6 +439,14 @@ const MY_MEALS = [
   {cat:'เส้น', emoji:'🍝', food:'สปาเกตตี้คาโบนาร่า EzyGo (7-11)', serving:'1 กล่อง (210g)', calories:520, protein:18, fat:22, carbs:62, fiber:2,  sugar:4,  note:'แคลปานกลาง โปรตีนต่ำ ควรกินคู่โปรตีนเสริม'},
   // 🥩 สเต็ก
   {cat:'สเต็ก', emoji:'🥩', food:'สเต็กหมูพริกไทยดำ',           serving:'1 จาน (~300g)', calories:550, protein:42, fat:28, carbs:22, fiber:2,   sugar:3,  note:'โปรตีนสูงมาก คาร์บต่ำ เหมาะมากสำหรับลีน'},
+  // 🌾 ข้าวเพื่อสุขภาพ
+  {cat:'ข้าวสุขภาพ', emoji:'🌾', food:'ข้าวกล้อง',              serving:'1 จาน (150g)', calories:167, protein:3.9, fat:1.4, carbs:35, fiber:2.7, sugar:0, note:'คาร์บเชิงซ้อน ย่อยช้า ไฟเบอร์สูงกว่าข้าวขาว 3 เท่า เหมาะสำหรับลีนและควบคุมน้ำตาล'},
+  {cat:'ข้าวสุขภาพ', emoji:'🫐', food:'ข้าวไรซ์เบอร์รี่',        serving:'1 จาน (150g)', calories:160, protein:3.5, fat:1.2, carbs:33, fiber:3, sugar:0, note:'สีม่วงจากแอนโทไซยานิน ต้านอนุมูลอิสระ คาร์บเชิงซ้อน น้ำตาลในเลือดขึ้นช้า'},
+  // 🍢 ข้าวเหนียว
+  {cat:'ข้าวเหนียว', emoji:'🍢', food:'ข้าวเหนียวหมูทอด',        serving:'1 ชุด (~250g)', calories:680, protein:26, fat:38, carbs:62, fiber:1.5, sugar:2, note:'ไขมันสูงจากหมูทอด คาร์บจากข้าวเหนียว ควรกินเป็นครั้งคราว'},
+  {cat:'ข้าวเหนียว', emoji:'🍢', food:'ข้าวเหนียวหมูปิ้ง',        serving:'1 ชุด (ข้าว+หมู 3 ไม้ ~200g)', calories:530, protein:22, fat:18, carbs:68, fiber:1, sugar:3, note:'หมูปิ้งให้โปรตีนดี ข้าวเหนียวคาร์บสูง ไขมันจากการหมักย่าง เหมาะเป็นมื้อเช้า'},
+  // 🌿 ยำ
+  {cat:'ข้าว', emoji:'🌶️', food:'ข้าวยำไก่แซ่บ+ไข่ออนเซน พิเศษ', serving:'1 จาน (~430g)', calories:720, protein:30, fat:20, carbs:98, fiber:2, sugar:4, note:'คาร์บสูงจากข้าว โปรตีนจากไก่+ไข่ รสเผ็ดเปรี้ยว ไข่ออนเซนเพิ่มโปรตีนและไขมันดี'},
   // 🛒 7-11 & Snack
   {cat:'สแน็ค', emoji:'🧀', food:'ค็อกเทลชีส 120g (7-11)',       serving:'1 ถุง (120g)',   calories:340, protein:24, fat:25, carbs:4,  fiber:0,   sugar:2,  note:'โปรตีนสูง คาร์บต่ำ ระวังโซเดียม'},
   {cat:'สแน็ค', emoji:'🥛', food:'นม Sunshine Dairy High Protein 340ml', serving:'1 ขวด (340ml)', calories:250, protein:33, fat:7,  carbs:10, fiber:0, sugar:2, note:'โปรตีนสูงมาก Lactose-free เหมาะหลังเวท'},
@@ -448,7 +456,7 @@ const MY_MEALS = [
   {cat:'น้ำ', emoji:'💧', food:'น้ำเปล่า 600ml', serving:'1 ขวด (600ml)', calories:0, protein:0, fat:0, carbs:0, fiber:0, sugar:0, isWater:true, waterMl:600, note:'ช่วย hydration และการเผาผลาญ'},
 ];
 
-const MEAL_CATS = ['ทั้งหมด','ข้าว','เส้น','สเต็ก','สแน็ค','น้ำ'];
+const MEAL_CATS = ['ทั้งหมด','ข้าว','เส้น','สเต็ก','ข้าวสุขภาพ','ข้าวเหนียว','สแน็ค','น้ำ'];
 let activeMealCat = 'ทั้งหมด';
 
 const TIMER_SET=60, TIMER_EX=90;
