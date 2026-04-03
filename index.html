@@ -409,8 +409,8 @@ display:flex; flex-direction:column; gap:3px; position:relative; overflow:hidden
       <button class="nav-btn active" onclick="switchTab('today',this)">🏠 วันนี้</button>
       <button class="nav-btn" onclick="switchTab('calendar',this)">📅 ปฏิทิน</button>
       <button class="nav-btn" onclick="switchTab('schedule',this)">📋 ตาราง</button>
-      <button class="nav-btn" onclick="switchTab('stats',this)">📊 สถิติ</button>
       <button class="nav-btn" onclick="switchTab('nutrition',this)">🥗 โภชนา</button>
+      <button class="nav-btn" onclick="switchTab('stats',this)">📊 สถิติ</button>
     </div>
   </div>
 </div>
@@ -508,7 +508,7 @@ const STREAK_BADGES=[
   {days:60,badge:'👑',label:'2 เดือน!'},{days:100,badge:'💎',label:'100 วัน!'},
 ];
 
-const MEAL_DATA = [
+const MY_MEALS = [
   // 🍚 หมวด: ข้าว (อาหารตามสั่ง)
   { cat: '🍚 ข้าว', emoji: '🍳', food: 'ข้าวผัดกรอบไข่ดาว พิเศษ', serving: '1 จาน (~450g)', calories: 750, protein: 28, fat: 38, carbs: 72, fiber: 1.5, sugar: 3, note: 'ไขมันสูงจากหมูกรอบ+ไข่ดาว คาร์บจากข้าวผัด' },
   { cat: '🍚 ข้าว', emoji: '🐔', food: 'ข้าวมันไก่ต้ม พิเศษ', serving: '1 จาน (~400g)', calories: 650, protein: 35, fat: 22, carbs: 75, fiber: 1, sugar: 2, note: 'โปรตีนดี ไขมันพอดี สมดุลดี' },
