@@ -433,7 +433,14 @@ display:flex; flex-direction:column; gap:3px; position:relative; overflow:hidden
 </div>
 
 <div class="toast" id="toast"></div>
-
+<div style="padding:0 15px 15px;">
+  <button onclick="suggestDailyMenu(3)" class="add-food-btn" style="background:linear-gradient(90deg,#FF6B35,#ff4060); margin-bottom:10px;">
+    🎲 สุ่มเมนู 3 มื้อ (แนะนำ)
+  </button>
+  <button onclick="suggestDailyMenu(2)" class="add-food-btn" style="background:#444;">
+    🎲 สุ่มเมนู 2 มื้อ (วันตื่นสาย)
+  </button>
+</div>
 <script>
 const SCHEDULE = {
   1:{name:'จันทร์',dayType:'A',focus:'Day A — อก + ไหล่ + ท้อง',emoji:'🟢',color:'#4ECDC4',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',
