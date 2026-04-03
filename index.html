@@ -933,7 +933,8 @@ function renderNutrition(){
   // Macro pct for mini bars
   const mp=(v,g)=>Math.min(Math.round((v/g)*100),100);
 
-  const mealOpts=MY_MEALS.filter(m=>!m.isWater).map((m,i)=>`<option value="${i}">${m.emoji} ${m.food} — ${m.calories} kcal · P${m.protein}g</option>`).join('');
+  const mealOpts = MEAL_DATA.filter(m=>!m.isWater).map((m,i)=>
+  `<option value="${i}">${m.emoji} ${m.food} — ${m.calories} kcal · P${m.protein}g</option>`).join('');
 
   let h=`
   <!-- Day banner -->
