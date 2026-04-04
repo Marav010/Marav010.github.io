@@ -153,59 +153,27 @@ circle.fg.warning { stroke:#ff4060; }
 .rest-info-box { margin-top:10px; padding:7px 10px; background:#ffffff07; border-radius:8px; font-size:10px; color:#555; }
 .day-note { margin-top:8px; padding:7px 10px; background:rgba(255,107,53,.08); border-radius:8px; font-size:11px; color:#FF6B35; }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   NUTRITION PAGE — redesigned
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/* Day banner */
-.nutr-day-banner {
-  border-radius:16px; padding:14px 16px;
-  margin-bottom:16px;
-  display:flex; align-items:center; gap:12px;
-}
+/* ── NUTRITION ── */
+.nutr-day-banner { border-radius:16px; padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; gap:12px; }
 .nutr-day-emoji { font-size:32px; flex-shrink:0; }
 .nutr-day-label { font-size:10px; color:rgba(255,255,255,.5); letter-spacing:2px; }
 .nutr-day-title { font-size:15px; font-weight:700; }
-
-/* Big calorie ring */
-.nutr-cal-section {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:20px; padding:20px 16px;
-  margin-bottom:12px;
-}
-.nutr-cal-top {
-  display:flex; align-items:center; gap:16px; margin-bottom:16px;
-}
+.nutr-cal-section { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:20px 16px; margin-bottom:12px; }
+.nutr-cal-top { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
 .nutr-ring-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
 .nutr-ring-wrap svg { transform:rotate(-90deg); }
-.nutr-ring-center {
-  position:absolute; inset:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-.nutr-ring-val { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; color:#FF6B35; }
+.nutr-ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.nutr-ring-val { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; }
 .nutr-ring-unit { font-size:9px; color:#555; letter-spacing:1px; margin-top:2px; }
 .nutr-cal-info { flex:1; }
-.nutr-cal-eaten { font-family:'Bebas Neue',sans-serif; font-size:38px; line-height:1; color:#FF6B35; }
+.nutr-cal-eaten { font-family:'Bebas Neue',sans-serif; font-size:38px; line-height:1; }
 .nutr-cal-eaten-lbl { font-size:11px; color:#555; margin-bottom:8px; }
 .nutr-cal-row { display:flex; gap:6px; flex-wrap:wrap; }
-.nutr-cal-chip {
-  background:#111; border-radius:8px; padding:5px 10px;
-  font-size:11px; font-weight:600; border:1px solid #2a2a3e;
-}
+.nutr-cal-chip { background:#111; border-radius:8px; padding:5px 10px; font-size:11px; font-weight:600; border:1px solid #2a2a3e; }
 .nutr-cal-chip span { font-family:'Bebas Neue',sans-serif; font-size:15px; }
-
-/* Macro 4-cards */
 .nutr-macro-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-.nmacro {
-  border-radius:14px; padding:12px 8px;
-  text-align:center; border:1px solid transparent;
-  position:relative; overflow:hidden;
-  background:#111;
-}
-.nmacro-track {
-  position:absolute; bottom:0; left:0; right:0;
-  height:3px; background:#222;
-}
+.nmacro { border-radius:14px; padding:12px 8px; text-align:center; border:1px solid transparent; position:relative; overflow:hidden; background:#111; }
+.nmacro-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:#222; }
 .nmacro-fill { height:100%; border-radius:99px; transition:width .5s; }
 .nmacro-icon { font-size:18px; margin-bottom:4px; }
 .nmacro-eaten { font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; }
@@ -213,65 +181,31 @@ circle.fg.warning { stroke:#ff4060; }
 .nmacro-goal { font-size:10px; color:#444; margin-top:3px; }
 .nmacro-rem { font-size:10px; margin-top:4px; font-weight:700; }
 .nmacro.done { border-color:rgba(78,205,196,.3); }
-
-/* Water */
-.nutr-water-card {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:16px; padding:14px 16px;
-  margin-top:12px; margin-bottom:16px;
-  display:flex; align-items:center; gap:12px;
-}
+.nutr-water-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:16px; padding:14px 16px; margin-top:12px; margin-bottom:16px; display:flex; align-items:center; gap:12px; }
 .nutr-water-left { flex:1; }
 .nutr-water-title { font-size:13px; font-weight:700; margin-bottom:4px; }
-.nutr-water-sub { font-size:11px; color:#555; }
 .nutr-water-bar-wrap { background:#111; border-radius:99px; height:8px; overflow:hidden; margin-top:8px; }
 .nutr-water-bar-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#74b9ff,#0984e3); transition:width .5s; }
 .nutr-water-btns { display:flex; flex-direction:column; gap:5px; }
-.nutr-water-btn {
-  background:#74b9ff22; border:1px solid #74b9ff44;
-  border-radius:10px; padding:6px 12px; color:#74b9ff;
-  font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
-  white-space:nowrap;
-}
+.nutr-water-btn { background:#74b9ff22; border:1px solid #74b9ff44; border-radius:10px; padding:6px 12px; color:#74b9ff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
 .nutr-water-reset { font-size:10px; color:#444; background:none; border:none; cursor:pointer; font-family:inherit; margin-top:4px; text-align:center; }
-
-/* Food log */
-.nutr-log-card {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:20px; padding:16px;
-  margin-bottom:16px;
-}
+.nutr-log-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:16px; margin-bottom:16px; }
 .nutr-log-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .nutr-log-title { font-size:14px; font-weight:700; }
 .nutr-log-clear { background:none; border:1px solid #2a2a3e; border-radius:8px; padding:4px 10px; color:#666; font-size:11px; cursor:pointer; font-family:inherit; }
-
-.nutr-log-item {
-  display:flex; align-items:center; gap:10px;
-  padding:9px 0; border-bottom:1px solid #ffffff06;
-}
+.nutr-log-item { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #ffffff06; }
 .nutr-log-item:last-of-type { border-bottom:none; }
-.nutr-log-dot { width:8px; height:8px; border-radius:50%; background:#FF6B35; flex-shrink:0; }
+.nutr-log-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .nutr-log-name { flex:1; font-size:13px; }
 .nutr-log-kcal { font-family:'Bebas Neue',sans-serif; font-size:17px; color:#FF6B35; }
 .nutr-log-del { background:none; border:none; color:#333; cursor:pointer; font-size:16px; padding:0 4px; }
 .nutr-log-empty { color:#444; font-size:12px; text-align:center; padding:14px 0; }
-
 .nutr-add-row { display:flex; gap:6px; margin-top:10px; width:100%; overflow:hidden; }
-.nutr-add-select {
-  flex:1; min-width:0; background:#111; border:1px solid #2a2a3e; border-radius:10px;
-  padding:9px 10px; color:#fff; font-size:12px; font-family:inherit; outline:none;
-  overflow:hidden; text-overflow:ellipsis;
-}
-.nutr-add-btn {
-  flex:0 0 auto; background:#FF6B35; color:#000; border:none; border-radius:10px;
-  padding:9px 14px; font-weight:900; font-size:13px; cursor:pointer; font-family:inherit; white-space:nowrap;
-}
+.nutr-add-select { flex:1; min-width:0; background:#111; border:1px solid #2a2a3e; border-radius:10px; padding:9px 10px; color:#fff; font-size:12px; font-family:inherit; outline:none; overflow:hidden; text-overflow:ellipsis; }
+.nutr-add-btn { flex:0 0 auto; background:#FF6B35; color:#000; border:none; border-radius:10px; padding:9px 14px; font-weight:900; font-size:13px; cursor:pointer; font-family:inherit; white-space:nowrap; }
 
-/* ── API KEY SETUP ── */
-.api-key-card {
-  background:#1a1a2e; border:1px solid #FF6B3544; border-radius:16px;
-  padding:14px 16px; margin-bottom:14px;
-}
+/* ── API KEY + LIMIT GUARD ── */
+.api-key-card { background:#1a1a2e; border:1px solid #FF6B3544; border-radius:16px; padding:14px 16px; margin-bottom:14px; }
 .api-key-card.has-key { border-color:#4ECDC444; }
 .api-key-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .api-key-title { font-size:13px; font-weight:700; }
@@ -279,35 +213,31 @@ circle.fg.warning { stroke:#ff4060; }
 .api-key-status.ok { background:rgba(78,205,196,.15); color:#4ECDC4; }
 .api-key-status.missing { background:rgba(255,107,53,.15); color:#FF6B35; }
 .api-key-row { display:flex; gap:6px; }
-.api-key-input {
-  flex:1; min-width:0; background:#111; border:1px solid #2a2a3e; border-radius:10px;
-  padding:9px 12px; color:#fff; font-size:12px; font-family:inherit; outline:none;
-  letter-spacing:1px;
-}
+.api-key-input { flex:1; min-width:0; background:#111; border:1px solid #2a2a3e; border-radius:10px; padding:9px 12px; color:#fff; font-size:12px; font-family:inherit; outline:none; letter-spacing:1px; }
 .api-key-input:focus { border-color:#FF6B35; }
 .api-key-save { flex:0 0 auto; background:#FF6B35; color:#000; border:none; border-radius:10px; padding:9px 14px; font-weight:900; font-size:13px; cursor:pointer; font-family:inherit; }
 .api-key-clear { font-size:11px; color:#555; background:none; border:none; cursor:pointer; font-family:inherit; margin-top:6px; text-decoration:underline; }
 .api-key-hint { font-size:10px; color:#555; margin-top:6px; line-height:1.5; }
-.nutr-loading { text-align:center; padding:30px; color:#555; font-size:14px; }
-.nutr-loading-spinner { font-size:32px; animation:spin 1s linear infinite; display:block; margin-bottom:8px; }
-.nutr-error { background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3); border-radius:12px; padding:14px; color:#ff8a9a; font-size:13px; margin-bottom:12px; }
+
+/* ── LIMIT BAR ── */
+.limit-bar-wrap { margin-top:10px; }
+.limit-bar-row { display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; }
+.limit-bar-lbl { color:#555; }
+.limit-bar-val { font-weight:700; }
+.limit-bar-track { background:#111; border-radius:99px; height:6px; overflow:hidden; }
+.limit-bar-fill { height:100%; border-radius:99px; transition:width .4s; }
+.limit-warning { background:rgba(255,230,109,.08); border:1px solid #FFE66D44; border-radius:10px; padding:8px 12px; margin-top:8px; font-size:11px; color:#FFE66D; }
+.limit-blocked { background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3); border-radius:10px; padding:10px 12px; margin-top:8px; font-size:12px; color:#ff8a9a; text-align:center; }
+.limit-blocked b { display:block; font-size:14px; margin-bottom:4px; }
 
 /* ── MEAL CARDS ── */
 .meal-section-title { font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px; color:#555; margin:16px 0 8px; }
 .meal-cat-tabs { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-bottom:10px; padding-bottom:2px; }
 .meal-cat-tabs::-webkit-scrollbar { display:none; }
-.meal-cat-btn {
-  flex:0 0 auto; background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px;
-  padding:6px 14px; font-size:12px; color:#555; cursor:pointer; font-family:inherit;
-  white-space:nowrap; transition:all .2s;
-}
+.meal-cat-btn { flex:0 0 auto; background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 14px; font-size:12px; color:#555; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all .2s; }
 .meal-cat-btn.active { background:rgba(255,107,53,.12); border-color:#FF6B3566; color:#FF6B35; font-weight:700; }
 .meal-cards-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
-.meal-card {
-  background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px;
-  padding:12px; cursor:pointer; transition:all .15s;
-  display:flex; flex-direction:column; gap:3px; position:relative; overflow:hidden;
-}
+.meal-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:14px; padding:12px; cursor:pointer; transition:all .15s; display:flex; flex-direction:column; gap:3px; position:relative; overflow:hidden; }
 .meal-card:active { transform:scale(.97); opacity:.9; }
 .meal-card.water-card { border-color:#74b9ff33; background:rgba(116,185,255,.05); }
 .meal-card-emoji { font-size:22px; line-height:1; }
@@ -324,9 +254,6 @@ circle.fg.warning { stroke:#ff4060; }
 .nutr-input:focus { border-color:#FF6B35; }
 .nutr-ask-btn { background:linear-gradient(135deg,#FF6B35,#ff8c42); color:#000; border:none; border-radius:12px; padding:12px 16px; font-weight:900; font-size:13px; font-family:inherit; cursor:pointer; white-space:nowrap; }
 .nutr-ask-btn:disabled { opacity:.5; cursor:default; }
-.nutr-quick-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-.nutr-quick-chip { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; padding:6px 12px; font-size:11px; color:#aaa; cursor:pointer; font-family:inherit; }
-.nutr-meal-chip { background:rgba(255,107,53,.08) !important; border-color:#FF6B3544 !important; color:#FF6B35 !important; }
 .nutr-result-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:16px; padding:16px; margin-bottom:12px; }
 .nutr-result-food { font-size:16px; font-weight:800; margin-bottom:12px; }
 .nutr-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
@@ -342,133 +269,59 @@ circle.fg.warning { stroke:#ff4060; }
 .nutr-vs-pct { font-size:10px; color:#555; width:36px; text-align:right; flex-shrink:0; }
 .nutr-loading { text-align:center; padding:30px; color:#555; font-size:14px; }
 .nutr-loading-spinner { font-size:32px; animation:spin 1s linear infinite; display:block; margin-bottom:8px; }
+.nutr-error { background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3); border-radius:12px; padding:14px; color:#ff8a9a; font-size:13px; margin-bottom:12px; }
 .nutr-hist-item { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer; }
 .nutr-hist-icon { font-size:24px; }
 .nutr-hist-name { font-size:13px; font-weight:700; }
 .nutr-hist-cal { font-size:11px; color:#FF6B35; margin-top:2px; }
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   MEAL PLANNER PAGE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.planner-hero {
-  border-radius:20px; padding:18px;
-  margin-bottom:14px; position:relative; overflow:hidden;
-}
+
+/* ── MEAL PLANNER ── */
+.planner-hero { border-radius:20px; padding:18px; margin-bottom:14px; position:relative; overflow:hidden; }
 .planner-hero-label { font-size:10px; letter-spacing:2px; opacity:.6; margin-bottom:4px; }
 .planner-hero-title { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:1px; line-height:1.1; }
 .planner-hero-sub { font-size:12px; opacity:.7; margin-top:4px; }
 .planner-goal-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
-.planner-chip {
-  background:rgba(0,0,0,.2); border-radius:20px;
-  padding:4px 10px; font-size:11px; font-weight:600;
-}
-.planner-gen-btn {
-  width:100%; margin-top:12px;
-  padding:14px; border:none; border-radius:14px;
-  font-family:'Bebas Neue',sans-serif; font-size:18px;
-  letter-spacing:1px; cursor:pointer;
-  transition:all .15s; color:#000;
-}
+.planner-chip { background:rgba(0,0,0,.2); border-radius:20px; padding:4px 10px; font-size:11px; font-weight:600; }
+.planner-gen-btn { width:100%; margin-top:12px; padding:14px; border:none; border-radius:14px; font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; cursor:pointer; transition:all .15s; color:#000; }
 .planner-gen-btn:active { transform:scale(.98); }
 .planner-gen-btn:disabled { opacity:.4; cursor:default; }
-
-.planner-options-card {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:16px; padding:14px 16px; margin-bottom:14px;
-}
+.planner-options-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:16px; padding:14px 16px; margin-bottom:14px; }
 .planner-opt-title { font-size:12px; font-weight:700; color:#888; margin-bottom:10px; letter-spacing:1px; }
 .planner-meals-row { display:flex; gap:8px; margin-bottom:12px; }
-.planner-meal-btn {
-  flex:1; padding:10px 8px; border-radius:12px;
-  border:1.5px solid #2a2a3e; background:#111;
-  color:#555; font-size:13px; font-weight:700;
-  cursor:pointer; font-family:inherit; transition:all .2s;
-}
+.planner-meal-btn { flex:1; padding:10px 8px; border-radius:12px; border:1.5px solid #2a2a3e; background:#111; color:#555; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s; }
 .planner-meal-btn.active { border-color:#FF6B35; background:rgba(255,107,53,.1); color:#FF6B35; }
 .planner-style-row { display:flex; gap:6px; flex-wrap:wrap; }
-.planner-style-btn {
-  flex:1; min-width:80px; padding:8px 6px; border-radius:10px;
-  border:1.5px solid #2a2a3e; background:#111;
-  color:#555; font-size:11px; font-weight:600;
-  cursor:pointer; font-family:inherit; transition:all .2s; text-align:center;
-}
+.planner-style-btn { flex:1; min-width:80px; padding:8px 6px; border-radius:10px; border:1.5px solid #2a2a3e; background:#111; color:#555; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .2s; text-align:center; }
 .planner-style-btn.active { border-color:#4ECDC4; background:rgba(78,205,196,.1); color:#4ECDC4; }
-
 .planner-result-wrap { margin-bottom:14px; }
-.planner-loading {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:16px; padding:28px;
-  text-align:center; color:#555;
-}
+.planner-loading { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:16px; padding:28px; text-align:center; color:#555; }
 .planner-loading-icon { font-size:36px; animation:spin 1.2s linear infinite; display:block; margin-bottom:8px; }
-.planner-plan-card {
-  background:#1a1a2e; border:1px solid #2a2a3e;
-  border-radius:20px; overflow:hidden; margin-bottom:12px;
-}
-.planner-plan-header {
-  padding:14px 16px;
-  display:flex; align-items:center; gap:10px;
-}
+.planner-plan-card { background:#1a1a2e; border:1px solid #2a2a3e; border-radius:20px; overflow:hidden; margin-bottom:12px; }
+.planner-plan-header { padding:14px 16px; display:flex; align-items:center; gap:10px; }
 .planner-plan-icon { font-size:28px; }
-.planner-plan-meal-name {
-  font-family:'Bebas Neue',sans-serif; font-size:16px;
-  letter-spacing:1px; color:#888;
-}
+.planner-plan-meal-name { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; color:#888; }
 .planner-plan-time { font-size:11px; color:#555; margin-top:1px; }
 .planner-meal-items { padding:0 16px 14px; }
-.planner-meal-item {
-  display:flex; align-items:flex-start; gap:10px;
-  padding:10px 0; border-bottom:1px solid #ffffff06;
-}
+.planner-meal-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid #ffffff06; }
 .planner-meal-item:last-child { border-bottom:none; }
 .planner-item-emoji { font-size:20px; flex-shrink:0; margin-top:1px; }
 .planner-item-info { flex:1; }
 .planner-item-name { font-size:13px; font-weight:700; line-height:1.3; }
 .planner-item-note { font-size:11px; color:#555; margin-top:2px; line-height:1.4; }
-.planner-item-kcal {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:18px; color:#FF6B35;
-  flex-shrink:0; padding-top:2px;
-}
-.planner-macros-row {
-  display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;
-}
-.planner-macro-chip {
-  background:#111; border-radius:6px; padding:4px 8px;
-  font-size:11px; font-weight:700;
-}
-.planner-add-row-btn {
-  width:100%; margin-top:10px; padding:10px;
-  border-radius:10px; border:1px solid #FF6B3544;
-  background:rgba(255,107,53,.08); color:#FF6B35;
-  font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
-}
-.planner-daily-summary {
-  background:#111; border-radius:14px;
-  padding:14px 16px; margin:0 16px 14px;
-}
+.planner-item-kcal { font-family:'Bebas Neue',sans-serif; font-size:18px; color:#FF6B35; flex-shrink:0; padding-top:2px; }
+.planner-macros-row { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.planner-macro-chip { background:#111; border-radius:6px; padding:4px 8px; font-size:11px; font-weight:700; }
+.planner-add-row-btn { width:100%; margin-top:10px; padding:10px; border-radius:10px; border:1px solid #FF6B3544; background:rgba(255,107,53,.08); color:#FF6B35; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+.planner-daily-summary { background:#111; border-radius:14px; padding:14px 16px; margin:0 16px 14px; }
 .planner-summary-title { font-size:11px; color:#555; letter-spacing:2px; margin-bottom:10px; }
 .planner-summary-row { display:flex; gap:8px; }
 .planner-summary-item { flex:1; text-align:center; }
 .planner-summary-val { font-family:'Bebas Neue',sans-serif; font-size:22px; }
 .planner-summary-lbl { font-size:9px; color:#555; margin-top:2px; letter-spacing:1px; }
-.planner-tip {
-  background:#1a1a2e; border:1px solid #FFE66D33;
-  border-radius:14px; padding:12px 14px;
-  font-size:12px; color:#aaa; line-height:1.6;
-  margin-bottom:14px;
-}
+.planner-tip { background:#1a1a2e; border:1px solid #FFE66D33; border-radius:14px; padding:12px 14px; font-size:12px; color:#aaa; line-height:1.6; margin-bottom:14px; }
 .planner-tip b { color:#FFE66D; }
-.planner-regen-btn {
-  width:100%; padding:13px; border-radius:12px;
-  border:1px solid #2a2a3e; background:#1a1a2e;
-  color:#888; font-size:13px; cursor:pointer; font-family:inherit;
-  margin-bottom:14px;
-}
-.planner-error {
-  background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3);
-  border-radius:12px; padding:16px; color:#ff8a9a;
-  font-size:13px; text-align:center;
-}
+.planner-regen-btn { width:100%; padding:13px; border-radius:12px; border:1px solid #2a2a3e; background:#1a1a2e; color:#888; font-size:13px; cursor:pointer; font-family:inherit; margin-bottom:14px; }
+.planner-error { background:rgba(255,64,96,.1); border:1px solid rgba(255,64,96,.3); border-radius:12px; padding:16px; color:#ff8a9a; font-size:13px; text-align:center; }
 
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#FF6B35; color:#000; border-radius:20px; padding:12px 24px; font-weight:700; font-size:14px; z-index:400; transition:transform .3s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; pointer-events:none; }
 .toast.show { transform:translateX(-50%) translateY(0); }
@@ -560,55 +413,13 @@ circle.fg.warning { stroke:#ff4060; }
 
 <script>
 const SCHEDULE = {
-  1:{name:'จันทร์',dayType:'A',focus:'Day A — อก + ไหล่ + ท้อง',emoji:'🟢',color:'#4ECDC4',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',
-    exercises:[
-      {name:'Push Up',sets:4,reps:'20',detail:'20 × 4'},
-      {name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},
-      {name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},
-      {name:'Leg Raise',sets:3,reps:'15',detail:'15 × 3'},
-    ]},
-  2:{name:'อังคาร',dayType:'B',focus:'Day B — ขา + หลัง + Core',emoji:'🔵',color:'#74b9ff',isRest:false,
-    exercises:[
-      {name:'Squat',sets:4,reps:'25',detail:'25 × 4'},
-      {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Plank',sets:3,reps:'60วิ',detail:'60 วิ × 3',isTime:true},
-      {name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true},
-    ]},
-  3:{name:'พุธ',dayType:'C',focus:'Day C — ท้อง + คาร์ดิโอเบา',emoji:'🟡',color:'#FFE66D',isRest:false,note:'🚶‍♂️ เดิน 20–30 นาที',
-    exercises:[
-      {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
-      {name:'Bicycle Crunch',sets:3,reps:'20',detail:'20 × 3'},
-      {name:'Russian Twist',sets:3,reps:'20',detail:'20 × 3'},
-      {name:'Mountain Climber',sets:3,reps:'30วิ',detail:'30 วิ × 3',isTime:true},
-    ]},
-  4:{name:'พฤหัส',dayType:'A+',focus:'Day A (หนักขึ้น)',emoji:'🔴',color:'#F38181',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',
-    exercises:[
-      {name:'Push Up (ยกเท้า)',sets:4,reps:'15',detail:'15 × 4'},
-      {name:'Dumbbell Curl (เพิ่มน้ำหนัก)',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},
-      {name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},
-      {name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},
-    ]},
-  5:{name:'ศุกร์',dayType:'B+',focus:'Day B (หนักขึ้น)',emoji:'🟣',color:'#C3A6FF',isRest:false,
-    exercises:[
-      {name:'Squat',sets:4,reps:'25',detail:'25 × 4'},
-      {name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},
-      {name:'Plank',sets:3,reps:'60-75วิ',detail:'60–75 วิ × 3',isTime:true},
-      {name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true},
-    ]},
-  6:{name:'เสาร์',dayType:'C',focus:'Day C — เบา + เผาไขมัน',emoji:'🟠',color:'#FDCB6E',isRest:false,note:'🚶‍♂️ เดิน 30–45 นาที หรือ HIIT 5–10 นาที',
-    exercises:[
-      {name:'Leg Raise',sets:3,reps:'12',detail:'12 × 3'},
-      {name:'Bicycle Crunch',sets:3,reps:'15',detail:'15 × 3'},
-    ]},
-  0:{name:'อาทิตย์',dayType:'REST',focus:'REST — พักเต็มที่',emoji:'⚫',color:'#636e72',isRest:true,note:'✔️ เดินเบา ๆ 10–20 นาที + ยืดเหยียด',
-    exercises:[
-      {name:'เดินเบา ๆ',sets:1,reps:'10-20 นาที',detail:'เบา ๆ',isTime:true},
-      {name:'ยืดเหยียด',sets:1,reps:'ตามสบาย',detail:'ทั้งตัว'},
-    ]},
+  1:{name:'จันทร์',dayType:'A',focus:'Day A — อก + ไหล่ + ท้อง',emoji:'🟢',color:'#4ECDC4',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',exercises:[{name:'Push Up',sets:4,reps:'20',detail:'20 × 4'},{name:'Dumbbell Curl',sets:4,reps:'12',detail:'12 × 4'},{name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},{name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},{name:'Leg Raise',sets:3,reps:'15',detail:'15 × 3'}]},
+  2:{name:'อังคาร',dayType:'B',focus:'Day B — ขา + หลัง + Core',emoji:'🔵',color:'#74b9ff',isRest:false,exercises:[{name:'Squat',sets:4,reps:'25',detail:'25 × 4'},{name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},{name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},{name:'Plank',sets:3,reps:'60วิ',detail:'60 วิ × 3',isTime:true},{name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true}]},
+  3:{name:'พุธ',dayType:'C',focus:'Day C — ท้อง + คาร์ดิโอเบา',emoji:'🟡',color:'#FFE66D',isRest:false,note:'🚶‍♂️ เดิน 20–30 นาที',exercises:[{name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'},{name:'Bicycle Crunch',sets:3,reps:'20',detail:'20 × 3'},{name:'Russian Twist',sets:3,reps:'20',detail:'20 × 3'},{name:'Mountain Climber',sets:3,reps:'30วิ',detail:'30 วิ × 3',isTime:true}]},
+  4:{name:'พฤหัส',dayType:'A+',focus:'Day A (หนักขึ้น)',emoji:'🔴',color:'#F38181',isRest:false,note:'🔥 เน้น: ฟอร์ม + ช้า',exercises:[{name:'Push Up (ยกเท้า)',sets:4,reps:'15',detail:'15 × 4'},{name:'Dumbbell Curl (เพิ่มน้ำหนัก)',sets:4,reps:'12',detail:'12 × 4'},{name:'Lateral Raise',sets:4,reps:'15',detail:'15 × 4'},{name:'Sit Up',sets:3,reps:'25',detail:'25 × 3'},{name:'Leg Raise',sets:4,reps:'15',detail:'15 × 4'}]},
+  5:{name:'ศุกร์',dayType:'B+',focus:'Day B (หนักขึ้น)',emoji:'🟣',color:'#C3A6FF',isRest:false,exercises:[{name:'Squat',sets:4,reps:'25',detail:'25 × 4'},{name:'Dumbbell Row',sets:4,reps:'12',detail:'12 × 4'},{name:'Shoulder Press',sets:4,reps:'12',detail:'12 × 4'},{name:'Plank',sets:3,reps:'60-75วิ',detail:'60–75 วิ × 3',isTime:true},{name:'Side Plank',sets:3,reps:'30วิ/ข้าง',detail:'30 วิ/ข้าง × 3',isTime:true}]},
+  6:{name:'เสาร์',dayType:'C',focus:'Day C — เบา + เผาไขมัน',emoji:'🟠',color:'#FDCB6E',isRest:false,note:'🚶‍♂️ เดิน 30–45 นาที หรือ HIIT 5–10 นาที',exercises:[{name:'Leg Raise',sets:3,reps:'12',detail:'12 × 3'},{name:'Bicycle Crunch',sets:3,reps:'15',detail:'15 × 3'}]},
+  0:{name:'อาทิตย์',dayType:'REST',focus:'REST — พักเต็มที่',emoji:'⚫',color:'#636e72',isRest:true,note:'✔️ เดินเบา ๆ 10–20 นาที + ยืดเหยียด',exercises:[{name:'เดินเบา ๆ',sets:1,reps:'10-20 นาที',detail:'เบา ๆ',isTime:true},{name:'ยืดเหยียด',sets:1,reps:'ตามสบาย',detail:'ทั้งตัว'}]},
 };
 
 const NUTR_GOALS = {
@@ -620,17 +431,8 @@ const NUTR_GOALS = {
   'REST':{label:'วันพัก',          cal:1800,protein:140,fat:67,carb:160},
 };
 
-const STICKERS=[
-  {emoji:'🌱',label:'เริ่มต้น',threshold:1},{emoji:'🔥',label:'3 วัน',threshold:3},
-  {emoji:'⚡',label:'7 วัน',threshold:7},{emoji:'💪',label:'14 วัน',threshold:14},
-  {emoji:'🏅',label:'21 วัน',threshold:21},{emoji:'🥇',label:'30 วัน',threshold:30},
-  {emoji:'🚀',label:'50 วัน',threshold:50},{emoji:'👑',label:'100 วัน',threshold:100},
-];
-const STREAK_BADGES=[
-  {days:3,badge:'🥉',label:'3 วันติด!'},{days:7,badge:'🥈',label:'1 สัปดาห์!'},
-  {days:14,badge:'🥇',label:'2 สัปดาห์!'},{days:30,badge:'🏆',label:'1 เดือน!'},
-  {days:60,badge:'👑',label:'2 เดือน!'},{days:100,badge:'💎',label:'100 วัน!'},
-];
+const STICKERS=[{emoji:'🌱',label:'เริ่มต้น',threshold:1},{emoji:'🔥',label:'3 วัน',threshold:3},{emoji:'⚡',label:'7 วัน',threshold:7},{emoji:'💪',label:'14 วัน',threshold:14},{emoji:'🏅',label:'21 วัน',threshold:21},{emoji:'🥇',label:'30 วัน',threshold:30},{emoji:'🚀',label:'50 วัน',threshold:50},{emoji:'👑',label:'100 วัน',threshold:100}];
+const STREAK_BADGES=[{days:3,badge:'🥉',label:'3 วันติด!'},{days:7,badge:'🥈',label:'1 สัปดาห์!'},{days:14,badge:'🥇',label:'2 สัปดาห์!'},{days:30,badge:'🏆',label:'1 เดือน!'},{days:60,badge:'👑',label:'2 เดือน!'},{days:100,badge:'💎',label:'100 วัน!'}];
 
 const MY_MEALS = [
   // 🍚 ข้าว
@@ -733,17 +535,13 @@ function totalCheckins(){return Object.values(state.checkins).filter(v=>v.done).
 function fmt(s){const m=Math.floor(s/60),sec=s%60;return`${m}:${String(sec).padStart(2,'0')}`;}
 function vibrate(){if(navigator.vibrate)navigator.vibrate([200,100,200]);}
 
-function unlockAudio(){
-  if(window._audioCtx) return;
-  try{ window._audioCtx=new(window.AudioContext||window.webkitAudioContext)(); }catch{}
-}
-document.addEventListener('touchstart', unlockAudio, {once:true});
-document.addEventListener('click', unlockAudio, {once:true});
-
+function unlockAudio(){if(window._audioCtx)return;try{window._audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch{}}
+document.addEventListener('touchstart',unlockAudio,{once:true});
+document.addEventListener('click',unlockAudio,{once:true});
 function beep(beeps){
   try{
     const ctx=window._audioCtx||(window._audioCtx=new(window.AudioContext||window.webkitAudioContext)());
-    if(ctx.state==='suspended') ctx.resume();
+    if(ctx.state==='suspended')ctx.resume();
     beeps.forEach(b=>{
       const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
       osc.connect(gain);gain.connect(ctx.destination);
@@ -753,31 +551,13 @@ function beep(beeps){
       gain.gain.linearRampToValueAtTime(0,now+b.start+b.dur);
       osc.start(now+b.start);osc.stop(now+b.start+b.dur+0.05);
     });
-  }catch(e){console.warn('audio',e);}
+  }catch(e){}
 }
+function playAlertSound(){beep([{freq:1046,start:0,dur:.18,vol:.8},{freq:1318,start:.22,dur:.18,vol:.8},{freq:1568,start:.44,dur:.35,vol:.9}]);if(navigator.vibrate)navigator.vibrate([150,80,150,80,300]);}
+function playSetDoneSound(){beep([{freq:880,start:0,dur:.1,vol:.5},{freq:1100,start:.13,dur:.18,vol:.65}]);if(navigator.vibrate)navigator.vibrate([60,40,80]);}
 
-// เสียงเตือนเมื่อพักเซต/ท่าหมดเวลา — 3 บีบสูง
-function playAlertSound(){
-  beep([
-    {freq:1046,start:0,   dur:0.18,vol:0.8},
-    {freq:1318,start:0.22,dur:0.18,vol:0.8},
-    {freq:1568,start:0.44,dur:0.35,vol:0.9},
-  ]);
-  if(navigator.vibrate) navigator.vibrate([150,80,150,80,300]);
-}
-
-// เสียงติ๊กเมื่อทำเซตเสร็จ — 2 โน้ตขึ้น
-function playSetDoneSound(){
-  beep([
-    {freq:880, start:0,   dur:0.1, vol:0.5},
-    {freq:1100,start:0.13,dur:0.18,vol:0.65},
-  ]);
-  if(navigator.vibrate) navigator.vibrate([60,40,80]);
-}
-
-// ── TIMER (wall-clock based — survives backgrounding) ──
+// ── TIMER ──
 let timer={id:null,seconds:0,total:0,onDone:null,type:'',label:'',startWallTime:null};
-
 function startTimerOverlay(seconds,type,subtitle,onDone){
   if(timer.id)clearInterval(timer.id);
   timer={id:null,seconds,total:seconds,onDone,type,label:subtitle,startWallTime:Date.now()};
@@ -802,8 +582,7 @@ function timerTick(){
   }
 }
 function updateTimerDisplay(){
-  const s=timer.seconds;
-  const big=document.getElementById('timerBig'),circle=document.getElementById('timerCircle');
+  const s=timer.seconds,big=document.getElementById('timerBig'),circle=document.getElementById('timerCircle');
   big.textContent=fmt(s);const warn=s<=10;
   big.classList.toggle('warning',warn);circle.classList.toggle('warning',warn);
   circle.style.strokeDashoffset=(2*Math.PI*88)*(1-timer.seconds/timer.total);
@@ -813,17 +592,7 @@ function skipTimer(){stopTimer();}
 function startSetTimer(exIdx){startTimerOverlay(TIMER_SET,'พักระหว่างเซต',`เซต ${exIdx+1} — พักให้หายใจ`,()=>{});}
 function startSetTimerAuto(){startTimerOverlay(TIMER_SET,'พักระหว่างเซต','เซตต่อไปพร้อมยัง?',()=>{});}
 function startExTimer(nextName){startTimerOverlay(TIMER_EX,'พักระหว่างท่า',`ถัดไป: ${nextName}`,()=>{});}
-
-// Resume timer
-(function(){
-  try{
-    const saved=JSON.parse(localStorage.getItem('activeTimer')||'null');
-    if(!saved)return;
-    const remaining=saved.total-Math.floor((Date.now()-saved.startWallTime)/1000);
-    if(remaining>0)startTimerOverlay(remaining,saved.type,saved.subtitle,()=>{});
-    else localStorage.removeItem('activeTimer');
-  }catch{}
-})();
+(function(){try{const s=JSON.parse(localStorage.getItem('activeTimer')||'null');if(!s)return;const r=s.total-Math.floor((Date.now()-s.startWallTime)/1000);if(r>0)startTimerOverlay(r,s.type,s.subtitle,()=>{});else localStorage.removeItem('activeTimer');}catch{}})();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&timer.id)timerTick();});
 
 // ── TODAY ──
@@ -836,30 +605,12 @@ function renderToday(){
   const pct=totalSets?Math.round(doneSets/totalSets*100):0;
   const nextBadge=STREAK_BADGES.find(b=>s_<b.days);
   const earnedBadges=STREAK_BADGES.filter(b=>s_>=b.days);
-
-  let h=`<div class="stats-row">
-    <div class="stat-card-home s-streak"><div class="stat-val">${s_}</div><div class="stat-lbl">🔥 STREAK</div></div>
-    <div class="stat-card-home s-plain"><div class="stat-val">${totalCI}</div><div class="stat-lbl">✅ เช็คอิน</div></div>
-    <div class="stat-card-home s-plain"><div class="stat-val">${pts}</div><div class="stat-lbl">⭐ POINTS</div></div>
-  </div>
-  <div class="today-card" style="border-color:${sched.color}44">
-    <div class="today-bg-emoji">${sched.emoji}</div>
-    <div class="today-sub">วันนี้ — ${sched.name} | ${d.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</div>
-    <div class="today-title">${sched.emoji} ${sched.focus}</div>
-    <div class="today-meta">${sched.isRest?'วันพัก':`${sched.exercises.length} ท่า · ${sched.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
-  if(!sched.isRest){
-    h+=`<div class="today-progress-wrap">
-      <div class="today-progress-labels"><span>${doneSets} / ${totalSets} เซต</span><span>${pct}%</span></div>
-      <div class="today-progress-bar"><div class="today-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${sched.color},${sched.color}88)"></div></div>
-    </div>`;
-  }
-  if(checkin.done){
-    h+=`<button class="big-btn done-btn">✓ เช็คอินแล้ววันนี้!</button>`;
-  } else if(sched.isRest){
-    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#fff" onclick="markRestDay()">😌 เช็คอินวันพัก (+5 แต้ม)</button>`;
-  } else {
-    h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000;box-shadow:0 4px 20px ${sched.color}44" ${pct>=100?'':'disabled'} onclick="masterCheckinClick()">${pct>=100?'🎉 เช็คอิน!':'✓ CHECK IN วันนี้'}</button>`;
-  }
+  let h=`<div class="stats-row"><div class="stat-card-home s-streak"><div class="stat-val">${s_}</div><div class="stat-lbl">🔥 STREAK</div></div><div class="stat-card-home s-plain"><div class="stat-val">${totalCI}</div><div class="stat-lbl">✅ เช็คอิน</div></div><div class="stat-card-home s-plain"><div class="stat-val">${pts}</div><div class="stat-lbl">⭐ POINTS</div></div></div>
+  <div class="today-card" style="border-color:${sched.color}44"><div class="today-bg-emoji">${sched.emoji}</div><div class="today-sub">วันนี้ — ${sched.name} | ${d.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</div><div class="today-title">${sched.emoji} ${sched.focus}</div><div class="today-meta">${sched.isRest?'วันพัก':`${sched.exercises.length} ท่า · ${sched.exercises.reduce((a,e)=>a+e.sets,0)} เซตรวม`}</div>`;
+  if(!sched.isRest)h+=`<div class="today-progress-wrap"><div class="today-progress-labels"><span>${doneSets} / ${totalSets} เซต</span><span>${pct}%</span></div><div class="today-progress-bar"><div class="today-progress-fill" style="width:${pct}%;background:linear-gradient(90deg,${sched.color},${sched.color}88)"></div></div></div>`;
+  if(checkin.done){h+=`<button class="big-btn done-btn">✓ เช็คอินแล้ววันนี้!</button>`;}
+  else if(sched.isRest){h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#fff" onclick="markRestDay()">😌 เช็คอินวันพัก (+5 แต้ม)</button>`;}
+  else{h+=`<button class="big-btn" style="background:linear-gradient(135deg,${sched.color},${sched.color}aa);color:#000;box-shadow:0 4px 20px ${sched.color}44" ${pct>=100?'':'disabled'} onclick="masterCheckinClick()">${pct>=100?'🎉 เช็คอิน!':'✓ CHECK IN วันนี้'}</button>`;}
   h+=`</div>`;
   if(!sched.isRest)h+=`<div class="rest-tip"><span>⏱</span><span>พักระหว่างเซต <b style="color:#aaa">1 นาที</b> · พักระหว่างท่า <b style="color:#aaa">1 นาที 30 วิ</b></span></div>`;
   if(sched.isRest&&!checkin.done)h+=`<div class="done-banner"><span class="done-emoji">😴</span><h2>วันพักเต็มที่</h2><p>${sched.note||''}</p></div>`;
@@ -867,65 +618,36 @@ function renderToday(){
   h+=buildExerciseList(sched,checkin);
   if(nextBadge)h+=`<div class="badge-progress"><div class="badge-emoji-big">${nextBadge.badge}</div><div class="badge-info"><div class="badge-sub-lbl">เป้าหมายถัดไป</div><div class="badge-title-lbl">${nextBadge.label}</div><div class="badge-bar"><div class="badge-bar-fill" style="width:${Math.min((s_/nextBadge.days)*100,100)}%"></div></div><div class="badge-count-lbl">${s_} / ${nextBadge.days} วัน</div></div></div>`;
   if(earnedBadges.length){h+=`<div class="badges-section"><div class="section-label">🏅 BADGES</div><div class="badges-grid">`;earnedBadges.forEach(b=>{h+=`<div class="badge-item"><div class="badge-item-emoji">${b.badge}</div><div class="badge-item-lbl">${b.label}</div></div>`;});h+=`</div></div>`;}
-  document.getElementById('page-today').innerHTML=h;
-  updateHeaderStats();
+  document.getElementById('page-today').innerHTML=h;updateHeaderStats();
 }
-
 function buildExerciseList(sched,checkin){
-  const setsInfo=checkin.sets||{};
-  let html=`<div class="ex-section-title">ท่าออกกำลังกายวันนี้</div>`;
+  const setsInfo=checkin.sets||{};let html=`<div class="ex-section-title">ท่าออกกำลังกายวันนี้</div>`;
   sched.exercises.forEach((ex,i)=>{
     const doneArr=setsInfo[i]||new Array(ex.sets).fill(false);
     const allDone=doneArr.every(Boolean),anyDone=doneArr.some(Boolean);
-    html+=`<div class="exercise-card ${allDone?'completed-ex':(anyDone?'active-ex':'')} ${anyDone&&!allDone?'open':''}" id="exCard${i}">
-      <div class="exercise-header" onclick="toggleExCard(${i})">
-        <div class="ex-num-box">${allDone?'✓':i+1}</div>
-        <div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div></div>
-        <div class="ex-arrow">▾</div>
-      </div>
-      <div class="sets-panel" id="setsPanel${i}"><div class="sets-grid">`;
-    for(let s=0;s<ex.sets;s++){
-      const done=doneArr[s],isNext=!done&&(s===0||doneArr[s-1]);
-      html+=`<div class="set-btn ${done?'done-set':(isNext?'active-set':'')}" onclick="toggleSet(${i},${s})"><span class="check-icon">✓</span><div class="set-lbl">เซต ${s+1}</div><div class="set-reps">${ex.reps}</div></div>`;
-    }
+    html+=`<div class="exercise-card ${allDone?'completed-ex':(anyDone?'active-ex':'')} ${anyDone&&!allDone?'open':''}" id="exCard${i}"><div class="exercise-header" onclick="toggleExCard(${i})"><div class="ex-num-box">${allDone?'✓':i+1}</div><div class="ex-info"><div class="ex-name">${ex.name}</div><div class="ex-detail">${ex.detail} · ${doneArr.filter(Boolean).length}/${ex.sets} เซต</div></div><div class="ex-arrow">▾</div></div><div class="sets-panel" id="setsPanel${i}"><div class="sets-grid">`;
+    for(let s=0;s<ex.sets;s++){const done=doneArr[s],isNext=!done&&(s===0||doneArr[s-1]);html+=`<div class="set-btn ${done?'done-set':(isNext?'active-set':'')}" onclick="toggleSet(${i},${s})"><span class="check-icon">✓</span><div class="set-lbl">เซต ${s+1}</div><div class="set-reps">${ex.reps}</div></div>`;}
     html+=`</div><div class="timer-row"><span class="timer-icon">⏱</span><span class="timer-label">พักระหว่างเซต 60 วิ</span><span class="timer-countdown">1:00</span><button class="start-timer-btn" onclick="startSetTimer(${i})">เริ่ม</button></div></div></div>`;
-  });
-  return html;
+  });return html;
 }
 function toggleExCard(i){document.getElementById(`exCard${i}`).classList.toggle('open');}
-
 function toggleSet(exIdx,setIdx){
   const key=todayKeyFn(),checkin=getCheckin(key),sched=getSchedule(),ex=sched.exercises[exIdx];
   if(!checkin.sets[exIdx])checkin.sets[exIdx]=new Array(ex.sets).fill(false);
-  const wasTrue=checkin.sets[exIdx][setIdx];
-  checkin.sets[exIdx][setIdx]=!wasTrue;
+  const wasTrue=checkin.sets[exIdx][setIdx];checkin.sets[exIdx][setIdx]=!wasTrue;
   if(!wasTrue){
-    checkin.points=(checkin.points||0)+5;state.totalPoints=(state.totalPoints||0)+5;
-    showPointsPop('+5');playSetDoneSound();
-    if(navigator.vibrate)navigator.vibrate([50,30,50]);
+    checkin.points=(checkin.points||0)+5;state.totalPoints=(state.totalPoints||0)+5;showPointsPop('+5');playSetDoneSound();
     const allSetsDone=checkin.sets[exIdx].every(Boolean);
     if(allSetsDone){
       const allExDone=sched.exercises.every((e,i)=>(checkin.sets[i]||[]).filter(Boolean).length>=e.sets);
       if(allExDone){checkin.points+=20;state.totalPoints+=20;checkin.done=true;saveState();updateUI();setTimeout(()=>{launchConfetti();showToast('🏆 ทำครบแล้ว! +20 แต้มโบนัส');showCelebration(checkin.points,'done');},300);return;}
       else{saveState();updateUI();setTimeout(()=>{const nxt=findNextExercise(exIdx,sched,checkin);startExTimer(nxt?nxt.name:'ท่าถัดไป');},100);return;}
-    } else {saveState();updateUI();setTimeout(()=>startSetTimerAuto(),100);return;}
-  }
-  saveState();updateUI();
+    }else{saveState();updateUI();setTimeout(()=>startSetTimerAuto(),100);return;}
+  }saveState();updateUI();
 }
-function findNextExercise(idx,sched,checkin){
-  for(let i=idx+1;i<sched.exercises.length;i++)if((checkin.sets[i]||[]).filter(Boolean).length<sched.exercises[i].sets)return sched.exercises[i];
-  return null;
-}
-function masterCheckinClick(){
-  const key=todayKeyFn(),checkin=getCheckin(key);
-  checkin.done=true;checkin.points=(checkin.points||0)+10;state.totalPoints=(state.totalPoints||0)+10;
-  saveState();updateUI();launchConfetti();showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');showCelebration(checkin.points,'workout');
-}
-function markRestDay(){
-  const key=todayKeyFn(),checkin=getCheckin(key);
-  checkin.done=true;checkin.points=(checkin.points||0)+5;checkin.isRest=true;state.totalPoints=(state.totalPoints||0)+5;
-  saveState();updateUI();showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');showCelebration(checkin.points,'rest');
-}
+function findNextExercise(idx,sched,checkin){for(let i=idx+1;i<sched.exercises.length;i++)if((checkin.sets[i]||[]).filter(Boolean).length<sched.exercises[i].sets)return sched.exercises[i];return null;}
+function masterCheckinClick(){const key=todayKeyFn(),checkin=getCheckin(key);checkin.done=true;checkin.points=(checkin.points||0)+10;state.totalPoints=(state.totalPoints||0)+10;saveState();updateUI();launchConfetti();showToast('🎉 เช็คอินสำเร็จ! +10 แต้ม');showCelebration(checkin.points,'workout');}
+function markRestDay(){const key=todayKeyFn(),checkin=getCheckin(key);checkin.done=true;checkin.points=(checkin.points||0)+5;checkin.isRest=true;state.totalPoints=(state.totalPoints||0)+5;saveState();updateUI();showToast('😌 เช็คอินวันพักแล้ว +5 แต้ม');showCelebration(checkin.points,'rest');}
 function showCelebration(pts,type){
   const s=streak(),el=document.getElementById('celebration');
   const em=['🌟','🔥','💎','⚡','🏆','💪','🎯','🚀'];
@@ -936,6 +658,7 @@ function showCelebration(pts,type){
   el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),3000);
 }
 
+// ── CALENDAR ──
 function renderCalendar(){
   const now=new Date(),year=now.getFullYear(),month=now.getMonth();
   document.getElementById('calMonth').textContent=now.toLocaleDateString('th-TH',{month:'long',year:'numeric'});
@@ -951,24 +674,15 @@ function renderCalendar(){
   }
   document.getElementById('calGrid').innerHTML=html;
   const total=totalCheckins();
-  document.getElementById('stickerRow').innerHTML=STICKERS.map(s=>{
-    const earned=total>=s.threshold;
-    return`<div class="sticker ${earned?'earned':''}"><span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span><div class="sticker-label">${s.label}</div></div>`;
-  }).join('');
+  document.getElementById('stickerRow').innerHTML=STICKERS.map(s=>{const earned=total>=s.threshold;return`<div class="sticker ${earned?'earned':''}"><span style="filter:${earned?'none':'grayscale(1) opacity(0.3)'}">${s.emoji}</span><div class="sticker-label">${s.label}</div></div>`;}).join('');
 }
 
+// ── SCHEDULE ──
 function renderSchedule(){
-  const el=document.getElementById('page-schedule'),dow=todayDow();
-  let h=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
+  const el=document.getElementById('page-schedule'),dow=todayDow();let h=`<div class="section-label" style="margin-bottom:14px">ตารางทั้งสัปดาห์</div>`;
   [1,2,3,4,5,6,0].forEach(d=>{
     const w=SCHEDULE[d],isToday=d===dow;
-    h+=`<div class="schedule-day" style="${isToday?`border-color:${w.color}`:''}">
-      <div class="day-header-row" onclick="toggleDay(${d})">
-        <div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div>
-        <div><div style="display:flex;align-items:center;gap:8px"><span class="day-name-txt">${w.name}</span>${isToday?`<span class="today-tag" style="background:${w.color}">TODAY</span>`:''}</div><div class="day-focus-txt">${w.focus}</div></div>
-        <div class="day-arrow-sch" id="sch-arrow-${d}">▼</div>
-      </div>
-      <div class="day-body" id="daybody-${d}">`;
+    h+=`<div class="schedule-day" style="${isToday?`border-color:${w.color}`:''}"><div class="day-header-row" onclick="toggleDay(${d})"><div class="day-icon" style="background:${w.color}22;border:1px solid ${w.color}44">${w.emoji}</div><div><div style="display:flex;align-items:center;gap:8px"><span class="day-name-txt">${w.name}</span>${isToday?`<span class="today-tag" style="background:${w.color}">TODAY</span>`:''}</div><div class="day-focus-txt">${w.focus}</div></div><div class="day-arrow-sch" id="sch-arrow-${d}">▼</div></div><div class="day-body" id="daybody-${d}">`;
     w.exercises.forEach((ex,i)=>{h+=`<div class="sch-ex-row"><div><span class="sch-ex-num">${i+1}.</span><span style="font-size:13px;color:#ddd">${ex.name}</span></div><div><span style="font-size:12px;font-weight:700;color:${w.color}">${ex.sets} เซต</span><span style="font-size:11px;color:#555;margin-left:6px">× ${ex.reps}</span></div></div>`;});
     if(w.note)h+=`<div class="day-note">${w.note}</div>`;
     h+=`<div class="rest-info-box">⏱ พักเซต 60 วิ · พักท่า 90 วิ</div></div></div>`;
@@ -977,337 +691,160 @@ function renderSchedule(){
   const tb=document.getElementById(`daybody-${dow}`),ta=document.getElementById(`sch-arrow-${dow}`);
   if(tb){tb.classList.add('open');if(ta)ta.textContent='▲';}
 }
-function toggleDay(d){
-  const b=document.getElementById(`daybody-${d}`),a=document.getElementById(`sch-arrow-${d}`);
-  b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▲':'▼';
-}
+function toggleDay(d){const b=document.getElementById(`daybody-${d}`),a=document.getElementById(`sch-arrow-${d}`);b.classList.toggle('open');a.textContent=b.classList.contains('open')?'▲':'▼';}
 
+// ── STATS ──
 function renderStats(){
   const total=totalCheckins(),s=streak(),pts=state.totalPoints||0,weeks=Math.floor(total/5);
-  document.getElementById('statsGrid').innerHTML=`
-    <div class="stat-card-stats"><div class="stat-value">${total}</div><div class="stat-label-stats">🗓 วันที่เช็คอิน</div></div>
-    <div class="stat-card-stats"><div class="stat-value">${s}</div><div class="stat-label-stats">🔥 สตรีคปัจจุบัน</div></div>
-    <div class="stat-card-stats"><div class="stat-value">${pts}</div><div class="stat-label-stats">⚡ แต้มสะสม</div></div>
-    <div class="stat-card-stats"><div class="stat-value">${weeks}</div><div class="stat-label-stats">📅 สัปดาห์ที่ครบ</div></div>`;
+  document.getElementById('statsGrid').innerHTML=`<div class="stat-card-stats"><div class="stat-value">${total}</div><div class="stat-label-stats">🗓 วันที่เช็คอิน</div></div><div class="stat-card-stats"><div class="stat-value">${s}</div><div class="stat-label-stats">🔥 สตรีคปัจจุบัน</div></div><div class="stat-card-stats"><div class="stat-value">${pts}</div><div class="stat-label-stats">⚡ แต้มสะสม</div></div><div class="stat-card-stats"><div class="stat-value">${weeks}</div><div class="stat-label-stats">📅 สัปดาห์ที่ครบ</div></div>`;
   const entries=Object.entries(state.checkins).filter(([,v])=>v.done).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
-  document.getElementById('historyList').innerHTML=entries.length?entries.map(([k,v])=>{
-    const dd=new Date(k+'T00:00:00'),dow=dd.getDay(),sched=SCHEDULE[dow];
-    return`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:8px;">
-      <div style="font-size:28px">${v.isRest?'😴':'✅'}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div><div style="font-size:12px;color:#555">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div></div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35">+${v.points||0}</div>
-    </div>`;
-  }).join(''):'<div style="color:#555;text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
+  document.getElementById('historyList').innerHTML=entries.length?entries.map(([k,v])=>{const dd=new Date(k+'T00:00:00'),dow=dd.getDay(),sched=SCHEDULE[dow];return`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;margin-bottom:8px;"><div style="font-size:28px">${v.isRest?'😴':'✅'}</div><div style="flex:1"><div style="font-weight:600;font-size:14px">${sched.name} — ${sched.focus}</div><div style="font-size:12px;color:#555">${dd.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}</div></div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35">+${v.points||0}</div></div>`;}).join(''):'<div style="color:#555;text-align:center;padding:20px">ยังไม่มีประวัติ</div>';
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// NUTRITION — redesigned
+// NUTRITION
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-let nutrQueryHistory=[];
-let currentNutrResult=null;
-
+let nutrQueryHistory=[];let currentNutrResult=null;
 function getTodayGoals(){return NUTR_GOALS[SCHEDULE[todayDow()].dayType]||NUTR_GOALS['A'];}
-
 function getFoodLog(){const k=todayKeyFn();if(!state.foodLog[k])state.foodLog[k]=[];return state.foodLog[k];}
 function getWaterMl(){const k=todayKeyFn();return state.waterLog[k]||0;}
-function addWaterMl(ml){
-  const k=todayKeyFn();
-  state.waterLog[k]=(state.waterLog[k]||0)+ml;
-  saveState();renderNutrition();
-  const total=state.waterLog[k];
-  if(total>=WATER_GOAL_ML)showToast('💧 ดื่มน้ำครบเป้าวันนี้! 🎉');
-  else showToast(`💧 +${ml}ml — รวม ${total}ml วันนี้`);
-}
+function addWaterMl(ml){const k=todayKeyFn();state.waterLog[k]=(state.waterLog[k]||0)+ml;saveState();renderNutrition();const total=state.waterLog[k];if(total>=WATER_GOAL_ML)showToast('💧 ดื่มน้ำครบเป้าวันนี้! 🎉');else showToast(`💧 +${ml}ml — รวม ${total}ml วันนี้`);}
 function resetWater(){state.waterLog[todayKeyFn()]=0;saveState();renderNutrition();}
-
-function getEaten(){
-  const log=getFoodLog();
-  return{
-    cal: log.reduce((a,f)=>a+(f.calories||0),0),
-    protein: log.reduce((a,f)=>a+(f.protein||0),0),
-    fat: log.reduce((a,f)=>a+(f.fat||0),0),
-    carb: log.reduce((a,f)=>a+(f.carbs||0),0),
-  };
-}
+function getEaten(){const log=getFoodLog();return{cal:log.reduce((a,f)=>a+(f.calories||0),0),protein:log.reduce((a,f)=>a+(f.protein||0),0),fat:log.reduce((a,f)=>a+(f.fat||0),0),carb:log.reduce((a,f)=>a+(f.carbs||0),0)};}
 
 function renderNutrition(){
   const el=document.getElementById('page-nutrition');
-  const dow=todayDow(),sched=SCHEDULE[dow];
-  const goals=getTodayGoals();
-  const eaten=getEaten();
-  const log=getFoodLog();
-  const waterMl=getWaterMl();
-
-  const remCal=goals.cal-eaten.cal;
-  const pctCal=Math.min(Math.round((eaten.cal/goals.cal)*100),100);
-
-  // Color helpers
-  const macroColor=(eaten,goal)=>eaten>=goal?'#4ECDC4':(eaten>=goal*0.8?'#FFE66D':'#FF6B35');
-  const remStr=(rem)=>rem>0?`เหลือ ${rem}`:rem===0?'✓ ครบ':`⚠ เกิน ${Math.abs(rem)}`;
+  const dow=todayDow(),sched=SCHEDULE[dow],goals=getTodayGoals(),eaten=getEaten(),log=getFoodLog(),waterMl=getWaterMl();
+  const remCal=goals.cal-eaten.cal,pctCal=Math.min(Math.round((eaten.cal/goals.cal)*100),100);
   const remCol=(rem)=>rem>0?'#555':rem===0?'#4ECDC4':'#ff4060';
-
-  // Ring SVG circumference r=46
-  const CIRC=2*Math.PI*46;
-  const calOffset=CIRC*(1-pctCal/100);
+  const CIRC=2*Math.PI*46,calOffset=CIRC*(1-pctCal/100);
   const calRingColor=pctCal>=100?'#4ECDC4':(pctCal>=80?'#FFE66D':'#FF6B35');
-
-  // Macro pct for mini bars
-  const mp=(v,g)=>Math.min(Math.round((v/g)*100),100);
-
   const mealOpts=MY_MEALS.filter(m=>!m.isWater).map((m,i)=>`<option value="${i}">${m.emoji} ${m.food} — ${m.calories} kcal · P${m.protein}g</option>`).join('');
 
-  let h=`
-  <!-- Day banner -->
-  <div class="nutr-day-banner" style="background:${sched.color}15;border:1px solid ${sched.color}33">
-    <div class="nutr-day-emoji">${sched.emoji}</div>
-    <div>
-      <div class="nutr-day-label">เป้าหมายวันนี้ · ${sched.name}</div>
-      <div class="nutr-day-title">${goals.label}</div>
-    </div>
+  let h=`<div class="nutr-day-banner" style="background:${sched.color}15;border:1px solid ${sched.color}33"><div class="nutr-day-emoji">${sched.emoji}</div><div><div class="nutr-day-label">เป้าหมายวันนี้ · ${sched.name}</div><div class="nutr-day-title">${goals.label}</div></div></div>
+  <div class="nutr-cal-section"><div class="nutr-cal-top">
+    <div class="nutr-ring-wrap"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#222" stroke-width="8"/><circle cx="50" cy="50" r="46" fill="none" stroke="${calRingColor}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${calOffset}" style="transition:stroke-dashoffset .5s,stroke .3s" transform="rotate(-90 50 50)"/></svg><div class="nutr-ring-center"><div class="nutr-ring-val" style="color:${calRingColor}">${pctCal}%</div><div class="nutr-ring-unit">แคล</div></div></div>
+    <div class="nutr-cal-info"><div class="nutr-cal-eaten" style="color:${calRingColor}">${eaten.cal}</div><div class="nutr-cal-eaten-lbl">/ ${goals.cal} kcal</div><div class="nutr-cal-row"><div class="nutr-cal-chip" style="color:${remCol(remCal)};border-color:${remCol(remCal)}33"><span>${Math.abs(remCal)}</span> kcal ${remCal>=0?'เหลือ':'เกิน!'}</div></div></div>
   </div>
-
-  <!-- Calories + Macros hero -->
-  <div class="nutr-cal-section">
-    <div class="nutr-cal-top">
-      <!-- Donut ring -->
-      <div class="nutr-ring-wrap">
-        <svg width="100" height="100" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="46" fill="none" stroke="#222" stroke-width="8"/>
-          <circle cx="50" cy="50" r="46" fill="none" stroke="${calRingColor}" stroke-width="8"
-            stroke-linecap="round"
-            stroke-dasharray="${CIRC}"
-            stroke-dashoffset="${calOffset}"
-            style="transition:stroke-dashoffset .5s,stroke .3s"
-            transform="rotate(-90 50 50)"/>
-        </svg>
-        <div class="nutr-ring-center">
-          <div class="nutr-ring-val" style="color:${calRingColor}">${pctCal}%</div>
-          <div class="nutr-ring-unit">แคล</div>
-        </div>
-      </div>
-      <!-- Cal numbers -->
-      <div class="nutr-cal-info">
-        <div class="nutr-cal-eaten" style="color:${calRingColor}">${eaten.cal}</div>
-        <div class="nutr-cal-eaten-lbl">/ ${goals.cal} kcal</div>
-        <div class="nutr-cal-row">
-          <div class="nutr-cal-chip" style="color:${remCol(remCal)};border-color:${remCol(remCal)}33">
-            <span style="color:${remCol(remCal)}">${Math.abs(remCal)}</span> kcal ${remCal>=0?'เหลือ':'เกิน!'}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4 Macro cards -->
-    <div class="nutr-macro-grid">
-      ${macroCard('🥩','โปรตีน',eaten.protein,goals.protein,'g','#4ECDC4')}
-      ${macroCard('🥑','ไขมัน',eaten.fat,goals.fat,'g','#FFE66D')}
-      ${macroCard('🍚','คาร์บ',eaten.carb,goals.carb,'g','#A8E6CF')}
-      ${macroCard('💊','รวม',eaten.cal,goals.cal,'cal','#FF6B35')}
-    </div>
-  </div>
-
-  <!-- Water tracker -->
-  <div class="nutr-water-card">
-    <div class="nutr-water-left">
-      <div class="nutr-water-title">💧 น้ำเปล่า</div>
-      <div style="display:flex;align-items:baseline;gap:4px;margin:4px 0">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${waterMl>=WATER_GOAL_ML?'#4ECDC4':'#74b9ff'}">${waterMl}</span>
-        <span style="font-size:11px;color:#555">/ ${WATER_GOAL_ML} ml</span>
-        ${waterMl>=WATER_GOAL_ML?'<span style="font-size:12px;color:#4ECDC4;font-weight:700">✅</span>':''}
-      </div>
-      <div class="nutr-water-bar-wrap">
-        <div class="nutr-water-bar-fill" style="width:${Math.min(Math.round((waterMl/WATER_GOAL_ML)*100),100)}%"></div>
-      </div>
-      <div style="font-size:10px;color:#555;margin-top:5px">เหลือ ${Math.max(0,WATER_GOAL_ML-waterMl)} ml · เป้า ${WATER_GOAL_ML/1000} ลิตร</div>
-    </div>
-    <div class="nutr-water-btns">
-      <button class="nutr-water-btn" onclick="addWaterMl(600)">+600ml 🍶</button>
-      <button class="nutr-water-btn" onclick="addWaterMl(250)">+250ml 🥛</button>
-      <button class="nutr-water-reset" onclick="resetWater()">รีเซ็ต</button>
-    </div>
-  </div>
-
-  <!-- Food log -->
-  <div class="nutr-log-card">
-    <div class="nutr-log-head">
-      <span class="nutr-log-title">🍽️ บันทึกที่กินวันนี้</span>
-      <button class="nutr-log-clear" onclick="clearFoodLog()">ล้างทั้งหมด</button>
-    </div>`;
-
-  if(!log.length){
-    h+=`<div class="nutr-log-empty">ยังไม่มีรายการ — เพิ่มด้านล่าง 👇</div>`;
-  } else {
-    log.forEach((f,i)=>{
-      h+=`<div class="nutr-log-item">
-        <div class="nutr-log-dot" style="background:${f.calories>600?'#ff4060':f.calories>400?'#FFE66D':'#4ECDC4'}"></div>
-        <div class="nutr-log-name">${f.food}</div>
-        <div class="nutr-log-kcal">${f.calories}</div>
-        <button class="nutr-log-del" onclick="removeFoodLog(${i})">✕</button>
-      </div>`;
-    });
-  }
-  h+=`
-    <div class="nutr-add-row">
-      <select class="nutr-add-select" id="foodSelect"><option value="">— เลือกเมนูที่กิน —</option>${mealOpts}</select>
-      <button class="nutr-add-btn" onclick="addFoodFromSelect()">+ เพิ่ม</button>
-    </div>
-  </div>
-
-  <!-- AI Ask -->
+  <div class="nutr-macro-grid">${macroCard('🥩','โปรตีน',eaten.protein,goals.protein,'g','#4ECDC4')}${macroCard('🥑','ไขมัน',eaten.fat,goals.fat,'g','#FFE66D')}${macroCard('🍚','คาร์บ',eaten.carb,goals.carb,'g','#A8E6CF')}${macroCard('💊','รวม',eaten.cal,goals.cal,'cal','#FF6B35')}</div></div>
+  <div class="nutr-water-card"><div class="nutr-water-left"><div class="nutr-water-title">💧 น้ำเปล่า</div><div style="display:flex;align-items:baseline;gap:4px;margin:4px 0"><span style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${waterMl>=WATER_GOAL_ML?'#4ECDC4':'#74b9ff'}">${waterMl}</span><span style="font-size:11px;color:#555">/ ${WATER_GOAL_ML} ml</span>${waterMl>=WATER_GOAL_ML?'<span style="font-size:12px;color:#4ECDC4;font-weight:700">✅</span>':''}</div><div class="nutr-water-bar-wrap"><div class="nutr-water-bar-fill" style="width:${Math.min(Math.round((waterMl/WATER_GOAL_ML)*100),100)}%"></div></div><div style="font-size:10px;color:#555;margin-top:5px">เหลือ ${Math.max(0,WATER_GOAL_ML-waterMl)} ml · เป้า ${WATER_GOAL_ML/1000} ลิตร</div></div><div class="nutr-water-btns"><button class="nutr-water-btn" onclick="addWaterMl(600)">+600ml 🍶</button><button class="nutr-water-btn" onclick="addWaterMl(250)">+250ml 🥛</button><button class="nutr-water-reset" onclick="resetWater()">รีเซ็ต</button></div></div>
+  <div class="nutr-log-card"><div class="nutr-log-head"><span class="nutr-log-title">🍽️ บันทึกที่กินวันนี้</span><button class="nutr-log-clear" onclick="clearFoodLog()">ล้างทั้งหมด</button></div>`;
+  if(!log.length){h+=`<div class="nutr-log-empty">ยังไม่มีรายการ — เพิ่มด้านล่าง 👇</div>`;}
+  else{log.forEach((f,i)=>{h+=`<div class="nutr-log-item"><div class="nutr-log-dot" style="background:${f.calories>600?'#ff4060':f.calories>400?'#FFE66D':'#4ECDC4'}"></div><div class="nutr-log-name">${f.food}</div><div class="nutr-log-kcal">${f.calories}</div><button class="nutr-log-del" onclick="removeFoodLog(${i})">✕</button></div>`;});}
+  h+=`<div class="nutr-add-row"><select class="nutr-add-select" id="foodSelect"><option value="">— เลือกเมนูที่กิน —</option>${mealOpts}</select><button class="nutr-add-btn" onclick="addFoodFromSelect()">+ เพิ่ม</button></div></div>
   <div class="ex-section-title">ถามข้อมูลสารอาหาร AI</div>
   ${renderApiKeyCard()}
   <div class="nutr-search-box">
     <input class="nutr-input" id="nutrInput" type="text" placeholder="เช่น ข้าวผัดกุ้ง 1 จาน..." onkeydown="if(event.key==='Enter')askNutrition()"/>
-    <button class="nutr-ask-btn" id="nutrAskBtn" onclick="askNutrition()" ${!getApiKey()?'disabled style="opacity:.4"':''}>ถาม AI</button>
+    <button class="nutr-ask-btn" id="nutrAskBtn" onclick="askNutrition()" ${(!getApiKey()||isLimitReached())?'disabled style="opacity:.4"':''}>ถาม AI</button>
   </div>
-  <!-- MEAL CARDS with category tabs -->
   <div class="meal-section-title">⭐ เมนูที่กินบ่อย</div>
-  <div class="meal-cat-tabs">
-    ${MEAL_CATS.map(c=>`<button class="meal-cat-btn ${activeMealCat===c?'active':''}" onclick="setMealCat('${c}')">${c}</button>`).join('')}
-  </div>
+  <div class="meal-cat-tabs">${MEAL_CATS.map(c=>`<button class="meal-cat-btn ${activeMealCat===c?'active':''}" onclick="setMealCat('${c}')">${c}</button>`).join('')}</div>
   <div class="meal-cards-grid">
-    ${(activeMealCat==='ทั้งหมด'?MY_MEALS:MY_MEALS.filter(m=>m.cat===activeMealCat)).map((m,_,__)=>{
-      const realIdx=MY_MEALS.indexOf(m);
-      const isW=m.isWater;
+    ${(activeMealCat==='ทั้งหมด'?MY_MEALS:MY_MEALS.filter(m=>m.cat===activeMealCat)).map(m=>{
+      const ri=MY_MEALS.indexOf(m),isW=m.isWater;
       const calColor=m.calories>700?'#ff4060':m.calories>400?'#FF6B35':'#4ECDC4';
       const protPct=Math.min(Math.round((m.protein/getTodayGoals().protein)*100),100);
-      return `<div class="meal-card ${isW?'water-card':''}" onclick="showMealInfo(${realIdx})">
-        <div class="meal-card-emoji">${m.emoji}</div>
-        <div class="meal-card-name">${m.food}</div>
-        ${isW
-          ?`<div class="meal-card-kcal" style="color:#74b9ff">${m.waterMl}ml</div><div style="font-size:10px;color:#555;margin-top:2px">0 kcal</div>`
-          :`<div class="meal-card-kcal" style="color:${calColor}">${m.calories}</div>
-           <div class="meal-card-macros">
-             <span class="meal-card-chip" style="color:#4ECDC4">P ${m.protein}g</span>
-             <span class="meal-card-chip" style="color:#FFE66D">F ${m.fat}g</span>
-             <span class="meal-card-chip" style="color:#A8E6CF">C ${m.carbs}g</span>
-           </div>`}
-        <div class="meal-card-bar"><div class="meal-card-bar-fill" style="width:${protPct}%;background:${isW?'#74b9ff':'#4ECDC4'}"></div></div>
-      </div>`;
+      return`<div class="meal-card ${isW?'water-card':''}" onclick="showMealInfo(${ri})"><div class="meal-card-emoji">${m.emoji}</div><div class="meal-card-name">${m.food}</div>${isW?`<div class="meal-card-kcal" style="color:#74b9ff">${m.waterMl}ml</div><div style="font-size:10px;color:#555;margin-top:2px">0 kcal</div>`:`<div class="meal-card-kcal" style="color:${calColor}">${m.calories}</div><div class="meal-card-macros"><span class="meal-card-chip" style="color:#4ECDC4">P ${m.protein}g</span><span class="meal-card-chip" style="color:#FFE66D">F ${m.fat}g</span><span class="meal-card-chip" style="color:#A8E6CF">C ${m.carbs}g</span></div>`}<div class="meal-card-bar"><div class="meal-card-bar-fill" style="width:${protPct}%;background:${isW?'#74b9ff':'#4ECDC4'}"></div></div></div>`;
     }).join('')}
   </div>
   <div id="nutrResult"></div>
-  <div id="nutrHistoryWrap" style="display:none">
-    <div class="ex-section-title" style="margin-top:4px">ที่ถามล่าสุด</div>
-    <div id="nutrHistory"></div>
-  </div>`;
-
-  el.innerHTML=h;
-  if(nutrQueryHistory.length)renderNutrHistory();
+  <div id="nutrHistoryWrap" style="display:none"><div class="ex-section-title" style="margin-top:4px">ที่ถามล่าสุด</div><div id="nutrHistory"></div></div>`;
+  el.innerHTML=h;if(nutrQueryHistory.length)renderNutrHistory();
 }
 
 function macroCard(icon,label,eaten,goal,unit,color){
-  const pct=Math.min(Math.round((eaten/goal)*100),100);
-  const rem=goal-eaten;
-  const done=eaten>=goal;
-  return`<div class="nmacro${done?' done':''}" style="${done?`border-color:${color}44`:``}">
-    <div class="nmacro-icon">${icon}</div>
-    <div class="nmacro-eaten" style="color:${done?color:'#ccc'}">${eaten}</div>
-    <div class="nmacro-unit">${unit}</div>
-    <div class="nmacro-goal">/ ${goal}${unit}</div>
-    <div class="nmacro-rem" style="color:${done?color:rem<goal*0.2?'#FFE66D':'#555'}">${done?'✅ ครบ':rem+unit+' เหลือ'}</div>
-    <div class="nmacro-track"><div class="nmacro-fill" style="width:${pct}%;background:${color}"></div></div>
-  </div>`;
+  const pct=Math.min(Math.round((eaten/goal)*100),100),rem=goal-eaten,done=eaten>=goal;
+  return`<div class="nmacro${done?' done':''}" style="${done?`border-color:${color}44`:''}"><div class="nmacro-icon">${icon}</div><div class="nmacro-eaten" style="color:${done?color:'#ccc'}">${eaten}</div><div class="nmacro-unit">${unit}</div><div class="nmacro-goal">/ ${goal}${unit}</div><div class="nmacro-rem" style="color:${done?color:rem<goal*0.2?'#FFE66D':'#555'}">${done?'✅ ครบ':rem+unit+' เหลือ'}</div><div class="nmacro-track"><div class="nmacro-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
 }
-
-function addFoodFromSelect(){
-  const sel=document.getElementById('foodSelect');
-  if(!sel||sel.value==='')return;
-  const meal=MY_MEALS[parseInt(sel.value)];
-  if(meal.isWater){addWaterMl(meal.waterMl||600);return;}
-  const k=todayKeyFn();
-  if(!state.foodLog[k])state.foodLog[k]=[];
-  state.foodLog[k].push({food:meal.food,calories:meal.calories,protein:meal.protein,fat:meal.fat,carbs:meal.carbs});
-  saveState();showToast(`✅ เพิ่ม ${meal.food} แล้ว`);renderNutrition();
-}
-function addCurrentMealToLog(){
-  if(!currentNutrResult)return;
-  const m=currentNutrResult;
-  if(m.isWater){addWaterMl(m.waterMl||600);return;}
-  const k=todayKeyFn();
-  if(!state.foodLog[k])state.foodLog[k]=[];
-  state.foodLog[k].push({food:m.food,calories:m.calories,protein:m.protein,fat:m.fat,carbs:m.carbs});
-  saveState();showToast(`✅ เพิ่ม ${m.food} ลงบันทึกแล้ว`);renderNutrition();
-}
+function addFoodFromSelect(){const sel=document.getElementById('foodSelect');if(!sel||sel.value==='')return;const meal=MY_MEALS[parseInt(sel.value)];if(meal.isWater){addWaterMl(meal.waterMl||600);return;}const k=todayKeyFn();if(!state.foodLog[k])state.foodLog[k]=[];state.foodLog[k].push({food:meal.food,calories:meal.calories,protein:meal.protein,fat:meal.fat,carbs:meal.carbs});saveState();showToast(`✅ เพิ่ม ${meal.food} แล้ว`);renderNutrition();}
+function addCurrentMealToLog(){if(!currentNutrResult)return;const m=currentNutrResult;if(m.isWater){addWaterMl(m.waterMl||600);return;}const k=todayKeyFn();if(!state.foodLog[k])state.foodLog[k]=[];state.foodLog[k].push({food:m.food,calories:m.calories,protein:m.protein,fat:m.fat,carbs:m.carbs});saveState();showToast(`✅ เพิ่ม ${m.food} ลงบันทึกแล้ว`);renderNutrition();}
 function removeFoodLog(idx){const k=todayKeyFn();if(!state.foodLog[k])return;state.foodLog[k].splice(idx,1);saveState();renderNutrition();}
 function clearFoodLog(){state.foodLog[todayKeyFn()]=[];saveState();renderNutrition();}
 
-// ── API KEY MANAGEMENT ──
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// API KEY + DAILY LIMIT GUARD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const OR_DAILY_LIMIT = 180; // safe buffer below 200 free req/day
+
+// Usage tracking — keyed by UTC date → auto-resets at midnight UTC
+function _usageKey(){return 'fs_or_usage_'+new Date().toISOString().slice(0,10);}
+function getUsage(){
+  // Clean old keys to keep localStorage tidy
+  Object.keys(localStorage).filter(k=>k.startsWith('fs_or_usage_')&&k!==_usageKey()).forEach(k=>localStorage.removeItem(k));
+  return parseInt(localStorage.getItem(_usageKey())||'0',10);
+}
+function incUsage(){const k=_usageKey();localStorage.setItem(k,String(getUsage()+1));}
+function usageRemaining(){return Math.max(0,OR_DAILY_LIMIT-getUsage());}
+function isLimitReached(){return getUsage()>=OR_DAILY_LIMIT;}
+function usageResetTime(){
+  const now=new Date();
+  const next=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1));
+  const diff=next-now;
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+  return`${h} ชม. ${m} นาที`;
+}
+function usagePct(){return Math.min(Math.round((getUsage()/OR_DAILY_LIMIT)*100),100);}
+function usageBarColor(){const p=usagePct();return p>=100?'#ff4060':p>=80?'#FFE66D':'#4ECDC4';}
+
 function getApiKey(){return localStorage.getItem('fs_openrouter_key')||'';}
 function saveApiKey(){
   const v=document.getElementById('apiKeyInput').value.trim();
   if(!v){showToast('❌ กรุณาใส่ API Key');return;}
-  if(!v.startsWith('sk-or-')){showToast('❌ OpenRouter Key ต้องขึ้นต้นด้วย sk-or-');return;}
-  localStorage.setItem('fs_openrouter_key',v);
-  showToast('✅ บันทึก OpenRouter API Key แล้ว');
-  renderNutrition();
+  if(!v.startsWith('sk-or-')){showToast('❌ Key ต้องขึ้นต้นด้วย sk-or-');return;}
+  localStorage.setItem('fs_openrouter_key',v);showToast('✅ บันทึก API Key แล้ว');renderNutrition();
 }
 function clearApiKey(){localStorage.removeItem('fs_openrouter_key');renderNutrition();showToast('🗑 ลบ API Key แล้ว');}
+
 function renderApiKeyCard(){
-  const key=getApiKey();
-  const masked=key?'···'+key.slice(-8):'';
-  return `<div class="api-key-card ${key?'has-key':''}">
-    <div class="api-key-top">
-      <span class="api-key-title">🔑 OpenRouter API Key</span>
-      <span class="api-key-status ${key?'ok':'missing'}">${key?'✓ พร้อมใช้':'ยังไม่ได้ตั้ง'}</span>
+  const key=getApiKey(),used=getUsage(),rem=usageRemaining(),pct=usagePct(),barColor=usageBarColor(),limited=isLimitReached();
+  const masked=key?'sk-or-···'+key.slice(-6):'';
+  if(!key){
+    return`<div class="api-key-card">
+      <div class="api-key-top"><span class="api-key-title">🔑 OpenRouter API Key</span><span class="api-key-status missing">ยังไม่ได้ตั้ง</span></div>
+      <div class="api-key-row"><input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-or-v1-..."/><button class="api-key-save" onclick="saveApiKey()">บันทึก</button></div>
+      <div class="api-key-hint">✅ ฟรี 200 req/วัน ไม่ต้องใส่บัตรเครดิต<br>1. ไปที่ <b>openrouter.ai</b> → Sign Up (ใช้ Gmail ได้)<br>2. ไปที่ <b>Keys</b> → Create Key<br>3. Copy key ที่ขึ้นต้น <b>sk-or-</b> มาใส่ที่นี่</div>
+    </div>`;
+  }
+  return`<div class="api-key-card has-key">
+    <div class="api-key-top"><span class="api-key-title">🔑 OpenRouter</span><span class="api-key-status ok">✓ พร้อมใช้</span></div>
+    <div style="font-size:11px;color:#555;margin-bottom:8px">${masked}</div>
+    <div class="limit-bar-wrap">
+      <div class="limit-bar-row">
+        <span class="limit-bar-lbl">📊 ใช้ไปวันนี้ (รีเซ็ตทุก 00:00 UTC)</span>
+        <span class="limit-bar-val" style="color:${barColor}">${used} / ${OR_DAILY_LIMIT}</span>
+      </div>
+      <div class="limit-bar-track"><div class="limit-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
     </div>
-    ${key
-      ? `<div style="font-size:12px;color:#4ECDC4;margin-bottom:6px">sk-or-···${masked}</div>
-         <button class="api-key-clear" onclick="clearApiKey()">เปลี่ยน / ลบ API Key</button>`
-      : `<div class="api-key-row">
-           <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-or-v1-..." />
-           <button class="api-key-save" onclick="saveApiKey()">บันทึก</button>
-         </div>
-         <div class="api-key-hint">
-           ✅ ฟรี 200 req/วัน ไม่ต้องใส่บัตรเครดิต<br>
-           1. ไปที่ <b>openrouter.ai</b> → Sign Up (ใช้ Gmail ได้)<br>
-           2. ไปที่ <b>Keys</b> → Create Key<br>
-           3. Copy key ที่ขึ้นต้น <b>sk-or-</b> มาใส่ที่นี่
-         </div>`
-    }
+    ${pct>=80&&!limited?`<div class="limit-warning">⚠️ ใกล้ถึง limit แล้ว เหลือ ${rem} req · รีเซ็ตในอีก ${usageResetTime()}</div>`:''}
+    ${limited?`<div class="limit-blocked"><b>🚫 ถึง limit วันนี้แล้ว (${OR_DAILY_LIMIT}/${OR_DAILY_LIMIT})</b>จะรีเซ็ตในอีก ${usageResetTime()} · หรือ <a href="https://openrouter.ai/credits" target="_blank" style="color:#74b9ff">เติมเครดิต</a></div>`:''}
+    <button class="api-key-clear" onclick="clearApiKey()">เปลี่ยน / ลบ Key</button>
   </div>`;
 }
 
-// ── OpenRouter helper: retry + model fallback ──
+// ── OpenRouter caller with model fallback ──
 const OR_MODELS = [
   'meta-llama/llama-3.3-70b-instruct:free',
   'mistralai/mistral-7b-instruct:free',
   'google/gemma-3-12b-it:free',
   'openrouter/auto',
 ];
-async function callOpenRouter(apiKey, prompt, maxTokens=600){
-  for(let m=0; m<OR_MODELS.length; m++){
-    for(let retry=0; retry<2; retry++){
+async function callOpenRouter(apiKey,prompt,maxTokens=600){
+  for(let m=0;m<OR_MODELS.length;m++){
+    for(let retry=0;retry<2;retry++){
       try{
         const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
           method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'Authorization':`Bearer ${apiKey}`,
-            'HTTP-Referer':'https://fitstreak.app',
-            'X-Title':'FitStreak',
-          },
-          body:JSON.stringify({
-            model:OR_MODELS[m],
-            messages:[{role:'user',content:prompt}],
-            temperature:0.2,
-            max_tokens:maxTokens,
-          })
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`,'HTTP-Referer':'https://fitstreak.app','X-Title':'FitStreak'},
+          body:JSON.stringify({model:OR_MODELS[m],messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:maxTokens})
         });
-        if(res.status===429){
-          // รอแล้ว retry หรือลอง model ถัดไป
-          if(retry===0){await new Promise(r=>setTimeout(r,2000));continue;}
-          else break; // ลอง model ถัดไป
-        }
+        if(res.status===429){if(retry===0){await new Promise(r=>setTimeout(r,2000));continue;}else break;}
         const data=await res.json();
-        if(data.error) throw new Error(data.error.message||'OpenRouter error');
+        if(data.error)throw new Error(data.error.message||'OpenRouter error');
         const raw=(data.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
-        if(!raw) throw new Error('ไม่ได้รับข้อมูล');
+        if(!raw)throw new Error('ไม่ได้รับข้อมูล');
         return raw;
-      }catch(e){
-        if(retry===1 && m===OR_MODELS.length-1) throw e;
-        if(retry===1) break; // ลอง model ถัดไป
-      }
+      }catch(e){if(retry===1&&m===OR_MODELS.length-1)throw e;if(retry===1)break;}
     }
   }
   throw new Error('ทุก model เต็มในขณะนี้ ลองใหม่ในอีกสักครู่');
@@ -1316,37 +853,37 @@ async function callOpenRouter(apiKey, prompt, maxTokens=600){
 function quickAsk(text){document.getElementById('nutrInput').value=text;askNutrition();}
 async function askNutrition(){
   const apiKey=getApiKey();
-  if(!apiKey){showToast('❌ ใส่ Gemini API Key ก่อน');renderNutrition();return;}
+  if(!apiKey){showToast('❌ ใส่ OpenRouter Key ก่อน');renderNutrition();return;}
+  if(isLimitReached()){showToast(`🚫 ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetTime()}`);return;}
   const input=document.getElementById('nutrInput'),btn=document.getElementById('nutrAskBtn');
   const query=input.value.trim();if(!query)return;
   const resultEl=document.getElementById('nutrResult');
   btn.disabled=true;btn.textContent='⏳';
-  resultEl.innerHTML=`<div class="nutr-loading"><span class="nutr-loading-spinner">⚙️</span>กำลังวิเคราะห์...</div>`;
+  resultEl.innerHTML=`<div class="nutr-loading"><span class="nutr-loading-spinner">⚙️</span>กำลังวิเคราะห์... (เหลือ ${usageRemaining()-1} req วันนี้)</div>`;
   const prompt=`คุณคือผู้เชี่ยวชาญด้านโภชนาการ วิเคราะห์สารอาหารของ: "${query}"
-ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown:
-{"food":"ชื่ออาหาร","serving":"ขนาด","calories":0,"protein":0.0,"fat":0.0,"carbs":0.0,"fiber":0.0,"sugar":0.0,"note":"หมายเหตุ 1-2 ประโยค"}`;
+ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
+{"food":"ชื่ออาหาร","serving":"ขนาด","calories":0,"protein":0.0,"fat":0.0,"carbs":0.0,"fiber":0.0,"sugar":0.0,"note":"หมายเหตุ 1-2 ประโยคภาษาไทย"}`;
   try{
     const raw=await callOpenRouter(apiKey,prompt,600);
+    incUsage(); // นับหลังสำเร็จ
     const info=JSON.parse(raw);
     currentNutrResult=info;displayNutrResult(info);
     nutrQueryHistory.unshift(info);if(nutrQueryHistory.length>10)nutrQueryHistory.pop();
     renderNutrHistory();input.value='';
+    // อัปเดต counter ในการ์ด
+    const card=document.querySelector('.api-key-card.has-key');
+    if(card)card.outerHTML=renderApiKeyCard();
   }catch(e){
     const msg=e.message||'';
-    const isAuth=msg.includes('API_KEY')||msg.includes('401')||msg.includes('403')||msg.includes('Invalid API key');
-    resultEl.innerHTML=`<div class="nutr-error">❌ ${
-      isAuth?'API Key ไม่ถูกต้อง — ตรวจสอบที่ openrouter.ai/keys':
-      msg||'เกิดข้อผิดพลาด ลองใหม่'
-    }</div>`;
+    const isAuth=msg.includes('401')||msg.includes('403')||msg.includes('Invalid');
+    resultEl.innerHTML=`<div class="nutr-error">❌ ${isAuth?'API Key ไม่ถูกต้อง — ตรวจสอบที่ openrouter.ai/keys':msg||'เกิดข้อผิดพลาด ลองใหม่'}</div>`;
   }
   btn.disabled=false;btn.textContent='ถาม AI';
 }
 function showMealInfo(idx){
-  currentNutrResult=MY_MEALS[idx];
-  displayNutrResult(MY_MEALS[idx]);
+  currentNutrResult=MY_MEALS[idx];displayNutrResult(MY_MEALS[idx]);
   nutrQueryHistory.unshift(MY_MEALS[idx]);if(nutrQueryHistory.length>10)nutrQueryHistory.pop();
-  renderNutrHistory();
-  setTimeout(()=>document.getElementById('nutrResult').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  renderNutrHistory();setTimeout(()=>document.getElementById('nutrResult').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
 }
 function displayNutrResult(info){
   const el=document.getElementById('nutrResult');if(!el)return;
@@ -1356,327 +893,98 @@ function displayNutrResult(info){
   const pctF=Math.min(Math.round(((info.fat||0)/goals.fat)*100),999);
   const pctC=Math.min(Math.round(((info.carbs||0)/goals.carb)*100),999);
   const isW=info.isWater;
-  el.innerHTML=`<div class="nutr-result-card">
-    <div class="nutr-result-food">${isW?'💧':'🍽️'} ${info.food} <span style="font-size:11px;color:#555;font-weight:400">(${info.serving||''})</span></div>
-    ${isW?`<div style="text-align:center;padding:20px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#74b9ff">${info.waterMl}ml</div>
-      <div style="font-size:12px;color:#555">ไม่มีแคลอรี่ — นับยอดน้ำ</div>
-    </div>`:
-    `<div class="nutr-result-grid">
-      <div class="nutr-result-item"><div class="nutr-result-label">🔥 แคลอรี่</div><div class="nutr-result-val" style="color:#FF6B35">${info.calories} <span style="font-size:13px">kcal</span></div></div>
-      <div class="nutr-result-item"><div class="nutr-result-label">🥩 โปรตีน</div><div class="nutr-result-val" style="color:#4ECDC4">${info.protein} <span style="font-size:13px">g</span></div></div>
-      <div class="nutr-result-item"><div class="nutr-result-label">🥑 ไขมัน</div><div class="nutr-result-val" style="color:#FFE66D">${info.fat} <span style="font-size:13px">g</span></div></div>
-      <div class="nutr-result-item"><div class="nutr-result-label">🍚 คาร์บ</div><div class="nutr-result-val" style="color:#A8E6CF">${info.carbs} <span style="font-size:13px">g</span></div></div>
-      <div class="nutr-result-item"><div class="nutr-result-label">🌾 ไฟเบอร์</div><div class="nutr-result-val" style="color:#C3A6FF">${info.fiber||0} <span style="font-size:13px">g</span></div></div>
-      <div class="nutr-result-item"><div class="nutr-result-label">🍬 น้ำตาล</div><div class="nutr-result-val" style="color:#F38181">${info.sugar||0} <span style="font-size:13px">g</span></div></div>
-    </div>
-    <div class="nutr-result-note">${info.note||''}</div>
-    <div class="nutr-vs-goal" style="margin-top:14px">
-      <div style="font-size:10px;color:#555;letter-spacing:2px;margin-bottom:8px">% ของเป้าหมายวันนี้</div>
-      ${['แคลอรี่','โปรตีน','ไขมัน','คาร์บ'].map((l,i)=>{
-        const p=[pctCal,pctP,pctF,pctC][i],c=['#FF6B35','#4ECDC4','#FFE66D','#A8E6CF'][i];
-        return`<div class="nutr-vs-row"><span class="nutr-vs-lbl">${l}</span><div class="nutr-vs-bar-wrap"><div class="nutr-vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="nutr-vs-pct">${p}%</span></div>`;
-      }).join('')}`}
-    <button class="nutr-result-add-btn" onclick="addCurrentMealToLog()">+ บันทึกลงรายการวันนี้</button>
-  </div>`;
+  el.innerHTML=`<div class="nutr-result-card"><div class="nutr-result-food">${isW?'💧':'🍽️'} ${info.food} <span style="font-size:11px;color:#555;font-weight:400">(${info.serving||''})</span></div>
+  ${isW?`<div style="text-align:center;padding:20px"><div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#74b9ff">${info.waterMl}ml</div><div style="font-size:12px;color:#555">ไม่มีแคลอรี่ — นับยอดน้ำ</div></div>`
+  :`<div class="nutr-result-grid"><div class="nutr-result-item"><div class="nutr-result-label">🔥 แคลอรี่</div><div class="nutr-result-val" style="color:#FF6B35">${info.calories} <span style="font-size:13px">kcal</span></div></div><div class="nutr-result-item"><div class="nutr-result-label">🥩 โปรตีน</div><div class="nutr-result-val" style="color:#4ECDC4">${info.protein} <span style="font-size:13px">g</span></div></div><div class="nutr-result-item"><div class="nutr-result-label">🥑 ไขมัน</div><div class="nutr-result-val" style="color:#FFE66D">${info.fat} <span style="font-size:13px">g</span></div></div><div class="nutr-result-item"><div class="nutr-result-label">🍚 คาร์บ</div><div class="nutr-result-val" style="color:#A8E6CF">${info.carbs} <span style="font-size:13px">g</span></div></div><div class="nutr-result-item"><div class="nutr-result-label">🌾 ไฟเบอร์</div><div class="nutr-result-val" style="color:#C3A6FF">${info.fiber||0} <span style="font-size:13px">g</span></div></div><div class="nutr-result-item"><div class="nutr-result-label">🍬 น้ำตาล</div><div class="nutr-result-val" style="color:#F38181">${info.sugar||0} <span style="font-size:13px">g</span></div></div></div>
+  <div class="nutr-result-note">${info.note||''}</div>
+  <div style="margin-top:14px"><div style="font-size:10px;color:#555;letter-spacing:2px;margin-bottom:8px">% ของเป้าหมายวันนี้</div>
+  ${[['แคลอรี่',pctCal,'#FF6B35'],['โปรตีน',pctP,'#4ECDC4'],['ไขมัน',pctF,'#FFE66D'],['คาร์บ',pctC,'#A8E6CF']].map(([l,p,c])=>`<div class="nutr-vs-row"><span class="nutr-vs-lbl">${l}</span><div class="nutr-vs-bar-wrap"><div class="nutr-vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="nutr-vs-pct">${p}%</span></div>`).join('')}`}
+  <button class="nutr-result-add-btn" onclick="addCurrentMealToLog()">+ บันทึกลงรายการวันนี้</button></div>`;
 }
 function renderNutrHistory(){
   const wrap=document.getElementById('nutrHistoryWrap'),el=document.getElementById('nutrHistory');
   if(!wrap||!el)return;
   if(!nutrQueryHistory.length){wrap.style.display='none';return;}
   wrap.style.display='block';
-  el.innerHTML=nutrQueryHistory.map((info,i)=>`
-    <div class="nutr-hist-item" onclick="currentNutrResult=nutrQueryHistory[${i}];displayNutrResult(nutrQueryHistory[${i}])">
-      <div class="nutr-hist-icon">${info.isWater?'💧':'🍽️'}</div>
-      <div><div class="nutr-hist-name">${info.food}</div>
-      <div class="nutr-hist-cal">${info.isWater?info.waterMl+'ml น้ำ':info.calories+' kcal · P '+info.protein+'g'}</div></div>
-    </div>`).join('');
+  el.innerHTML=nutrQueryHistory.map((info,i)=>`<div class="nutr-hist-item" onclick="currentNutrResult=nutrQueryHistory[${i}];displayNutrResult(nutrQueryHistory[${i}])"><div class="nutr-hist-icon">${info.isWater?'💧':'🍽️'}</div><div><div class="nutr-hist-name">${info.food}</div><div class="nutr-hist-cal">${info.isWater?info.waterMl+'ml น้ำ':info.calories+' kcal · P '+info.protein+'g'}</div></div></div>`).join('');
 }
-
 function setMealCat(cat){activeMealCat=cat;renderNutrition();}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MEAL PLANNER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-let plannerState = {
-  mealCount: 3,
-  style: 'อาหารตามสั่ง',
-  result: null,
-  loading: false,
-};
-
+let plannerState={mealCount:3,style:'อาหารตามสั่ง',result:null,loading:false};
 function renderPlanner(){
-  const el = document.getElementById('page-planner');
-  if(!el) return;
-  const sched = SCHEDULE[todayDow()];
-  const goals = getTodayGoals();
-  const color = sched.color;
-  const apiKey = getApiKey();
-
-  const styles = ['อาหารตามสั่ง','7-11 คลีน','ผสมผสาน','High Protein'];
-  const mealTimes = {
-    2: ['🌅 มื้อกลางวัน (~12:00)','🌙 มื้อเย็น (~20:00-21:00)'],
-    3: ['🌅 มื้อเช้า-กลางวัน (~11:00)','🌆 มื้อบ่าย (~16:00)','🌙 มื้อเย็น (~20:00-21:00)'],
-  };
-
-  let h = `
-  <!-- Hero card -->
-  <div class="planner-hero" style="background:linear-gradient(135deg,${color}22,${color}08);border:1px solid ${color}33">
-    <div class="planner-hero-label">แผนอาหารวันนี้ · ${sched.name}</div>
-    <div class="planner-hero-title">${sched.emoji} ${goals.label}</div>
-    <div class="planner-hero-sub">ออกกำลังกาย 4–5 ทุ่ม · ${plannerState.mealCount} มื้อ</div>
-    <div class="planner-goal-chips">
-      <span class="planner-chip" style="color:#FF6B35">🔥 ${goals.cal} kcal</span>
-      <span class="planner-chip" style="color:#4ECDC4">🥩 P ${goals.protein}g</span>
-      <span class="planner-chip" style="color:#FFE66D">🥑 F ${goals.fat}g</span>
-      <span class="planner-chip" style="color:#A8E6CF">🍚 C ${goals.carb}g</span>
-    </div>
-  </div>
-
-  <!-- Options -->
-  <div class="planner-options-card">
-    <div class="planner-opt-title">จำนวนมื้อ</div>
-    <div class="planner-meals-row">
-      <button class="planner-meal-btn ${plannerState.mealCount===2?'active':''}" onclick="setPlannerOpt('mealCount',2)">2 มื้อ</button>
-      <button class="planner-meal-btn ${plannerState.mealCount===3?'active':''}" onclick="setPlannerOpt('mealCount',3)">3 มื้อ</button>
-    </div>
-    <div class="planner-opt-title">สไตล์อาหาร</div>
-    <div class="planner-style-row">
-      ${styles.map(s => `<button class="planner-style-btn ${plannerState.style===s?'active':''}" onclick="setPlannerOpt('style','${s}')">${s}</button>`).join('')}
-    </div>
-  </div>
-
-  ${!apiKey ? `<div class="planner-plan-card" style="padding:16px;text-align:center">
-    <div style="font-size:32px;margin-bottom:8px">🔑</div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:6px">ต้องมี Gemini API Key</div>
-    <div style="font-size:12px;color:#555">ไปที่แท็บ 🥗 โภชนา แล้วใส่ OpenRouter Key ก่อน</div>
-  </div>` : `<button class="planner-gen-btn" style="background:linear-gradient(135deg,${color},${color}bb)"
-    onclick="generateMealPlan()">✨ แนะนำเมนูให้เลย</button>`}
-
-  <!-- Result -->
-  <div class="planner-result-wrap" id="plannerResult">`;
-
-  if(plannerState.loading){
-    h += `<div class="planner-loading">
-      <span class="planner-loading-icon">🍽️</span>
-      <div style="font-size:14px">Gemini กำลังวางแผนมื้ออาหาร...</div>
-      <div style="font-size:11px;margin-top:6px;color:#444">คำนวณตามเป้าโภชนาการของวัน${sched.name}</div>
-    </div>`;
-  } else if(plannerState.result){
-    const plan = plannerState.result;
-    const times = mealTimes[plannerState.mealCount] || mealTimes[3];
-    let totalCal=0, totalP=0, totalF=0, totalC=0;
-
-    plan.meals.forEach((meal, mi) => {
-      const mealCal = meal.items.reduce((a,item)=>a+(item.calories||0),0);
-      const mealP = meal.items.reduce((a,item)=>a+(item.protein||0),0);
-      const mealF = meal.items.reduce((a,item)=>a+(item.fat||0),0);
-      const mealC = meal.items.reduce((a,item)=>a+(item.carbs||0),0);
-      totalCal+=mealCal; totalP+=mealP; totalF+=mealF; totalC+=mealC;
-
-      h += `<div class="planner-plan-card">
-        <div class="planner-plan-header" style="background:${color}10">
-          <div class="planner-plan-icon">${meal.icon||'🍽️'}</div>
-          <div>
-            <div class="planner-plan-meal-name">${meal.name}</div>
-            <div class="planner-plan-time">${times[mi]||''} · ${mealCal} kcal · P${mealP}g</div>
-          </div>
-        </div>
-        <div class="planner-meal-items">`;
-
-      meal.items.forEach(item => {
-        h += `<div class="planner-meal-item">
-          <div class="planner-item-emoji">${item.emoji||'🍽️'}</div>
-          <div class="planner-item-info">
-            <div class="planner-item-name">${item.name}</div>
-            <div class="planner-item-note">${item.note||''}</div>
-          </div>
-          <div class="planner-item-kcal">${item.calories}</div>
-        </div>`;
-      });
-
-      h += `</div>
-        <div class="planner-macros-row" style="padding:0 16px 12px">
-          <span class="planner-macro-chip" style="color:#FF6B35">🔥 ${mealCal} kcal</span>
-          <span class="planner-macro-chip" style="color:#4ECDC4">P ${mealP}g</span>
-          <span class="planner-macro-chip" style="color:#FFE66D">F ${mealF}g</span>
-          <span class="planner-macro-chip" style="color:#A8E6CF">C ${mealC}g</span>
-        </div>
-        <div style="padding:0 16px 14px">
-          <button class="planner-add-row-btn" onclick="addPlanMealToLog(${mi})">+ บันทึกมื้อนี้ลงรายการวันนี้</button>
-        </div>
-      </div>`;
+  const el=document.getElementById('page-planner');if(!el)return;
+  const sched=SCHEDULE[todayDow()],goals=getTodayGoals(),color=sched.color,apiKey=getApiKey();
+  const styles=['อาหารตามสั่ง','7-11 คลีน','ผสมผสาน','High Protein'];
+  const mealTimes={2:['🌅 มื้อกลางวัน (~12:00)','🌙 มื้อเย็น (~20:00-21:00)'],3:['🌅 มื้อเช้า-กลางวัน (~11:00)','🌆 มื้อบ่าย (~16:00)','🌙 มื้อเย็น (~20:00-21:00)']};
+  let h=`<div class="planner-hero" style="background:linear-gradient(135deg,${color}22,${color}08);border:1px solid ${color}33"><div class="planner-hero-label">แผนอาหารวันนี้ · ${sched.name}</div><div class="planner-hero-title">${sched.emoji} ${goals.label}</div><div class="planner-hero-sub">ออกกำลังกาย 4–5 ทุ่ม · ${plannerState.mealCount} มื้อ</div><div class="planner-goal-chips"><span class="planner-chip" style="color:#FF6B35">🔥 ${goals.cal} kcal</span><span class="planner-chip" style="color:#4ECDC4">🥩 P ${goals.protein}g</span><span class="planner-chip" style="color:#FFE66D">🥑 F ${goals.fat}g</span><span class="planner-chip" style="color:#A8E6CF">🍚 C ${goals.carb}g</span></div></div>
+  <div class="planner-options-card"><div class="planner-opt-title">จำนวนมื้อ</div><div class="planner-meals-row"><button class="planner-meal-btn ${plannerState.mealCount===2?'active':''}" onclick="setPlannerOpt('mealCount',2)">2 มื้อ</button><button class="planner-meal-btn ${plannerState.mealCount===3?'active':''}" onclick="setPlannerOpt('mealCount',3)">3 มื้อ</button></div><div class="planner-opt-title">สไตล์อาหาร</div><div class="planner-style-row">${styles.map(s=>`<button class="planner-style-btn ${plannerState.style===s?'active':''}" onclick="setPlannerOpt('style','${s}')">${s}</button>`).join('')}</div></div>`;
+  if(!apiKey){h+=`<div class="planner-plan-card" style="padding:16px;text-align:center"><div style="font-size:32px;margin-bottom:8px">🔑</div><div style="font-size:14px;font-weight:700;margin-bottom:6px">ต้องมี OpenRouter API Key</div><div style="font-size:12px;color:#555">ไปที่แท็บ 🥗 โภชนา แล้วใส่ Key ก่อน</div></div>`;}
+  else if(isLimitReached()){h+=`<div class="planner-error">🚫 ถึง limit วันนี้แล้ว (${getUsage()}/${OR_DAILY_LIMIT})<br><small>รีเซ็ตในอีก ${usageResetTime()}</small></div>`;}
+  else{h+=`<button class="planner-gen-btn" style="background:linear-gradient(135deg,${color},${color}bb)" onclick="generateMealPlan()">✨ แนะนำเมนูให้เลย</button>`;}
+  h+=`<div class="planner-result-wrap" id="plannerResult">`;
+  if(plannerState.loading){h+=`<div class="planner-loading"><span class="planner-loading-icon">🍽️</span><div style="font-size:14px">กำลังวางแผนมื้ออาหาร...</div><div style="font-size:11px;margin-top:6px;color:#444">คำนวณตามเป้าโภชนาการของวัน${sched.name}</div></div>`;}
+  else if(plannerState.result){
+    const plan=plannerState.result;const times=mealTimes[plannerState.mealCount]||mealTimes[3];
+    let tCal=0,tP=0,tF=0,tC=0;
+    plan.meals.forEach((meal,mi)=>{
+      const mCal=meal.items.reduce((a,it)=>a+(it.calories||0),0),mP=meal.items.reduce((a,it)=>a+(it.protein||0),0),mF=meal.items.reduce((a,it)=>a+(it.fat||0),0),mC=meal.items.reduce((a,it)=>a+(it.carbs||0),0);
+      tCal+=mCal;tP+=mP;tF+=mF;tC+=mC;
+      h+=`<div class="planner-plan-card"><div class="planner-plan-header" style="background:${color}10"><div class="planner-plan-icon">${meal.icon||'🍽️'}</div><div><div class="planner-plan-meal-name">${meal.name}</div><div class="planner-plan-time">${times[mi]||''} · ${mCal} kcal · P${mP}g</div></div></div><div class="planner-meal-items">`;
+      meal.items.forEach(item=>{h+=`<div class="planner-meal-item"><div class="planner-item-emoji">${item.emoji||'🍽️'}</div><div class="planner-item-info"><div class="planner-item-name">${item.name}</div><div class="planner-item-note">${item.note||''}</div></div><div class="planner-item-kcal">${item.calories}</div></div>`;});
+      h+=`</div><div class="planner-macros-row" style="padding:0 16px 12px"><span class="planner-macro-chip" style="color:#FF6B35">🔥 ${mCal} kcal</span><span class="planner-macro-chip" style="color:#4ECDC4">P ${mP}g</span><span class="planner-macro-chip" style="color:#FFE66D">F ${mF}g</span><span class="planner-macro-chip" style="color:#A8E6CF">C ${mC}g</span></div><div style="padding:0 16px 14px"><button class="planner-add-row-btn" onclick="addPlanMealToLog(${mi})">+ บันทึกมื้อนี้ลงรายการวันนี้</button></div></div>`;
     });
-
-    // Daily summary
-    h += `<div class="planner-plan-card">
-      <div class="planner-daily-summary">
-        <div class="planner-summary-title">รวมทั้งวัน</div>
-        <div class="planner-summary-row">
-          <div class="planner-summary-item"><div class="planner-summary-val" style="color:${totalCal>goals.cal?'#ff4060':'#FF6B35'}">${totalCal}</div><div class="planner-summary-lbl">KCAL</div></div>
-          <div class="planner-summary-item"><div class="planner-summary-val" style="color:#4ECDC4">${totalP}g</div><div class="planner-summary-lbl">PROTEIN</div></div>
-          <div class="planner-summary-item"><div class="planner-summary-val" style="color:#FFE66D">${totalF}g</div><div class="planner-summary-lbl">FAT</div></div>
-          <div class="planner-summary-item"><div class="planner-summary-val" style="color:#A8E6CF">${totalC}g</div><div class="planner-summary-lbl">CARB</div></div>
-        </div>
-        <div style="margin-top:10px">
-          <div style="background:#222;border-radius:99px;height:6px;overflow:hidden">
-            <div style="height:100%;border-radius:99px;width:${Math.min(Math.round((totalCal/goals.cal)*100),100)}%;background:${totalCal>goals.cal?'#ff4060':'linear-gradient(90deg,#FF6B35,#FFE66D)'};transition:width .5s"></div>
-          </div>
-          <div style="font-size:10px;color:#555;margin-top:4px;text-align:right">${Math.round((totalCal/goals.cal)*100)}% ของเป้า ${goals.cal} kcal</div>
-        </div>
-      </div>
-    </div>`;
-
-    if(plan.tip){
-      h += `<div class="planner-tip">💡 <b>เคล็ดลับ:</b> ${plan.tip}</div>`;
-    }
-
-    h += `<button class="planner-regen-btn" onclick="generateMealPlan()">🔄 แนะนำแผนใหม่อีกครั้ง</button>`;
+    h+=`<div class="planner-plan-card"><div class="planner-daily-summary"><div class="planner-summary-title">รวมทั้งวัน</div><div class="planner-summary-row"><div class="planner-summary-item"><div class="planner-summary-val" style="color:${tCal>goals.cal?'#ff4060':'#FF6B35'}">${tCal}</div><div class="planner-summary-lbl">KCAL</div></div><div class="planner-summary-item"><div class="planner-summary-val" style="color:#4ECDC4">${tP}g</div><div class="planner-summary-lbl">PROTEIN</div></div><div class="planner-summary-item"><div class="planner-summary-val" style="color:#FFE66D">${tF}g</div><div class="planner-summary-lbl">FAT</div></div><div class="planner-summary-item"><div class="planner-summary-val" style="color:#A8E6CF">${tC}g</div><div class="planner-summary-lbl">CARB</div></div></div><div style="margin-top:10px"><div style="background:#222;border-radius:99px;height:6px;overflow:hidden"><div style="height:100%;border-radius:99px;width:${Math.min(Math.round((tCal/goals.cal)*100),100)}%;background:${tCal>goals.cal?'#ff4060':'linear-gradient(90deg,#FF6B35,#FFE66D)'};transition:width .5s"></div></div><div style="font-size:10px;color:#555;margin-top:4px;text-align:right">${Math.round((tCal/goals.cal)*100)}% ของเป้า ${goals.cal} kcal</div></div></div></div>`;
+    if(plan.tip)h+=`<div class="planner-tip">💡 <b>เคล็ดลับ:</b> ${plan.tip}</div>`;
+    h+=`<button class="planner-regen-btn" onclick="generateMealPlan()">🔄 แนะนำแผนใหม่อีกครั้ง</button>`;
   }
-
-  h += `</div>`;
-  el.innerHTML = h;
+  h+=`</div>`;el.innerHTML=h;
 }
-
-function setPlannerOpt(key, val){
-  plannerState[key] = val;
-  plannerState.result = null;
-  renderPlanner();
-}
-
+function setPlannerOpt(key,val){plannerState[key]=val;plannerState.result=null;renderPlanner();}
 async function generateMealPlan(){
-  const apiKey = getApiKey();
-  if(!apiKey){ showToast('❌ ใส่ Gemini API Key ก่อน'); return; }
-
-  const sched = SCHEDULE[todayDow()];
-  const goals = getTodayGoals();
-  const eaten = getEaten();
-  const remaining = {
-    cal: Math.max(0, goals.cal - eaten.cal),
-    protein: Math.max(0, goals.protein - eaten.protein),
-    fat: Math.max(0, goals.fat - eaten.fat),
-    carb: Math.max(0, goals.carb - eaten.carb),
-  };
-  const useRemaining = eaten.cal > 50;
-
-  plannerState.loading = true;
-  plannerState.result = null;
-  renderPlanner();
-
-  const mealNames = plannerState.mealCount === 2
-    ? ['มื้อกลางวัน (12:00)', 'มื้อเย็น (20:00-21:00 หลังออกกำลังกาย)']
-    : ['มื้อเช้า-กลางวัน (11:00)', 'มื้อบ่าย (16:00)', 'มื้อเย็น (20:00-21:00 หลังออกกำลังกาย)'];
-
-  const prompt = `คุณคือนักโภชนาการผู้เชี่ยวชาญด้านอาหารไทย
-วางแผนมื้ออาหาร ${plannerState.mealCount} มื้อสำหรับวัน${sched.name} (${goals.label})
-
-เป้าหมายโภชนาการ${useRemaining ? 'ที่เหลือ' : ''}วันนี้:
-- แคลอรี่: ${useRemaining ? remaining.cal : goals.cal} kcal
-- โปรตีน: ${useRemaining ? remaining.protein : goals.protein}g
-- ไขมัน: ${useRemaining ? remaining.fat : goals.fat}g
-- คาร์บ: ${useRemaining ? remaining.carb : goals.carb}g
-
-เงื่อนไขสำคัญ:
-- สไตล์อาหาร: ${plannerState.style}
-- ออกกำลังกาย 4-5 ทุ่ม → มื้อเย็นต้องมีโปรตีนสูง เน้นฟื้นตัวกล้ามเนื้อ
-- มื้อ: ${mealNames.join(' | ')}
-- แต่ละมื้อมี 1-3 รายการอาหาร ให้จริงๆ เป็น${plannerState.style}ใน${plannerState.style.includes('7-11')?'7-11':'ร้านอาหารทั่วไปหรือตามสั่ง'}
-
-ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
-{
-  "meals": [
-    {
-      "name": "ชื่อมื้อ",
-      "icon": "emoji",
-      "items": [
-        {
-          "name": "ชื่ออาหาร (ระบุขนาด เช่น 1 จาน, 1 ขวด)",
-          "emoji": "emoji",
-          "calories": 0,
-          "protein": 0,
-          "fat": 0,
-          "carbs": 0,
-          "note": "เหตุผลสั้นๆ ว่าทำไมถึงแนะนำมื้อนี้"
-        }
-      ]
-    }
-  ],
-  "tip": "เคล็ดลับการกินให้ตรงเป้าวันนี้ 1-2 ประโยค"
-}`;
-
+  const apiKey=getApiKey();if(!apiKey){showToast('❌ ใส่ OpenRouter Key ก่อน');return;}
+  if(isLimitReached()){showToast(`🚫 ถึง limit แล้ว รีเซ็ตในอีก ${usageResetTime()}`);return;}
+  const sched=SCHEDULE[todayDow()],goals=getTodayGoals(),eaten=getEaten();
+  const remaining={cal:Math.max(0,goals.cal-eaten.cal),protein:Math.max(0,goals.protein-eaten.protein),fat:Math.max(0,goals.fat-eaten.fat),carb:Math.max(0,goals.carb-eaten.carb)};
+  const useRem=eaten.cal>50;
+  plannerState.loading=true;plannerState.result=null;renderPlanner();
+  const mealNames=plannerState.mealCount===2?['มื้อกลางวัน (12:00)','มื้อเย็น (20:00-21:00 หลังออกกำลังกาย)']:['มื้อเช้า-กลางวัน (11:00)','มื้อบ่าย (16:00)','มื้อเย็น (20:00-21:00 หลังออกกำลังกาย)'];
+  const prompt=`คุณคือนักโภชนาการผู้เชี่ยวชาญด้านอาหารไทย\nวางแผนมื้ออาหาร ${plannerState.mealCount} มื้อสำหรับวัน${sched.name} (${goals.label})\n\nเป้าหมาย${useRem?'ที่เหลือ':''}วันนี้: แคลอรี่ ${useRem?remaining.cal:goals.cal} kcal, โปรตีน ${useRem?remaining.protein:goals.protein}g, ไขมัน ${useRem?remaining.fat:goals.fat}g, คาร์บ ${useRem?remaining.carb:goals.carb}g\n\nเงื่อนไข: สไตล์${plannerState.style}, ออกกำลังกาย 4-5 ทุ่ม, มื้อเย็นโปรตีนสูง, มื้อ: ${mealNames.join(' | ')}\n\nตอบเป็น JSON เท่านั้น:\n{"meals":[{"name":"ชื่อมื้อ","icon":"emoji","items":[{"name":"ชื่ออาหาร+ขนาด","emoji":"emoji","calories":0,"protein":0,"fat":0,"carbs":0,"note":"เหตุผล"}]}],"tip":"เคล็ดลับ 1-2 ประโยค"}`;
   try{
-    const raw = await callOpenRouter(apiKey,prompt,1800);
-    plannerState.result = JSON.parse(raw);
-    plannerState.loading = false;
-    renderPlanner();
-    showToast('✅ แผนมื้ออาหารพร้อมแล้ว!');
-  } catch(e){
-    plannerState.loading = false;
-    plannerState.result = null;
-    renderPlanner();
-    const el = document.getElementById('plannerResult');
-    if(el){
-      const pm=e.message||'';
-      const pq=pm.includes('quota')||pm.includes('RESOURCE_EXHAUSTED')||pm.includes('rate')||pm.includes('limit');
-      el.innerHTML=`<div class="planner-error">❌ ${pq?'Quota หมด — รอสักครู่แล้วลองใหม่ หรือดู openrouter.ai/docs/limits':pm||'เกิดข้อผิดพลาด กรุณาลองใหม่'}</div>`;
-    }
+    const raw=await callOpenRouter(apiKey,prompt,1800);
+    incUsage(); // นับหลังสำเร็จ
+    plannerState.result=JSON.parse(raw);plannerState.loading=false;renderPlanner();showToast('✅ แผนมื้ออาหารพร้อมแล้ว!');
+  }catch(e){
+    plannerState.loading=false;plannerState.result=null;renderPlanner();
+    const el=document.getElementById('plannerResult');
+    if(el){const pm=e.message||'';el.innerHTML=`<div class="planner-error">❌ ${pm||'เกิดข้อผิดพลาด กรุณาลองใหม่'}</div>`;}
   }
 }
-
 function addPlanMealToLog(mealIdx){
-  if(!plannerState.result) return;
-  const meal = plannerState.result.meals[mealIdx];
-  if(!meal) return;
-  const k = todayKeyFn();
-  if(!state.foodLog[k]) state.foodLog[k] = [];
-  meal.items.forEach(item => {
-    state.foodLog[k].push({
-      food: item.name,
-      calories: item.calories || 0,
-      protein: item.protein || 0,
-      fat: item.fat || 0,
-      carbs: item.carbs || 0,
-    });
-  });
-  saveState();
-  showToast(`✅ บันทึก ${meal.name} แล้ว (${meal.items.length} รายการ)`);
+  if(!plannerState.result)return;const meal=plannerState.result.meals[mealIdx];if(!meal)return;
+  const k=todayKeyFn();if(!state.foodLog[k])state.foodLog[k]=[];
+  meal.items.forEach(item=>state.foodLog[k].push({food:item.name,calories:item.calories||0,protein:item.protein||0,fat:item.fat||0,carbs:item.carbs||0}));
+  saveState();showToast(`✅ บันทึก ${meal.name} แล้ว (${meal.items.length} รายการ)`);
 }
-function updateHeaderStats(){
-  document.getElementById('streakNum').textContent=streak();
-  document.getElementById('pointsDisplay').textContent=state.totalPoints||0;
-}
+
+// ── UI UTILS ──
+function updateHeaderStats(){document.getElementById('streakNum').textContent=streak();document.getElementById('pointsDisplay').textContent=state.totalPoints||0;}
 function updateUI(){
-  updateHeaderStats();
-  const active=document.querySelector('.page.active');if(!active)return;
-  const id=active.id;
-  if(id==='page-today')     renderToday();
-  if(id==='page-calendar')  renderCalendar();
-  if(id==='page-schedule')  renderSchedule();
-  if(id==='page-stats')     renderStats();
-  if(id==='page-nutrition') renderNutrition();
-  if(id==='page-planner')   renderPlanner();
+  updateHeaderStats();const active=document.querySelector('.page.active');if(!active)return;const id=active.id;
+  if(id==='page-today')renderToday();if(id==='page-calendar')renderCalendar();if(id==='page-schedule')renderSchedule();if(id==='page-stats')renderStats();if(id==='page-nutrition')renderNutrition();if(id==='page-planner')renderPlanner();
 }
 function switchTab(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(name==='today')     renderToday();
-  if(name==='calendar')  renderCalendar();
-  if(name==='schedule')  renderSchedule();
-  if(name==='stats')     renderStats();
-  if(name==='nutrition') renderNutrition();
-  if(name==='planner')   renderPlanner();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  if(name==='today')renderToday();if(name==='calendar')renderCalendar();if(name==='schedule')renderSchedule();if(name==='stats')renderStats();if(name==='nutrition')renderNutrition();if(name==='planner')renderPlanner();
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function showPointsPop(text){const el=document.createElement('div');el.className='points-pop';el.textContent=text;el.style.left=(Math.random()*60+20)+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1100);}
-function launchConfetti(){
-  const colors=['#FF6B35','#FFE66D','#4ECDC4','#fff','#A8E6CF','#ff4060'];
-  for(let i=0;i<40;i++){const el=document.createElement('div');el.className='confetti-piece';el.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${1.2+Math.random()*.8}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),2500);}
-}
+function launchConfetti(){const colors=['#FF6B35','#FFE66D','#4ECDC4','#fff','#A8E6CF','#ff4060'];for(let i=0;i<40;i++){const el=document.createElement('div');el.className='confetti-piece';el.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${1.2+Math.random()*.8}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),2500);}}
 
-renderToday();
-updateHeaderStats();
+renderToday();updateHeaderStats();
 </script>
 </body>
 </html>
