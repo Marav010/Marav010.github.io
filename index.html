@@ -1292,7 +1292,7 @@ async function askNutrition(){
         'X-Title':'FitStreak',
       },
       body:JSON.stringify({
-        model:'google/gemini-flash-1.5-exp:free',
+        model:'meta-llama/llama-3.3-70b-instruct:free',
         messages:[{role:'user',content:prompt}],
         temperature:0.1,
         max_tokens:600,
