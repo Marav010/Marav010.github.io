@@ -636,7 +636,6 @@ const STREAK_BADGES=[
 
 const MY_MEALS = [
   // 🍚 ข้าว
-  { cat: '🍚 ข้าว', emoji: '🍳', food: 'ข้าวผัดกรอบไข่ดาว พิเศษ', serving: '1 จาน (~450g)', calories: 750, protein: 28, fat: 38, carbs: 72, fiber: 1.5, sugar: 3, note: 'ไขมันสูงจากหมูกรอบ+ไข่ดาว คาร์บจากข้าวผัด' },
   { cat: '🍚 ข้าว', emoji: '🐔', food: 'ข้าวมันไก่ต้ม พิเศษ', serving: '1 จาน (~400g)', calories: 650, protein: 35, fat: 22, carbs: 75, fiber: 1, sugar: 2, note: 'โปรตีนดี ไขมันพอดี สมดุลดี' },
   { cat: '🍚 ข้าว', emoji: '🐔', food: 'ข้าวมันไก่ต้ม พิเศษ (อกล้วน-ไม่หนัง)', serving: '1 จาน (~400g)', calories: 540, protein: 42, fat: 12, carbs: 65, fiber: 1, sugar: 2, note: 'Low Fat / High Protein เหมาะสำหรับคุมไขมัน' },
   { cat: '🍚 ข้าว', emoji: '🍗', food: 'ข้าวมันไก่ทอด พิเศษ', serving: '1 จาน (~420g)', calories: 780, protein: 38, fat: 38, carbs: 75, fiber: 1, sugar: 2, note: 'ไขมันสูงกว่าต้มเพราะทอด โปรตีนดี' },
@@ -1236,31 +1235,37 @@ function removeFoodLog(idx){const k=todayKeyFn();if(!state.foodLog[k])return;sta
 function clearFoodLog(){state.foodLog[todayKeyFn()]=[];saveState();renderNutrition();}
 
 // ── API KEY MANAGEMENT ──
-function getApiKey(){return localStorage.getItem('fs_gemini_key')||'';}
+function getApiKey(){return localStorage.getItem('fs_openrouter_key')||'';}
 function saveApiKey(){
   const v=document.getElementById('apiKeyInput').value.trim();
   if(!v){showToast('❌ กรุณาใส่ API Key');return;}
-  localStorage.setItem('fs_gemini_key',v);
-  showToast('✅ บันทึก Gemini API Key แล้ว');
+  if(!v.startsWith('sk-or-')){showToast('❌ OpenRouter Key ต้องขึ้นต้นด้วย sk-or-');return;}
+  localStorage.setItem('fs_openrouter_key',v);
+  showToast('✅ บันทึก OpenRouter API Key แล้ว');
   renderNutrition();
 }
-function clearApiKey(){localStorage.removeItem('fs_gemini_key');renderNutrition();showToast('🗑 ลบ API Key แล้ว');}
+function clearApiKey(){localStorage.removeItem('fs_openrouter_key');renderNutrition();showToast('🗑 ลบ API Key แล้ว');}
 function renderApiKeyCard(){
   const key=getApiKey();
-  const masked=key?'···'+key.slice(-6):'';
+  const masked=key?'···'+key.slice(-8):'';
   return `<div class="api-key-card ${key?'has-key':''}">
     <div class="api-key-top">
-      <span class="api-key-title">🔑 Google Gemini API Key</span>
+      <span class="api-key-title">🔑 OpenRouter API Key</span>
       <span class="api-key-status ${key?'ok':'missing'}">${key?'✓ พร้อมใช้':'ยังไม่ได้ตั้ง'}</span>
     </div>
     ${key
-      ? `<div style="font-size:12px;color:#4ECDC4;margin-bottom:6px">AIza···${masked}</div>
+      ? `<div style="font-size:12px;color:#4ECDC4;margin-bottom:6px">sk-or-···${masked}</div>
          <button class="api-key-clear" onclick="clearApiKey()">เปลี่ยน / ลบ API Key</button>`
       : `<div class="api-key-row">
-           <input class="api-key-input" id="apiKeyInput" type="password" placeholder="AIzaSy..." />
+           <input class="api-key-input" id="apiKeyInput" type="password" placeholder="sk-or-v1-..." />
            <button class="api-key-save" onclick="saveApiKey()">บันทึก</button>
          </div>
-         <div class="api-key-hint">รับฟรีที่ <b>aistudio.google.com</b> → Get API Key<br>ใช้ <b>Gemini 1.5 Flash</b> (free tier 15 req/min)<br>Key จะเก็บเฉพาะในเครื่องของคุณ ไม่ส่งไปที่อื่น</div>`
+         <div class="api-key-hint">
+           ✅ ฟรี 200 req/วัน ไม่ต้องใส่บัตรเครดิต<br>
+           1. ไปที่ <b>openrouter.ai</b> → Sign Up (ใช้ Gmail ได้)<br>
+           2. ไปที่ <b>Keys</b> → Create Key<br>
+           3. Copy key ที่ขึ้นต้น <b>sk-or-</b> มาใส่ที่นี่
+         </div>`
     }
   </div>`;
 }
@@ -1278,19 +1283,25 @@ async function askNutrition(){
 ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น ไม่มี markdown:
 {"food":"ชื่ออาหาร","serving":"ขนาด","calories":0,"protein":0.0,"fat":0.0,"carbs":0.0,"fiber":0.0,"sugar":0.0,"note":"หมายเหตุ 1-2 ประโยค"}`;
   try{
-    const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const res=await fetch(url,{
+    const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${apiKey}`,
+        'HTTP-Referer':'https://fitstreak.app',
+        'X-Title':'FitStreak',
+      },
       body:JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{temperature:0.1,maxOutputTokens:512},
+        model:'meta-llama/llama-3.3-70b-instruct:free',
+        messages:[{role:'user',content:prompt}],
+        temperature:0.1,
+        max_tokens:600,
       })
     });
     const data=await res.json();
-    if(data.error) throw new Error(data.error.message||'Gemini error');
-    const raw=(data.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json|```/g,'').trim();
-    if(!raw) throw new Error('ไม่ได้รับข้อมูลจาก Gemini');
+    if(data.error) throw new Error(data.error.message||'OpenRouter error');
+    const raw=(data.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
+    if(!raw) throw new Error('ไม่ได้รับข้อมูล');
     const info=JSON.parse(raw);
     currentNutrResult=info;displayNutrResult(info);
     nutrQueryHistory.unshift(info);if(nutrQueryHistory.length>10)nutrQueryHistory.pop();
@@ -1300,8 +1311,8 @@ async function askNutrition(){
     const isAuth=msg.includes('API_KEY')||msg.includes('401')||msg.includes('403');
     const isQuota=msg.includes('quota')||msg.includes('RESOURCE_EXHAUSTED')||msg.includes('rate')||msg.includes('limit');
     resultEl.innerHTML=`<div class="nutr-error">❌ ${
-      isAuth?'API Key ไม่ถูกต้อง — ตรวจสอบที่ aistudio.google.com':
-      isQuota?'Quota หมด — รอสักครู่แล้วลองใหม่ หรือเปิด Billing ที่ aistudio.google.com':
+      isAuth?'API Key ไม่ถูกต้อง — ตรวจสอบที่ openrouter.ai/keys':
+      isQuota?'Quota หมด — รอสักครู่แล้วลองใหม่ หรือดู openrouter.ai/docs/limits':
       msg||'เกิดข้อผิดพลาด ลองใหม่'
     }</div>`;
   }
@@ -1415,7 +1426,7 @@ function renderPlanner(){
   ${!apiKey ? `<div class="planner-plan-card" style="padding:16px;text-align:center">
     <div style="font-size:32px;margin-bottom:8px">🔑</div>
     <div style="font-size:14px;font-weight:700;margin-bottom:6px">ต้องมี Gemini API Key</div>
-    <div style="font-size:12px;color:#555">ไปที่แท็บ 🥗 โภชนา แล้วใส่ key ก่อน</div>
+    <div style="font-size:12px;color:#555">ไปที่แท็บ 🥗 โภชนา แล้วใส่ OpenRouter Key ก่อน</div>
   </div>` : `<button class="planner-gen-btn" style="background:linear-gradient(135deg,${color},${color}bb)"
     onclick="generateMealPlan()">✨ แนะนำเมนูให้เลย</button>`}
 
@@ -1571,18 +1582,24 @@ async function generateMealPlan(){
 }`;
 
   try{
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        contents: [{parts: [{text: prompt}]}],
-        generationConfig: {temperature: 0.7, maxOutputTokens: 1500},
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${apiKey}`,
+        'HTTP-Referer':'https://fitstreak.app',
+        'X-Title':'FitStreak',
+      },
+      body:JSON.stringify({
+        model:'meta-llama/llama-3.3-70b-instruct:free',
+        messages:[{role:'user',content:prompt}],
+        temperature:0.7,
+        max_tokens:1800,
       })
     });
     const data = await res.json();
-    if(data.error) throw new Error(data.error.message);
-    const raw = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
+    if(data.error) throw new Error(data.error.message||'OpenRouter error');
+    const raw = (data.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
     if(!raw) throw new Error('ไม่ได้รับข้อมูล');
     plannerState.result = JSON.parse(raw);
     plannerState.loading = false;
@@ -1596,7 +1613,7 @@ async function generateMealPlan(){
     if(el){
       const pm=e.message||'';
       const pq=pm.includes('quota')||pm.includes('RESOURCE_EXHAUSTED')||pm.includes('rate')||pm.includes('limit');
-      el.innerHTML=`<div class="planner-error">❌ ${pq?'Quota หมด — รอสักครู่แล้วลองใหม่ หรือเปิด Billing ที่ aistudio.google.com':pm||'เกิดข้อผิดพลาด กรุณาลองใหม่'}</div>`;
+      el.innerHTML=`<div class="planner-error">❌ ${pq?'Quota หมด — รอสักครู่แล้วลองใหม่ หรือดู openrouter.ai/docs/limits':pm||'เกิดข้อผิดพลาด กรุณาลองใหม่'}</div>`;
     }
   }
 }
