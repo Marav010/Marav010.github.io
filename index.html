@@ -335,11 +335,54 @@ circle.fg.warning { stroke:#ff4060; }
 .celeb-streak { color:#FF6B35; font-weight:700; font-size:17px; margin-top:6px; }
 .hidden { display:none !important; }
 
-@keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes bounce { from{transform:scale(1) translateY(0)} to{transform:scale(1.1) translateY(-20px)} }@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes pop-up { 0%{transform:translateY(0) scale(.5);opacity:0} 30%{transform:translateY(-20px) scale(1.2);opacity:1} 100%{transform:translateY(-60px) scale(1);opacity:0} }
 @keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ── AI COACH ── */
+.coach-header-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid #C3A6FF33;border-radius:20px;padding:18px 16px 14px;margin-bottom:14px;position:relative;overflow:hidden;}
+.coach-header-card::before{content:'🤖';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.06;}
+.coach-header-label{font-size:10px;color:#C3A6FF;letter-spacing:3px;margin-bottom:4px;}
+.coach-header-title{font-size:20px;font-weight:900;margin-bottom:4px;}
+.coach-header-sub{font-size:12px;color:#555;line-height:1.4;}
+.coach-messages{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;min-height:40px;}
+.coach-msg{max-width:90%;animation:fadeIn .2s;}
+.coach-msg.user{align-self:flex-end;}
+.coach-msg.ai{align-self:flex-start;}
+.coach-bubble{border-radius:16px;padding:11px 14px;font-size:13px;line-height:1.55;}
+.coach-msg.user .coach-bubble{background:linear-gradient(135deg,#FF6B35,#ff8c42);color:#000;font-weight:600;border-bottom-right-radius:4px;}
+.coach-msg.ai .coach-bubble{background:#1a1a2e;border:1px solid #2a2a3e;color:#ddd;border-bottom-left-radius:4px;}
+.coach-msg-time{font-size:10px;color:#444;margin-top:3px;text-align:right;}
+.coach-msg.ai .coach-msg-time{text-align:left;}
+.coach-ex-card{background:#111;border:1px solid #2a2a3e;border-radius:14px;padding:12px 14px;margin-top:8px;}
+.coach-ex-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.coach-ex-icon{font-size:26px;}
+.coach-ex-name{font-size:15px;font-weight:800;color:#fff;}
+.coach-ex-target{font-size:11px;color:#C3A6FF;}
+.coach-ex-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.coach-ex-chip{border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;}
+.coach-ex-steps{margin-top:6px;}
+.coach-ex-step{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #2a2a3e;font-size:12px;color:#aaa;}
+.coach-ex-step:last-child{border-bottom:none;}
+.coach-ex-step-num{color:#FF6B35;font-weight:700;font-family:'Bebas Neue',sans-serif;font-size:15px;min-width:18px;}
+.coach-ex-tip{background:rgba(255,230,109,.07);border:1px solid #FFE66D33;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px;color:#FFE66D;}
+.coach-add-btn{margin-top:10px;width:100%;padding:9px;border-radius:10px;border:1px solid #4ECDC444;background:rgba(78,205,196,.1);color:#4ECDC4;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.coach-input-wrap{position:sticky;bottom:0;background:#0A0A0F;padding:10px 0 4px;}
+.coach-quick-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;padding-bottom:2px;}
+.coach-quick-row::-webkit-scrollbar{display:none;}
+.coach-quick-chip{flex:0 0 auto;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:20px;padding:6px 12px;font-size:11px;color:#aaa;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s;}
+.coach-quick-chip:active{background:#2a2a3e;}
+.coach-input-row{display:flex;gap:8px;}
+.coach-input{flex:1;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:14px;padding:12px 14px;color:#fff;font-size:14px;font-family:inherit;outline:none;resize:none;height:46px;}
+.coach-input:focus{border-color:#C3A6FF;}
+.coach-send-btn{width:46px;height:46px;border-radius:14px;border:none;flex-shrink:0;background:linear-gradient(135deg,#C3A6FF,#a855f7);color:#000;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.coach-send-btn:disabled{opacity:.4;cursor:default;}
+.coach-no-key{background:#1a1a2e;border:1px solid #FF6B3533;border-radius:16px;padding:16px;text-align:center;margin-bottom:14px;}
+.coach-typing{display:flex;align-items:center;gap:6px;padding:10px 14px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:14px;width:fit-content;}
+.coach-dot{width:7px;height:7px;border-radius:50%;background:#C3A6FF;animation:coachDot 1.2s infinite;}
+.coach-dot:nth-child(2){animation-delay:.2s;}.coach-dot:nth-child(3){animation-delay:.4s;}
+@keyframes coachDot{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -387,6 +430,7 @@ circle.fg.warning { stroke:#ff4060; }
       <button class="nav-btn" onclick="switchTab('stats',this)">📊 สถิติ</button>
       <button class="nav-btn" onclick="switchTab('nutrition',this)">🥗 โภชนา</button>
       <button class="nav-btn" onclick="switchTab('planner',this)">🍱 แผนมื้อ</button>
+      <button class="nav-btn" onclick="switchTab('coach',this)">🤖 AI</button>
     </div>
   </div>
 </div>
@@ -407,6 +451,7 @@ circle.fg.warning { stroke:#ff4060; }
   </div>
   <div class="page" id="page-nutrition"></div>
   <div class="page" id="page-planner"></div>
+  <div class="page" id="page-coach"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -494,6 +539,7 @@ const MY_MEALS = [
   { cat: '💊 สแน็ค', emoji: '🥚', food: 'ไข่ต้มปอกเปลือก', serving: '2 ฟอง', calories: 150, protein: 14, fat: 10, carbs: 1, fiber: 0, sugar: 0, note: 'แหล่งโปรตีนมาตรฐาน ราคาประหยัดที่สุด' },
   { cat: '💊 สแน็ค', emoji: '🍫', food: 'เกรนเน่ย์ โปรตีนบาร์ ช็อกเฮเซลนัทเคลือบดาร์กช็อก', serving: '1 บาร์ (60g)', calories: 220, protein: 21, fat: 8, carbs: 22, fiber: 7, sugar: 1.6, note: 'โปรตีนบาร์คุณภาพสูง น้ำตาลต่ำมาก ไฟเบอร์สูง' },
   { cat: '💊 สแน็ค', emoji: '🥜', food: 'อัลมอนด์อบเกลือ (Blue Diamond)', serving: '1 ซอง (30g)', calories: 160, protein: 6, fat: 14, carbs: 5, fiber: 3, sugar: 1, note: 'ไขมันดีสูง ควรแบ่งกิน' },
+  
    
   // 🍿 ขนม
   { cat: '🍿 ขนม', emoji: '🍦', food: 'ไอศกรีม Extreme Zero (Sugar Free)', serving: '1 แท่ง', calories: 90, protein: 2, fat: 5, carbs: 12, fiber: 4, sugar: 0, note: 'ทางเลือกที่ดีที่สุดสำหรับคนอยากกินไอศกรีม' },
@@ -501,6 +547,9 @@ const MY_MEALS = [
   { cat: '🍿 ขนม', emoji: '🌽', food: 'ข้าวโพดหวานต้ม', serving: '1 ฝัก', calories: 180, protein: 5, fat: 2, carbs: 38, fiber: 4, sugar: 8, note: 'คาร์บธรรมชาติ ไฟเบอร์สูง กินแทนข้าวได้' },
   { cat: '🍿 ขนม', emoji: '🥨', food: 'ปาท่องโก๋แบบกลม (ตัวเล็ก)', serving: '4-5 ตัว (~100g)', calories: 350, protein: 6, fat: 20, carbs: 42, fiber: 1, sugar: 4, note: 'พลังงานสูงจากแป้งทอดและน้ำมัน ควรจำกัดปริมาณ' },
   { cat: '🍿 ขนม', emoji: '🥯', food: 'ปาท่องโก๋แบบกลม (ตัวใหญ่/ซาลาเปา)', serving: '1 ตัวใหญ่ (~60g)', calories: 210, protein: 4, fat: 12, carbs: 26, fiber: 0.5, sugar: 5, note: 'มีรสหวานเล็กน้อย ไขมันสูงกว่าขนมปังปกติ' },
+  { cat: '🍿 ขนม', emoji: '🥣', food: 'กราโนล่า Diamond Grains (ถ้วย)', serving: '1 ถ้วย (38g)', calories: 150, protein: 4, fat: 5, carbs: 24, fiber: 3, sugar: 6, note: 'คาร์บเชิงซ้อนจากโอ๊ต อิ่มนานกว่าซีเรียลปกติ' },
+  { cat: '🍿 ขนม', emoji: '🌽', food: 'เคลล็อกส์ คอร์นเฟลกส์ (ถ้วย)', serving: '1 ถ้วย (20g)', calories: 70, protein: 1.5, fat: 0, carbs: 17, fiber: 0.5, sugar: 2, note: 'ไขมัน 0% ย่อยง่ายมาก เหมาะเป็นพลังงานก่อนเล่นเวท' },
+  { cat: '🍿 ขนม', emoji: '🍫', food: 'โกโก้ครันช์ (ถ้วยเล็ก 7-11)', serving: '1 ถ้วย (25g)', calories: 110, protein: 2, fat: 1.5, carbs: 23, fiber: 1.5, sugar: 9, note: 'ระวังน้ำตาล ควรทานคู่กับนมโปรตีนสูง' },
 
   // 🍵 เครื่องดื่ม
   { cat: '🍵 เครื่องดื่ม', emoji: '🍵', food: 'ชาเขียว Extra Green Latte หวาน70% (ชาตรามือ)', serving: '1 แก้ว (500ml)', calories: 220, protein: 3, fat: 8, carbs: 35, fiber: 0, sugar: 28, note: 'พลังงานหลักมาจากน้ำตาลและนมข้น' },
@@ -973,12 +1022,175 @@ function addPlanMealToLog(mealIdx){
 function updateHeaderStats(){document.getElementById('streakNum').textContent=streak();document.getElementById('pointsDisplay').textContent=state.totalPoints||0;}
 function updateUI(){
   updateHeaderStats();const active=document.querySelector('.page.active');if(!active)return;const id=active.id;
-  if(id==='page-today')renderToday();if(id==='page-calendar')renderCalendar();if(id==='page-schedule')renderSchedule();if(id==='page-stats')renderStats();if(id==='page-nutrition')renderNutrition();if(id==='page-planner')renderPlanner();
+  if(id==='page-today')renderToday();if(id==='page-calendar')renderCalendar();if(id==='page-schedule')renderSchedule();if(id==='page-stats')renderStats();if(id==='page-nutrition')renderNutrition();if(id==='page-planner')renderPlanner();if(id==='page-coach')renderCoach();
 }
 function switchTab(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  if(name==='today')renderToday();if(name==='calendar')renderCalendar();if(name==='schedule')renderSchedule();if(name==='stats')renderStats();if(name==='nutrition')renderNutrition();if(name==='planner')renderPlanner();
+  if(name==='today')renderToday();if(name==='calendar')renderCalendar();if(name==='schedule')renderSchedule();if(name==='stats')renderStats();if(name==='nutrition')renderNutrition();if(name==='planner')renderPlanner();if(name==='coach')renderCoach();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AI COACH
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let coachMessages = []; // {role:'user'|'ai', text:'', cards:[], time:''}
+let coachTyping = false;
+
+const COACH_QUICK_CHIPS = [
+  '💪 ท่า Push Up ที่ถูกต้อง',
+  '🦵 ท่า Squat ฟอร์มดี',
+  '🏋️ Dumbbell Curl วิธีทำ',
+  '🔥 ออกกำลังกายก่อนนอน ดีไหม?',
+  '🍗 ควรกินโปรตีนหลังเวทเมื่อไหร่',
+  '😴 นอนหลับกี่ชั่วโมงถึงฟื้นตัวดี',
+  '📈 ท่าเพิ่มกล้ามไหล่',
+  '🩹 ปวดกล้ามหลังออกกำลัง ทำยังไง',
+  '🏃 Cardio ช่วย Lean ได้ไหม',
+  '⚡ Plank ดีกว่า Sit Up ยังไง',
+];
+
+const COACH_SYSTEM_PROMPT = `คุณคือ AI Personal Trainer และผู้เชี่ยวชาญด้านสุขภาพ พูดภาษาไทย เป็นกันเอง ใช้ emoji เหมาะสม
+
+ข้อมูลผู้ใช้:
+- น้ำหนัก ~70.8 kg เป้าหมาย: ลีนลง สร้างกล้ามเนื้อ
+- ออกกำลังกาย: Dumbbell + Bodyweight ที่บ้าน ตอน 4-5 ทุ่ม
+- ตาราง: จ (Push/Curl/Lateral/Sit/Leg), อ (Squat/Row/Press/Plank), พ (Core+Cardio), พฤ (A+หนัก), ศ (B+หนัก), ส (เบา), อา (พัก)
+
+กฎการตอบ:
+1. ตอบกระชับ ใช้ภาษาไทยเป็นกันเอง
+2. ถ้าถามเรื่อง "ท่า" หรือ "วิธีทำ" ให้ตอบในรูปแบบ JSON พิเศษ:
+   ตอบด้วย prefix [EXERCISE_CARD] แล้วตาม JSON:
+   {"name":"ชื่อท่า","emoji":"emoji","target":"กล้ามที่เน้น","sets":"เซ็ต×ครั้ง","level":"ง่าย/ปานกลาง/ยาก","steps":["ขั้นตอน 1","ขั้นตอน 2","ขั้นตอน 3","ขั้นตอน 4"],"tip":"เคล็ดลับสำคัญ","calColor":"#4ECDC4"}
+3. ถ้าถามหลายท่า ตอบ [EXERCISE_CARD] หลายอัน แต่ละอันแยกด้วย newline
+4. ถ้าถามทั่วไป ตอบเป็นข้อความปกติ ไม่ต้องใช้ [EXERCISE_CARD]
+5. ห้ามตอบยาวเกินไป เน้น practical และ actionable`;
+
+function renderCoach(){
+  const el=document.getElementById('page-coach');if(!el)return;
+  const apiKey=getApiKey();
+  const sched=SCHEDULE[todayDow()];
+
+  let msgsHtml='';
+  if(coachMessages.length===0){
+    msgsHtml=`<div class="coach-msg ai"><div class="coach-bubble">สวัสดีครับ! 👋 วันนี้วัน${sched.name} — ${sched.focus}<br><br>ถามอะไรก็ได้เลยครับ ไม่ว่าจะเป็นท่าออกกำลังกาย ฟอร์มที่ถูกต้อง โภชนาการ หรือเรื่องสุขภาพทั่วไป 💪</div><div class="coach-msg-time">AI Coach</div></div>`;
+  } else {
+    coachMessages.forEach((m,i)=>{
+      if(m.role==='user'){
+        msgsHtml+=`<div class="coach-msg user"><div class="coach-bubble">${escHtml(m.text)}</div><div class="coach-msg-time">${m.time}</div></div>`;
+      } else {
+        let content=`<div class="coach-bubble">${m.text.replace(/\n/g,'<br>')}</div>`;
+        if(m.cards&&m.cards.length){
+          m.cards.forEach((card,ci)=>{
+            content+=`<div class="coach-ex-card">
+              <div class="coach-ex-header"><div class="coach-ex-icon">${card.emoji||'💪'}</div><div><div class="coach-ex-name">${card.name}</div><div class="coach-ex-target">🎯 ${card.target||''}</div></div></div>
+              <div class="coach-ex-chips">
+                <span class="coach-ex-chip" style="background:rgba(195,166,255,.12);color:#C3A6FF">📊 ${card.sets||''}</span>
+                <span class="coach-ex-chip" style="background:rgba(255,107,53,.1);color:#FF6B35">⚡ ${card.level||''}</span>
+              </div>
+              <div class="coach-ex-steps">${(card.steps||[]).map((s,si)=>`<div class="coach-ex-step"><span class="coach-ex-step-num">${si+1}</span><span>${s}</span></div>`).join('')}</div>
+              ${card.tip?`<div class="coach-ex-tip">💡 ${card.tip}</div>`:''}
+              <button class="coach-add-btn" onclick="addExerciseToToday('${escHtml(card.name)}','${escHtml(card.sets||'')}')">+ เพิ่มท่านี้เข้าวันนี้</button>
+            </div>`;
+          });
+        }
+        msgsHtml+=`<div class="coach-msg ai">${content}<div class="coach-msg-time">${m.time}</div></div>`;
+      }
+    });
+  }
+
+  if(coachTyping){
+    msgsHtml+=`<div class="coach-msg ai"><div class="coach-typing"><div class="coach-dot"></div><div class="coach-dot"></div><div class="coach-dot"></div></div></div>`;
+  }
+
+  const limitBlock=isLimitReached();
+  const canSend=!!apiKey&&!limitBlock&&!coachTyping;
+
+  el.innerHTML=`
+  <div class="coach-header-card">
+    <div class="coach-header-label">PERSONAL TRAINER AI</div>
+    <div class="coach-header-title">🤖 AI Coach</div>
+    <div class="coach-header-sub">ถามได้ทุกเรื่อง — ท่าออกกำลังกาย, โภชนาการ, สุขภาพ</div>
+  </div>
+  ${!apiKey?`<div class="coach-no-key"><div style="font-size:32px;margin-bottom:8px">🔑</div><div style="font-size:14px;font-weight:700">ต้องมี OpenRouter API Key</div><div style="font-size:12px;color:#555;margin-top:4px">ไปที่แท็บ 🥗 โภชนา แล้วใส่ Key ก่อน</div></div>`:''}
+  ${limitBlock?`<div style="background:rgba(255,64,96,.08);border:1px solid rgba(255,64,96,.2);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#ff8a9a;text-align:center">🚫 ถึง limit วันนี้แล้ว (${getUsage()}/${OR_DAILY_LIMIT}) · รีเซ็ตในอีก ${usageResetTime()}</div>`:''}
+  <div class="coach-messages" id="coachMsgs">${msgsHtml}</div>
+  <div class="coach-input-wrap">
+    <div class="coach-quick-row" id="coachQuickRow">
+      ${COACH_QUICK_CHIPS.map(c=>`<button class="coach-quick-chip" onclick="coachQuickAsk('${escHtml(c)}')">${c}</button>`).join('')}
+    </div>
+    <div class="coach-input-row">
+      <textarea class="coach-input" id="coachInput" placeholder="ถามเรื่องท่า, สุขภาพ, โภชนาการ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCoachMessage();}" ${!canSend?'disabled':''}></textarea>
+      <button class="coach-send-btn" id="coachSendBtn" onclick="sendCoachMessage()" ${!canSend?'disabled':''}>▶</button>
+    </div>
+  </div>`;
+
+  // Scroll to bottom
+  setTimeout(()=>{const msgs=document.getElementById('coachMsgs');if(msgs)msgs.scrollTop=msgs.scrollHeight;},50);
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function coachQuickAsk(text){
+  const input=document.getElementById('coachInput');
+  if(input){input.value=text;}
+  sendCoachMessage();
+}
+
+async function sendCoachMessage(){
+  const apiKey=getApiKey();
+  if(!apiKey||isLimitReached()||coachTyping)return;
+  const input=document.getElementById('coachInput');
+  const text=(input?input.value:'').trim();
+  if(!text)return;
+  if(input)input.value='';
+
+  const now=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  coachMessages.push({role:'user',text,time:now});
+  coachTyping=true;
+  renderCoach();
+
+  // Build conversation history for context (last 6 messages)
+  const history=coachMessages.slice(-7,-1).map(m=>({role:m.role==='user'?'user':'assistant',content:m.role==='user'?m.text:(m.text+(m.cards?.length?'\n[had exercise cards]':''))}));
+  const fullPrompt=COACH_SYSTEM_PROMPT+'\n\n---\n'+history.map(h=>`${h.role==='user'?'User':'AI'}: ${h.content}`).join('\n')+`\nUser: ${text}\nAI:`;
+
+  try{
+    const raw=await callOpenRouter(apiKey,fullPrompt,900);
+    incUsage();
+
+    // Parse exercise cards
+    const cards=[];
+    let displayText=raw;
+
+    if(raw.includes('[EXERCISE_CARD]')){
+      const parts=raw.split('[EXERCISE_CARD]');
+      displayText=parts[0].trim();
+      for(let i=1;i<parts.length;i++){
+        const part=parts[i].trim();
+        const jsonMatch=part.match(/\{[\s\S]*?\}/);
+        if(jsonMatch){
+          try{cards.push(JSON.parse(jsonMatch[0]));}catch{}
+          const after=part.replace(jsonMatch[0],'').trim();
+          if(after)displayText+=(displayText?'\n':'')+after;
+        }
+      }
+    }
+
+    coachMessages.push({role:'ai',text:displayText||'',cards,time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});
+  }catch(e){
+    coachMessages.push({role:'ai',text:`❌ ${e.message||'เกิดข้อผิดพลาด กรุณาลองใหม่'}`,cards:[],time:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});
+  }
+  coachTyping=false;
+  renderCoach();
+}
+
+function addExerciseToToday(name,sets){
+  // แจ้งเตือนและเปิด tab today
+  showToast(`💪 เพิ่ม "${name}" — ดูรายละเอียดที่ตาราง`);
+}
+
+function clearCoachHistory(){
+  coachMessages=[];
+  renderCoach();
 }
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function showPointsPop(text){const el=document.createElement('div');el.className='points-pop';el.textContent=text;el.style.left=(Math.random()*60+20)+'%';el.style.top='40%';document.body.appendChild(el);setTimeout(()=>el.remove(),1100);}
