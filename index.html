@@ -493,6 +493,8 @@ const MY_MEALS = [
   { cat: '🍚 ข้าว', emoji: '🍳', food: 'ข้าวผัดหมูกรอบไข่ดาว พิเศษ', serving: '1 จาน (~450g)', calories: 850, protein: 34, fat: 48, carbs: 75, fiber: 1.5, sugar: 3, note: 'พลังงานสูงมาก ไขมันพุ่งจากทั้งหมูกรอบและไข่ดาว' },
   { cat: '🍚 ข้าว', emoji: '🥓', food: 'ข้าวผัดหมูกรอบ พิเศษ (ไม่ดาว)', serving: '1 จาน (~420g)', calories: 760, protein: 28, fat: 40, carbs: 72, fiber: 1.5, sugar: 3, note: 'ลดไขมันลงเล็กน้อยจากการตัดไข่ดาวออก' },
   { cat: '🍚 ข้าว', emoji: '🥡', food: 'ข้าวเหนียวหมูทอด', serving: '1 ชุด (หมู 80g + ข้าวเหนียว 100g)', calories: 480, protein: 18, fat: 22, carbs: 55, fiber: 1, sugar: 2, note: 'ให้พลังงานเร็วจากข้าวเหนียว เหมาะกินก่อนออกกำลังกาย' },
+  { cat: '🍚 ข้าว', emoji: '🍢', food: 'ข้าวเหนียวหมูปิ้ง (3 ไม้)', serving: '1 ชุด (หมู 3 ไม้ + ข้าวเหนียว 1 ห่อ)', calories: 450, protein: 18, fat: 22, carbs: 45, fiber: 1, sugar: 8, note: 'พลังงานดีก่อนออกกำลังกาย ระวังไขมันจากมันหมูและน้ำตาลในซอส' },
+
 
   // 🍜 เส้น
   { cat: '🍜 เส้น', emoji: '🍜', food: 'ผัดซีอิ๊วหมูชิ้น', serving: '1 จาน (~400g)', calories: 580, protein: 28, fat: 22, carbs: 68, fiber: 2, sugar: 6, note: 'โปรตีนพอดี ซีอิ๊วโซเดียมสูง' },
@@ -539,8 +541,7 @@ const MY_MEALS = [
   { cat: '💊 สแน็ค', emoji: '🥚', food: 'ไข่ต้มปอกเปลือก', serving: '2 ฟอง', calories: 150, protein: 14, fat: 10, carbs: 1, fiber: 0, sugar: 0, note: 'แหล่งโปรตีนมาตรฐาน ราคาประหยัดที่สุด' },
   { cat: '💊 สแน็ค', emoji: '🍫', food: 'เกรนเน่ย์ โปรตีนบาร์ ช็อกเฮเซลนัทเคลือบดาร์กช็อก', serving: '1 บาร์ (60g)', calories: 220, protein: 21, fat: 8, carbs: 22, fiber: 7, sugar: 1.6, note: 'โปรตีนบาร์คุณภาพสูง น้ำตาลต่ำมาก ไฟเบอร์สูง' },
   { cat: '💊 สแน็ค', emoji: '🥜', food: 'อัลมอนด์อบเกลือ (Blue Diamond)', serving: '1 ซอง (30g)', calories: 160, protein: 6, fat: 14, carbs: 5, fiber: 3, sugar: 1, note: 'ไขมันดีสูง ควรแบ่งกิน' },
-  
-   
+    
   // 🍿 ขนม
   { cat: '🍿 ขนม', emoji: '🍦', food: 'ไอศกรีม Extreme Zero (Sugar Free)', serving: '1 แท่ง', calories: 90, protein: 2, fat: 5, carbs: 12, fiber: 4, sugar: 0, note: 'ทางเลือกที่ดีที่สุดสำหรับคนอยากกินไอศกรีม' },
   { cat: '🍿 ขนม', emoji: '🥣', food: 'โยเกิร์ตไขมันต่ำ 0% (Meiji)', serving: '1 ถ้วย', calories: 70, protein: 4, fat: 0, carbs: 13, fiber: 0, sugar: 7, note: 'แคลอรี่ต่ำ มีจุลินทรีย์ที่ดีต่อลำไส้' },
@@ -550,7 +551,8 @@ const MY_MEALS = [
   { cat: '🍿 ขนม', emoji: '🥣', food: 'กราโนล่า Diamond Grains (ถ้วย)', serving: '1 ถ้วย (38g)', calories: 150, protein: 4, fat: 5, carbs: 24, fiber: 3, sugar: 6, note: 'คาร์บเชิงซ้อนจากโอ๊ต อิ่มนานกว่าซีเรียลปกติ' },
   { cat: '🍿 ขนม', emoji: '🌽', food: 'เคลล็อกส์ คอร์นเฟลกส์ (ถ้วย)', serving: '1 ถ้วย (20g)', calories: 70, protein: 1.5, fat: 0, carbs: 17, fiber: 0.5, sugar: 2, note: 'ไขมัน 0% ย่อยง่ายมาก เหมาะเป็นพลังงานก่อนเล่นเวท' },
   { cat: '🍿 ขนม', emoji: '🍫', food: 'โกโก้ครันช์ (ถ้วยเล็ก 7-11)', serving: '1 ถ้วย (25g)', calories: 110, protein: 2, fat: 1.5, carbs: 23, fiber: 1.5, sugar: 9, note: 'ระวังน้ำตาล ควรทานคู่กับนมโปรตีนสูง' },
-
+  { cat: '🍿 ขนม', emoji: '🍿', food: 'ป๊อปคอร์นรสชีส (ถุงกลาง)', serving: '1 ถุง (~60g)', calories: 320, protein: 4, fat: 22, carbs: 32, fiber: 5, sugar: 4, note: 'ไขมันสูงจากผงชีสและเนย ควรคุมมื้อหลักให้ไขมันต่ำ' },
+   
   // 🍵 เครื่องดื่ม
   { cat: '🍵 เครื่องดื่ม', emoji: '🍵', food: 'ชาเขียว Extra Green Latte หวาน70% (ชาตรามือ)', serving: '1 แก้ว (500ml)', calories: 220, protein: 3, fat: 8, carbs: 35, fiber: 0, sugar: 28, note: 'พลังงานหลักมาจากน้ำตาลและนมข้น' },
   { cat: '🍵 เครื่องดื่ม', emoji: '💧', food: 'น้ำเปล่า 600ml', serving: '1 ขวด (600ml)', calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sugar: 0, isWater: true, waterMl: 600, note: 'ดื่มให้เพียงพอเพื่อช่วยระบบเผาผลาญ' },
