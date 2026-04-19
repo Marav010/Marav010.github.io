@@ -1293,31 +1293,38 @@ const MY_MEAL_CATS=['ทั้งหมด','ข้าว','เส้น','ค�
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
-function loadState(){try{return JSON.parse(localStorage.getItem('fitstreak_v3')||'{}');}catch{return {};}}
-function saveState(){localStorage.setItem('fitstreak_v3',JSON.stringify(S));}
+function loadState(){
+  try{
+    const raw=localStorage.getItem('fitstreak_v4');
+    if(!raw)return {};
+    return JSON.parse(raw);
+  }catch{return {};}
+}
+function saveState(){
+  try{localStorage.setItem('fitstreak_v4',JSON.stringify(S));}catch{}
+}
 let S=loadState();
-if(!S.goal)        S.goal=0; // 0 = ใช้เป้าอัตโนมัติจาก getNutrGoals() ตามวันนั้น
-// foodLog คือ source of truth หลัก: { breakfast:[], lunch:[], dinner:[], snack:[] } แต่ละ item: {food, calories, protein, fat, carbs, emoji, meal}
-if(!S.foodLog)     S.foodLog={};
-if(!S.checkins)    S.checkins={};
+if(!S.goal)        S.goal=0;
+if(!S.foodLog||typeof S.foodLog!=='object'||Array.isArray(S.foodLog)) S.foodLog={};
+if(!S.checkins||typeof S.checkins!=='object')   S.checkins={};
 if(!S.totalPoints) S.totalPoints=0;
-if(!S.waterLog)    S.waterLog={};
+if(!S.waterLog||typeof S.waterLog!=='object')    S.waterLog={};
 if(!S.profileName) S.profileName='ผู้ใช้ FitStreak';
-// migrate old S.meals → foodLog if present
-if(S.meals){
-  const key0=Object.keys(S.foodLog||{}).length;
-  if(key0===0){
+
+// migrate old S.meals → foodLog
+try{
+  if(S.meals){
     const td=(()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;})();
     if(!S.foodLog[td])S.foodLog[td]={breakfast:[],lunch:[],dinner:[],snack:[]};
     ['breakfast','lunch','dinner','snack'].forEach(m=>{
       (S.meals[m]||[]).forEach(f=>{
-        S.foodLog[td][m].push({food:f.name,calories:f.kcal||0,protein:f.protein||0,fat:f.fat||0,carbs:f.carb||0,emoji:f.emoji||'🍽️',meal:m});
+        S.foodLog[td][m].push({food:f.name||f.food,calories:f.kcal||f.calories||0,protein:f.protein||0,fat:f.fat||0,carbs:f.carb||f.carbs||0,emoji:f.emoji||'🍽️',meal:m});
       });
     });
+    delete S.meals;
+    saveState();
   }
-  delete S.meals;
-  saveState();
-}
+}catch(e){console.warn('Migration error:',e);}
 let lastAIFood=null, activeMealTarget='lunch', nutrQueryHistory=[], currentNutrResult=null;
 let plannerState={mealCount:3,style:'อาหารตามสั่ง',result:null,loading:false};
 let coachMessages=[], coachTyping=false;
@@ -1343,14 +1350,16 @@ const getWater=()=>S.waterLog[selectedDateKey]||0;
 // foodLog วันที่เลือก — structure: { breakfast:[], lunch:[], dinner:[], snack:[] }
 function getDayLog(){
   const k=selectedDateKey;
-  if(!S.foodLog[k])S.foodLog[k]={breakfast:[],lunch:[],dinner:[],snack:[]};
-  // compat: ถ้า foodLog[k] เป็น array (รูปแบบเก่า) ให้ migrate
-  if(Array.isArray(S.foodLog[k])){
-    const arr=S.foodLog[k];
+  // สร้างใหม่ถ้าไม่มีหรือ format ผิด
+  if(!S.foodLog[k]||typeof S.foodLog[k]!=='object'||Array.isArray(S.foodLog[k])){
     S.foodLog[k]={breakfast:[],lunch:[],dinner:[],snack:[]};
-    arr.forEach(f=>S.foodLog[k]['lunch'].push(f));
   }
-  return S.foodLog[k];
+  const log=S.foodLog[k];
+  if(!Array.isArray(log.breakfast))log.breakfast=[];
+  if(!Array.isArray(log.lunch))    log.lunch=[];
+  if(!Array.isArray(log.dinner))   log.dinner=[];
+  if(!Array.isArray(log.snack))    log.snack=[];
+  return log;
 }
 function getAllItems(){
   const log=getDayLog();
@@ -2135,7 +2144,7 @@ const u=URL.createObjectURL(b);
 const a=document.createElement(‘a’);a.href=u;a.download=‘fitstreak_data.json’;a.click();
 showToast(‘ส่งออกข้อมูลแล้ว’);
 }
-function clearAllData(){if(confirm(‘ล้างข้อมูลทั้งหมด?’)){localStorage.removeItem(‘fitstreak_v3’);location.reload();}}
+function clearAllData(){if(confirm(‘ล้างข้อมูลทั้งหมด?’)){localStorage.removeItem(‘fitstreak_v4’);location.reload();}}
 
 // ═══════════════════════════════════════
 // TAB SWITCH
@@ -2162,12 +2171,13 @@ document.querySelectorAll(’.modal-overlay’).forEach(o=>o.addEventListener(�
 // INIT
 // ═══════════════════════════════════════
 document.addEventListener(‘DOMContentLoaded’,()=>{
-applyThemeOnLoad();
-buildDateStrip();
-// แสดงวันที่เลือก (เริ่มต้นเป็นวันนี้)
+try{ applyThemeOnLoad(); }catch(e){}
+try{ buildDateStrip(); }catch(e){ console.warn(‘dateStrip error:’,e); }
+try{
 const initDate=new Date(selectedDateKey+‘T00:00:00’);
 document.getElementById(‘todayDate’).textContent=’วันนี้ ’+initDate.toLocaleDateString(‘th-TH’,{weekday:‘long’,day:‘numeric’,month:‘short’});
-updateHomeUI();
+}catch(e){}
+try{ updateHomeUI(); }catch(e){ console.error(‘updateHomeUI error:’,e); }
 });
 </script>
 
