@@ -415,22 +415,49 @@ background: var(–surface2); border-radius: var(–r-md); padding: 9px 12px;
 /* ─── TIMER OVERLAY ─── */
 .t-overlay {
 display: none; position: fixed; inset: 0; z-index: 300;
-background: rgba(26,29,35,.96);
-flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+background: rgba(0,0,0,.82);
+backdrop-filter: blur(6px);
+flex-direction: column; align-items: center; justify-content: center;
 }
 .t-overlay.show { display: flex; }
-.t-badge { background: var(–surface); border-radius: 99px; padding: 6px 16px; font-size: 12px; font-weight: 700; color: var(–teal); }
-.t-ring  { position: relative; width: 180px; height: 180px; }
+.t-card {
+background: var(–surface);
+border-radius: 28px;
+padding: 32px 28px 24px;
+width: min(340px, 90vw);
+display: flex; flex-direction: column; align-items: center; gap: 0;
+box-shadow: 0 24px 64px rgba(0,0,0,.4);
+}
+.t-badge {
+background: var(–surface2);
+border-radius: 99px; padding: 6px 16px;
+font-size: 12px; font-weight: 700; color: var(–teal);
+letter-spacing: .5px; margin-bottom: 24px;
+}
+.t-ring  { position: relative; width: 200px; height: 200px; }
 .t-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
-.t-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.t-big   { font-size: 56px; font-weight: 800; color: var(–accent); line-height: 1; }
+.t-inner {
+position: absolute; inset: 0;
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.t-label { font-size: 11px; font-weight: 700; color: var(–text-3); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.t-big   { font-size: 72px; font-weight: 800; color: var(–text); line-height: 1; font-variant-numeric: tabular-nums; }
 .t-big.warn { color: #EF4444; }
-.t-sub   { font-size: 12px; color: var(–text-3); text-align: center; margin-top: 4px; }
-.t-actions { display: flex; gap: 10px; }
-.t-skip { background: var(–accent); color: #fff; border: none; border-radius: var(–r-md); padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
-.t-stop { background: var(–surface); color: var(–text-2); border: 1px solid var(–border); border-radius: var(–r-md); padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
-circle.tr-bg { fill: none; stroke: var(–border); stroke-width: 8; }
-circle.tr-fg { fill: none; stroke: var(–accent); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .5s linear, stroke .3s; }
+.t-sub   { font-size: 12px; color: var(–text-3); text-align: center; margin-top: 20px; min-height: 18px; padding: 0 8px; }
+.t-actions { display: flex; gap: 10px; width: 100%; margin-top: 20px; }
+.t-skip {
+flex: 1; background: var(–accent); color: #fff; border: none;
+border-radius: var(–r-md); padding: 14px; font-size: 15px; font-weight: 700;
+cursor: pointer; font-family: inherit;
+}
+.t-stop {
+flex: 1; background: var(–surface2); color: var(–text-2);
+border: 1px solid var(–border); border-radius: var(–r-md);
+padding: 14px; font-size: 15px; font-weight: 700;
+cursor: pointer; font-family: inherit;
+}
+circle.tr-bg { fill: none; stroke: var(–border); stroke-width: 10; }
+circle.tr-fg { fill: none; stroke: var(–accent); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .5s linear, stroke .3s; }
 circle.tr-fg.warn { stroke: #EF4444; }
 
 /* ─── CALENDAR ─── */
@@ -755,20 +782,23 @@ border-radius: var(–r-md); padding: 10px; font-family: inherit; color: var(–
 <!-- TIMER OVERLAY -->
 
 <div class="t-overlay" id="timerOverlay">
-  <div class="t-badge" id="tBadge">พักระหว่างเซต</div>
-  <div class="t-ring">
-    <svg viewBox="0 0 180 180" width="180" height="180">
-      <circle class="tr-bg" cx="90" cy="90" r="80"/>
-      <circle class="tr-fg" id="tCircle" cx="90" cy="90" r="80" stroke-dasharray="503" stroke-dashoffset="0"/>
-    </svg>
-    <div class="t-inner">
-      <div class="t-big" id="tBig">1:00</div>
-      <div class="t-sub" id="tSub"></div>
+  <div class="t-card">
+    <div class="t-badge" id="tBadge">พักระหว่างเซต</div>
+    <div class="t-ring">
+      <svg viewBox="0 0 200 200" width="200" height="200">
+        <circle class="tr-bg" cx="100" cy="100" r="88"/>
+        <circle class="tr-fg" id="tCircle" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="0"/>
+      </svg>
+      <div class="t-inner">
+        <div class="t-label">เวลาพัก</div>
+        <div class="t-big" id="tBig">1:00</div>
+      </div>
     </div>
-  </div>
-  <div class="t-actions">
-    <button class="t-stop" onclick="stopTimer()">หยุด</button>
-    <button class="t-skip" onclick="skipTimer()">ข้าม</button>
+    <div class="t-sub" id="tSub"></div>
+    <div class="t-actions">
+      <button class="t-stop" onclick="stopTimer()">หยุด</button>
+      <button class="t-skip" onclick="skipTimer()">ข้ามได้เลย</button>
+    </div>
   </div>
 </div>
 
@@ -1382,7 +1412,7 @@ function updateTimerUI(){
   const s=tmr.s,big=document.getElementById('tBig'),c=document.getElementById('tCircle');
   big.textContent=fmtTimer(s);const w=s<=10;
   big.classList.toggle('warn',w);c.classList.toggle('warn',w);
-  c.style.strokeDashoffset=(2*Math.PI*80)*(1-tmr.s/tmr.total);
+  c.style.strokeDashoffset=(2*Math.PI*88)*(1-tmr.s/tmr.total);
 }
 function stopTimer(){if(tmr.id)clearInterval(tmr.id);tmr.id=null;localStorage.removeItem('tmr_active');document.getElementById('timerOverlay').classList.remove('show');}
 function skipTimer(){stopTimer();}
