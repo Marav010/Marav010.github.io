@@ -1476,10 +1476,10 @@ const OPENROUTER_FREE_MODELS = [
   { id: 'minimax/minimax-m2.5:free',                 label: 'MiniMax M2.5' },
 ];
 // ─── Vision models (วิเคราะห์รูปภาพ) — ลองทีละตัว fallback ───
-const IMG_MODELS = [
+// vision fallback list (ใช้เฉพาะถ้า selected model ไม่รองรับรูป)
+const IMG_FALLBACK = [
   'qwen/qwen2.5-vl-72b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-4-31b-it:free',
+  'meta-llama/llama-3.2-11b-vision-instruct:free',
 ];
 const getSelectedModel = () => localStorage.getItem('fitstreak_model') || 'meta-llama/llama-3.3-70b-instruct:free';
 function setModel(id) { localStorage.setItem('fitstreak_model', id); showToast('เปลี่ยน model แล้ว'); renderApiCard(); }
@@ -1488,8 +1488,12 @@ async function callOR(prompt, maxT = 600, withImg = null) {
   if (isLimited()) throw new Error(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ รีเซ็ตในอีก ${usageResetIn()}`);
   const key = localStorage.getItem('fitstreak_or_key') || '';
   if (!key) throw new Error('ยังไม่ได้ใส่ OpenRouter API Key');
-  // vision: ลองหลาย model / text: ใช้ model ที่ user เลือก
-  const models = withImg ? IMG_MODELS : [getSelectedModel()];
+  // ถ้าเป็น vision: ใช้ selected model ก่อน แล้ว fallback ไปตัวอื่น
+  // ถ้าเป็น text: ใช้ selected model เท่านั้น
+  const selected = getSelectedModel();
+  const models = withImg
+    ? [selected, ...IMG_FALLBACK.filter(m => m !== selected)]
+    : [selected];
   let lastErr = '';
   for (const model of models) {
     try {
