@@ -1466,6 +1466,7 @@ function renderApiCard() {
 // ─── Text models (user เลือกได้) ───
 const OPENROUTER_FREE_MODELS = [
   { id: 'openrouter/free',                           label: '🎲 Auto (เลือกอัตโนมัติ)' },
+  { id: 'meta-llama/llama-3.3-70b-instruct:free',    label: 'Llama 3.3 70B ⭐' },
   { id: 'openai/gpt-oss-120b:free',                  label: 'GPT OSS 120B' },
   { id: 'nvidia/nemotron-3-super-120b-a12b:free',    label: 'Nemotron 120B' },
   { id: 'google/gemma-4-31b-it:free',                label: 'Gemma 4 31B' },
@@ -1478,7 +1479,8 @@ const OPENROUTER_FREE_MODELS = [
 // vision fallback list (ใช้เฉพาะถ้า selected model ไม่รองรับรูป)
 const IMG_FALLBACK = [
   'qwen/qwen2.5-vl-72b-instruct:free',
-
+  'google/gemma-3-27b-it:free',
+  'google/gemma-4-31b-it:free',
 ];
 const getSelectedModel = () => localStorage.getItem('fitstreak_model') || 'meta-llama/llama-3.3-70b-instruct:free';
 function setModel(id) { localStorage.setItem('fitstreak_model', id); showToast('เปลี่ยน model แล้ว'); renderApiCard(); }
@@ -1487,14 +1489,16 @@ async function callOR(prompt, maxT = 600, withImg = null) {
   if (isLimited()) throw new Error(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ รีเซ็ตในอีก ${usageResetIn()}`);
   const key = localStorage.getItem('fitstreak_or_key') || '';
   if (!key) throw new Error('ยังไม่ได้ใส่ OpenRouter API Key');
-  // ถ้าเป็น vision: ใช้ selected model ก่อน แล้ว fallback ไปตัวอื่น
-  // ถ้าเป็น text: ใช้ selected model เท่านั้น
+  // เริ่มจาก model ที่ user เลือก → fallback ไปตัวอื่นอัตโนมัติถ้า rate limit / error
   const selected = getSelectedModel();
+  const allTextIds = OPENROUTER_FREE_MODELS.map(m => m.id);
+  const textFallback = [selected, ...allTextIds.filter(id => id !== selected)];
   const models = withImg
     ? [selected, ...IMG_FALLBACK.filter(m => m !== selected)]
-    : [selected];
-  let lastErr = '';
+    : textFallback;
+  let lastErr = '', triedModels = [];
   for (const model of models) {
+    triedModels.push(model.split('/').pop().replace(':free',''));
     try {
       const msgContent = withImg
         ? [{ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${withImg}` } }, { type: 'text', text: prompt }]
@@ -1504,15 +1508,17 @@ async function callOR(prompt, maxT = 600, withImg = null) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}`, 'HTTP-Referer': 'https://fitstreak.app', 'X-Title': 'FitStreak' },
         body: JSON.stringify({ model, messages: [{ role: 'user', content: msgContent }], temperature: 0.2, max_tokens: maxT })
       });
-      if (res.status === 429) { lastErr = `${model}: rate limit`; continue; }
+      if (res.status === 429) { lastErr = `${model} rate limit`; continue; }
       const d = await res.json();
       if (d.error) { lastErr = d.error.message || d.error.code || 'API error'; continue; }
       const raw = (d.choices?.[0]?.message?.content || '').replace(/```json|```/g, '').trim();
       if (!raw) { lastErr = 'ไม่ได้รับข้อมูล'; continue; }
+      // แจ้งถ้า fallback ไปใช้ตัวอื่น
+      if (model !== selected) showToast(`⚡ Fallback → ${model.split('/').pop().replace(':free','')}`);
       return raw;
     } catch (e) { lastErr = e.message || 'Network error'; continue; }
   }
-  throw new Error(lastErr || 'ทุก model ไม่ว่าง — ลองใหม่');
+  throw new Error(`ทุก model ไม่ว่าง (${triedModels.length} ตัว) — ${lastErr}`);
 }
 
 // ═══════════════════════════════════════
