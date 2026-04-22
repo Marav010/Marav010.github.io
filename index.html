@@ -1396,129 +1396,81 @@ function skipTimer(){stopTimer();}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&tmr.id)timerTick();});
 
 // ═══════════════════════════════════════
-// AI QUOTA — ฟรี ไม่ต้องใส่ Key
+// API KEY + RATE LIMIT
 // ═══════════════════════════════════════
-const AI_DAILY_LIMIT = 40; // req/วัน (ปลอดภัย ไม่เกิน rate limit)
-const _uk = () => 'fs_ai_' + new Date().toISOString().slice(0, 10);
-const getUsage = () => {
-  Object.keys(localStorage).filter(k => k.startsWith('fs_ai_') && k !== _uk()).forEach(k => localStorage.removeItem(k));
-  return parseInt(localStorage.getItem(_uk()) || '0', 10);
-};
-const incUsage = () => localStorage.setItem(_uk(), String(getUsage() + 1));
-const usageRem = () => Math.max(0, AI_DAILY_LIMIT - getUsage());
-const isLimited = () => getUsage() >= AI_DAILY_LIMIT;
-const usageResetIn = () => {
-  const n = new Date(), nxt = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate() + 1)), d = nxt - n;
-  return `${Math.floor(d / 3600000)} ชม. ${Math.floor((d % 3600000) / 60000)} นาที`;
-};
-// compat stubs (ไม่ใช้ key แล้ว แต่โค้ดอื่นยังเรียก)
-const getApiKey = () => localStorage.getItem('fitstreak_or_key') || '';
-function saveApiKey() {
-  const v = document.getElementById('apiKeyInput')?.value?.trim();
-  if (!v) { showToast('กรุณาใส่ API Key'); return; }
-  if (!v.startsWith('sk-or-')) { showToast('Key ต้องขึ้นต้นด้วย sk-or-'); return; }
-  localStorage.setItem('fitstreak_or_key', v);
-  showToast('บันทึก API Key แล้ว');
-  renderApiCard();
+const OR_LIMIT=180;
+const _uk=()=>'fs_u_'+new Date().toISOString().slice(0,10);
+const getUsage=()=>{Object.keys(localStorage).filter(k=>k.startsWith('fs_u_')&&k!==_uk()).forEach(k=>localStorage.removeItem(k));return parseInt(localStorage.getItem(_uk())||'0',10);};
+const incUsage=()=>localStorage.setItem(_uk(),String(getUsage()+1));
+const usageRem=()=>Math.max(0,OR_LIMIT-getUsage());
+const isLimited=()=>getUsage()>=OR_LIMIT;
+const usageResetIn=()=>{const n=new Date(),nxt=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)),d=nxt-n;return`${Math.floor(d/3600000)} ชม. ${Math.floor((d%3600000)/60000)} นาที`;};
+const getApiKey=()=>localStorage.getItem('fitstreak_or_key')||'';
+function saveApiKey(){const v=document.getElementById('apiKeyInput')?.value?.trim();if(!v){showToast('กรุณาใส่ API Key');return;}if(!v.startsWith('sk-or-')){showToast('Key ต้องขึ้นต้นด้วย sk-or-');return;}localStorage.setItem('fitstreak_or_key',v);showToast('บันทึก API Key แล้ว');renderApiCard();}
+function clearApiKey(){localStorage.removeItem('fitstreak_or_key');renderApiCard();showToast('ลบ API Key แล้ว');}
+function renderApiCard(){
+  const key=getApiKey(),used=getUsage(),rem=usageRem(),pct=Math.min(Math.round((used/OR_LIMIT)*100),100);
+  const barColor=pct>=100?'#DC2626':pct>=80?'var(--yellow)':'var(--green)';
+  const el=document.getElementById('scanApiCard');if(!el)return;
+  if(!key){el.className='apikey-card';el.innerHTML=`<div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status missing">ยังไม่ได้ตั้ง</span></div><div class="apikey-row"><input class="apikey-input" id="apiKeyInput" type="password" placeholder="sk-or-v1-..."/><button class="apikey-save" onclick="saveApiKey()">บันทึก</button></div><div class="apikey-hint">ฟรี 200 req/วัน — ไปที่ openrouter.ai → Keys → สร้าง Key ใหม่</div>`;return;}
+  el.className='apikey-card has-key';el.innerHTML=`<div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status ok">พร้อมใช้</span></div><div style="font-size:11px;color:var(--text-3);margin-bottom:6px">${'sk-or-···'+key.slice(-6)}</div><div class="limit-track"><div class="limit-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="limit-info"><span>ใช้ไป ${used}/${OR_LIMIT} req วันนี้</span><span style="color:${barColor}">เหลือ ${rem}</span></div>${pct>=80&&!isLimited()?`<div style="background:var(--yellow-lt);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:#92400E;margin-top:6px">ใกล้ถึง limit — รีเซ็ตในอีก ${usageResetIn()}</div>`:''} ${isLimited()?`<div class="limit-blocked" style="margin-top:6px">ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}</div>`:''}  <button class="apikey-clear" onclick="clearApiKey()">เปลี่ยน / ลบ Key</button>`;
 }
-function clearApiKey() { localStorage.removeItem('fitstreak_or_key'); renderApiCard(); showToast('ลบ Key แล้ว'); }
-
-function renderApiCard() {
-  const key = getApiKey(), used = getUsage(), rem = usageRem(), pct = Math.min(Math.round((used / AI_DAILY_LIMIT) * 100), 100);
-  const barColor = pct >= 100 ? '#DC2626' : pct >= 75 ? 'var(--yellow)' : 'var(--green)';
-  const el = document.getElementById('scanApiCard'); if (!el) return;
-  if (!key) {
-    el.className = 'apikey-card';
-    el.innerHTML = `
-      <div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status missing">ยังไม่ได้ตั้ง</span></div>
-      <div class="apikey-row"><input class="apikey-input" id="apiKeyInput" type="password" placeholder="sk-or-v1-..."/><button class="apikey-save" onclick="saveApiKey()">บันทึก</button></div>
-      <div class="apikey-hint">ฟรี 200 req/วัน — <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai → Keys</a></div>`;
-    return;
-  }
-  const cur = getSelectedModel();
-  const modelOpts = OPENROUTER_FREE_MODELS.map(m =>
-    `<option value="${m.id}" ${cur === m.id ? 'selected' : ''}>${m.label}</option>`
-  ).join('');
-  el.className = 'apikey-card has-key';
-  el.innerHTML = `
-    <div class="apikey-top">
-      <span class="apikey-title">OpenRouter API Key</span>
-      <span class="apikey-status ok">พร้อมใช้</span>
-    </div>
-    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">sk-or-···${key.slice(-6)}</div>
-    <div style="margin-bottom:8px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:4px">🤖 AI Model</div>
-      <select class="form-select" style="font-size:12px;padding:7px 10px" onchange="setModel(this.value)">${modelOpts}</select>
-    </div>
-    <div class="limit-track" style="margin:4px 0"><div class="limit-fill" style="width:${pct}%;background:${barColor};transition:width .5s"></div></div>
-    <div class="limit-info">
-      <span>ใช้ไป <b>${used}</b> / ${AI_DAILY_LIMIT} ครั้งวันนี้</span>
-      <span style="color:${barColor};font-weight:700">เหลือ ${rem} ครั้ง</span>
-    </div>
-    ${pct >= 75 && !isLimited() ? `<div style="background:var(--yellow-lt);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:#92400E;margin-top:6px">⚠️ ใกล้ครบ limit — รีเซ็ตในอีก ${usageResetIn()}</div>` : ''}
-    ${isLimited() ? `<div class="limit-blocked" style="margin-top:6px">❌ ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ — รีเซ็ตในอีก ${usageResetIn()}</div>` : ''}
-    <div style="font-size:10px;color:var(--text-3);margin-top:6px">รีเซ็ตทุกวันเที่ยงคืน · free models จาก OpenRouter</div>
-    <button class="apikey-clear" onclick="clearApiKey()" style="margin-top:8px">เปลี่ยน / ลบ Key</button>
-  `;
-}
-
-// ─── free models (ข้อความ) ───
-// ─── Text models (user เลือกได้) ───
-const OPENROUTER_FREE_MODELS = [
-  { id: 'openrouter/free',                           label: '🎲 Auto (เลือกอัตโนมัติ)' },
-  { id: 'meta-llama/llama-3.3-70b-instruct:free',    label: 'Llama 3.3 70B ⭐' },
-  { id: 'openai/gpt-oss-120b:free',                  label: 'GPT OSS 120B' },
-  { id: 'nvidia/nemotron-3-super-120b-a12b:free',    label: 'Nemotron 120B' },
-  { id: 'google/gemma-4-31b-it:free',                label: 'Gemma 4 31B' },
-  { id: 'qwen/qwen3-coder:free',                     label: 'Qwen3 Coder' },
-  { id: 'nousresearch/hermes-3-llama-3.1-405b:free', label: 'Hermes 405B' },
-  { id: 'google/gemma-3-27b-it:free',                label: 'Gemma 3 27B' },
-  { id: 'minimax/minimax-m2.5:free',                 label: 'MiniMax M2.5' },
+const OR_MODELS=[
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'openai/gpt-oss-120b:free',
+  'nvidia/nemotron-3-super-120b-a12b:free',
+  'google/gemma-4-31b-it:free',
+  'qwen/qwen3-coder:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'google/gemma-3-27b-it:free',
+  'minimax/minimax-m2.5:free',
+  'openrouter/free',
 ];
-// ─── Vision models (วิเคราะห์รูปภาพ) — ลองทีละตัว fallback ───
-// vision fallback list (ใช้เฉพาะถ้า selected model ไม่รองรับรูป)
-const IMG_FALLBACK = [
-  'qwen/qwen2.5-vl-72b-instruct:free',
+// model ที่รองรับ vision (วิเคราะห์รูปภาพ)
+const IMG_MODELS=[
+  'google/gemini-2.0-flash-lite-001',
   'google/gemma-3-27b-it:free',
   'google/gemma-4-31b-it:free',
+  'meta-llama/llama-3.2-11b-vision-instruct:free',
 ];
-const getSelectedModel = () => localStorage.getItem('fitstreak_model') || 'meta-llama/llama-3.3-70b-instruct:free';
-function setModel(id) { localStorage.setItem('fitstreak_model', id); showToast('เปลี่ยน model แล้ว'); renderApiCard(); }
-
-async function callOR(prompt, maxT = 600, withImg = null) {
-  if (isLimited()) throw new Error(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ รีเซ็ตในอีก ${usageResetIn()}`);
-  const key = localStorage.getItem('fitstreak_or_key') || '';
-  if (!key) throw new Error('ยังไม่ได้ใส่ OpenRouter API Key');
-  // เริ่มจาก model ที่ user เลือก → fallback ไปตัวอื่นอัตโนมัติถ้า rate limit / error
-  const selected = getSelectedModel();
-  const allTextIds = OPENROUTER_FREE_MODELS.map(m => m.id);
-  const textFallback = [selected, ...allTextIds.filter(id => id !== selected)];
-  const models = withImg
-    ? [selected, ...IMG_FALLBACK.filter(m => m !== selected)]
-    : textFallback;
-  let lastErr = '', triedModels = [];
-  for (const model of models) {
-    triedModels.push(model.split('/').pop().replace(':free',''));
-    try {
-      const msgContent = withImg
-        ? [{ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${withImg}` } }, { type: 'text', text: prompt }]
-        : prompt;
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}`, 'HTTP-Referer': 'https://fitstreak.app', 'X-Title': 'FitStreak' },
-        body: JSON.stringify({ model, messages: [{ role: 'user', content: msgContent }], temperature: 0.2, max_tokens: maxT })
-      });
-      if (res.status === 429) { lastErr = `${model} rate limit`; continue; }
-      const d = await res.json();
-      if (d.error) { lastErr = d.error.message || d.error.code || 'API error'; continue; }
-      const raw = (d.choices?.[0]?.message?.content || '').replace(/```json|```/g, '').trim();
-      if (!raw) { lastErr = 'ไม่ได้รับข้อมูล'; continue; }
-      // แจ้งถ้า fallback ไปใช้ตัวอื่น
-      if (model !== selected) showToast(`⚡ Fallback → ${model.split('/').pop().replace(':free','')}`);
+async function callOR(prompt,maxT=600,withImg=null){
+  const key=getApiKey();if(!key)throw new Error('ไม่มี API Key');
+  if(isLimited())throw new Error(`ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}`);
+  const models=withImg?IMG_MODELS:OR_MODELS;
+  let lastErr='';
+  for(let m=0;m<models.length;m++){
+    const model=models[m];
+    try{
+      const msgContent=withImg?[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${withImg}`}},{type:'text',text:prompt}]:prompt;
+      const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`,'HTTP-Referer':'https://fitstreak.app','X-Title':'FitStreak'},body:JSON.stringify({model,messages:[{role:'user',content:msgContent}],temperature:.2,max_tokens:maxT})});
+      if(res.status===429){
+        // อ่าน response body เพื่อดูว่าเป็น limit แบบไหน
+        let body='';
+        try{body=await res.text();}catch{}
+        const isRPM=body.includes('per minute')||body.includes('rpm')||body.includes('rate_limit_exceeded');
+        const isRPD=body.includes('per day')||body.includes('rpd')||body.includes('daily');
+        if(isRPD){
+          lastErr=`${model}: ถึง limit รายวัน (ครบโควต้าวันนี้แล้ว)`;
+        }else if(isRPM){
+          lastErr=`${model}: ถึง limit รายนาที — รอสักครู่แล้วลองใหม่`;
+        }else{
+          lastErr=`${model}: rate limit — ลองใหม่สักครู่`;
+        }
+        continue;
+      }
+      const d=await res.json();
+      if(d.error){lastErr=d.error.message||d.error.code||'API error';continue;}
+      const raw=(d.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
+      if(!raw){lastErr='ไม่ได้รับข้อมูล';continue;}
       return raw;
-    } catch (e) { lastErr = e.message || 'Network error'; continue; }
+    }catch(e){lastErr=e.message||'Network error';continue;}
   }
-  throw new Error(`ทุก model ไม่ว่าง (${triedModels.length} ตัว) — ${lastErr}`);
+  // แสดง error ที่ชัดขึ้น
+  const isRPM = lastErr.includes('รายนาที');
+  const isRPD = lastErr.includes('รายวัน');
+  if(isRPD) throw new Error('Model ถึง limit รายวัน (ครบโควต้าวันนี้แล้ว) — ลองพรุ่งนี้หรือใช้ model อื่น');
+  if(isRPM) throw new Error('Model ถึง limit รายนาที — รอ 60 วินาทีแล้วลองใหม่');
+  throw new Error(lastErr||'ทุก model ไม่ว่าง — ลองใหม่สักครู่');
 }
 
 // ═══════════════════════════════════════
@@ -1815,8 +1767,7 @@ function handlePhotoUpload(inp){
   const r=new FileReader();r.onload=e=>{const img=document.getElementById('previewImg');img.src=e.target.result;img.style.display='block';const btn=document.getElementById('analyzePhotoBtn');btn.style.display='block';btn.dataset.img=e.target.result.split(',')[1];};r.readAsDataURL(f);
 }
 async function analyzePhoto(){
-  const key=getApiKey();if(!key){showToast('ใส่ OpenRouter API Key ก่อน');return;}
-  if(isLimited()){showToast(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้`);return;}
+  const key=getApiKey();if(!key){showToast('ใส่ API Key ก่อน');return;}
   const btn=document.getElementById('analyzePhotoBtn');const imgData=btn.dataset.img;if(!imgData)return;
   btn.style.display='none';document.getElementById('scanLoading').style.display='block';document.getElementById('photoAiResult').classList.remove('visible');
   const prompt=`วิเคราะห์รูปอาหารนี้ ตอบเป็น JSON เท่านั้น:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
@@ -1870,7 +1821,7 @@ function addQRToLog(){
 // ═══════════════════════════════════════
 async function analyzeTextFood(){
   const txt=document.getElementById('textFoodInput')?.value?.trim();if(!txt)return;
-  if(isLimited()){showToast(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้`);return;}
+  if(!getApiKey()){showToast('ใส่ API Key ก่อน');return;}
   const el=document.getElementById('scanAiResult');el.classList.add('visible');
   el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
   const prompt=`ให้ข้อมูลโภชนาการของ "${txt}" ตอบ JSON:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
@@ -1890,7 +1841,7 @@ function addScanAIToLog(){
 }
 
 async function openMealPlanAI(){
-  if(isLimited()){showToast(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้`);return;}
+  const key=getApiKey();if(!key){showToast('ใส่ API Key ก่อน');return;}
   const goal=prompt('สร้างแผนมื้ออาหาร AI\n1.ลดน้ำหนัก\n2.เพิ่มกล้ามเนื้อ\n3.รักษาน้ำหนัก\nพิมพ์ 1-3:','1');
   const g={'1':'ลดน้ำหนัก','2':'เพิ่มกล้ามเนื้อ','3':'รักษาน้ำหนัก'}[goal]||'ลดน้ำหนัก';
   showToast('กำลังสร้างแผนมื้ออาหาร...');
@@ -2025,13 +1976,15 @@ function m4card(lbl,unit,eaten,goal,color){
   return`<div class="m4-card"><div class="m4-val" style="color:${done?color:'var(--text)'}">${eaten}</div><div class="m4-unit">${unit}</div><div class="m4-lbl">${lbl}</div><div class="m4-rem" style="color:${done?color:rem<goal*.2?'var(--yellow)':'var(--text-3)'}">${done?'ครบ':rem+unit}</div><div class="m4-bar"><div class="m4-barfill" style="width:${pct}%;background:${color}"></div></div></div>`;
 }
 function renderNutrApiCard(){
-  const used=getUsage(),pct=Math.min(Math.round(used/AI_DAILY_LIMIT*100),100);
-  const barColor=pct>=100?"#DC2626":pct>=75?"var(--yellow)":"var(--green)";
-  return`<div class="apikey-card has-key"><div class="apikey-top"><span class="apikey-title">🤖 AI ในตัว — ฟรี</span><span class="apikey-status ok">พร้อมใช้</span></div><div class="limit-track"><div class="limit-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="limit-info"><span>ใช้ไป <b>${used}</b> / ${AI_DAILY_LIMIT} ครั้งวันนี้</span><span style="color:${barColor};font-weight:700">เหลือ ${usageRem()} ครั้ง</span></div>${isLimited()?`<div class="limit-blocked" style="margin-top:6px">ครบ limit รีเซ็ตในอีก ${usageResetIn()}</div>`:""}</div>`;
+  const key=getApiKey(),used=getUsage(),pct=Math.min(Math.round(used/OR_LIMIT*100),100);
+  const barColor=pct>=100?'#DC2626':pct>=80?'var(--yellow)':'var(--green)';
+  if(!key)return`<div class="apikey-card"><div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status missing">ยังไม่ได้ตั้ง</span></div><div class="apikey-row"><input class="apikey-input" id="nutrApiInput" type="password" placeholder="sk-or-v1-..."/><button class="apikey-save" onclick="saveNutrApiKey()">บันทึก</button></div><div class="apikey-hint">ฟรี 200 req/วัน — openrouter.ai → Keys</div></div>`;
+  return`<div class="apikey-card has-key"><div class="apikey-top"><span class="apikey-title">OpenRouter</span><span class="apikey-status ok">พร้อมใช้</span></div><div class="limit-track"><div class="limit-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="limit-info"><span>${used}/${OR_LIMIT} req วันนี้</span><span style="color:${barColor}">เหลือ ${usageRem()}</span></div>${isLimited()?`<div class="limit-blocked" style="margin-top:6px">ถึง limit รีเซ็ตในอีก ${usageResetIn()}</div>`:''}</div>`;
 }
-function saveNutrApiKey(){}
+function saveNutrApiKey(){const v=document.getElementById('nutrApiInput')?.value?.trim();if(!v)return;if(!v.startsWith('sk-or-')){showToast('Key ต้องขึ้นต้นด้วย sk-or-');return;}localStorage.setItem('fitstreak_or_key',v);showToast('บันทึก Key แล้ว');}
 async function askNutrition(){
-  if(isLimited()){showToast(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ รีเซ็ตในอีก ${usageResetIn()}`);return;}
+  if(!getApiKey()){showToast('ใส่ API Key ก่อน');return;}
+  if(isLimited()){showToast(`ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}`);return;}
   const q=document.getElementById('nutrInput')?.value?.trim();if(!q)return;
   const el=document.getElementById('nutrResult');if(!el)return;
   const askBtn=document.getElementById('nutrAskBtn');if(askBtn)askBtn.textContent='...';
@@ -2095,8 +2048,7 @@ function renderPlanner(){
     <div class="planner-opts-title">สไตล์อาหาร</div>
     <div class="planner-style-btns" style="flex-wrap:wrap">${styles.map(s=>`<button class="planner-style-btn ${plannerState.style===s?'active':''}" onclick="setPlanOpt('style','${s}')">${s}</button>`).join('')}</div>
   </div>`;
-  
-  if(!getApiKey())h+=`<div class="no-key-box"><h3>ต้องมี OpenRouter API Key</h3><p>ไปที่ สแกน AI แล้วใส่ Key ก่อน</p></div>`;
+  if(!key)h+=`<div class="no-key-box"><h3>ต้องมี OpenRouter API Key</h3><p>ไปที่ โภชนาการ แล้วใส่ Key ก่อน</p></div>`;
   else if(isLimited())h+=`<div class="limit-blocked">ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}</div>`;
   else h+=`<button class="btn btn-primary btn-block" style="padding:14px;font-size:14px;margin-bottom:12px" onclick="generatePlan()">แนะนำเมนูให้เลย</button>`;
   if(plannerState.loading){h+=`<div class="planner-loading"><span class="pl-spinner">🍽️</span><div style="font-size:14px">กำลังวางแผนมื้ออาหาร...</div></div>`;}
@@ -2118,7 +2070,7 @@ function renderPlanner(){
 }
 function setPlanOpt(k,v){plannerState[k]=v;plannerState.result=null;renderPlanner();}
 async function generatePlan(){
-  if(isLimited())return;
+  if(!getApiKey()||isLimited())return;
   const sch=getSched(),goals=getNutrGoals(),eaten=getEaten();
   const rem={cal:Math.max(0,goals.cal-eaten.cal),protein:Math.max(0,goals.protein-eaten.protein),fat:Math.max(0,goals.fat-eaten.fat),carb:Math.max(0,goals.carb-eaten.carb)};
   const useRem=eaten.cal>50;
@@ -2137,7 +2089,7 @@ const COACH_QUICK=['ท่า Push Up ที่ถูกต้อง','ท่า
 const COACH_SYS=`คุณคือ AI Personal Trainer พูดภาษาไทย เป็นกันเอง ใช้ emoji เหมาะสม\nข้อมูล: ออกกำลังกาย Dumbbell+Bodyweight ที่บ้าน 4-5 ทุ่ม เป้าลีนและสร้างกล้ามเนื้อ\nถ้าถามเรื่อง "ท่า" ตอบด้วย prefix [EXERCISE_CARD] แล้ว JSON:\n{"name":"ชื่อ","emoji":"emoji","target":"กล้ามเป้าหมาย","sets":"เซต×ครั้ง","level":"ระดับ","steps":["ขั้น1","ขั้น2","ขั้น3","ขั้น4"],"tip":"เคล็ดลับ"}\nถามทั่วไปตอบข้อความปกติ ไม่ต้องยาว เน้น practical`;
 function renderCoach(){
   const el=document.getElementById('page-coach');if(!el)return;
-  const limited=isLimited();
+  const key=getApiKey(),limited=isLimited();
   let msgsHtml='';
   if(!coachMessages.length){
     msgsHtml=`<div class="coach-msg cm-ai"><div class="coach-bubble">สวัสดีครับ! วันนี้ ${getSched().name} — ${getSched().focus}<br><br>ถามได้เลยครับ ไม่ว่าจะเรื่องท่าออกกำลังกาย โภชนาการ หรือสุขภาพทั่วไป</div><div class="cm-time">AI Coach</div></div>`;
@@ -2155,11 +2107,11 @@ function renderCoach(){
     });
   }
   if(coachTyping)msgsHtml+=`<div class="coach-msg cm-ai"><div class="coach-typing"><div class="ct-dot"></div><div class="ct-dot"></div><div class="ct-dot"></div></div></div>`;
-  const canSend=!limited&&!coachTyping;
+  const canSend=!!key&&!limited&&!coachTyping;
 
   el.innerHTML=`
   <div class="coach-msgs-area" id="coachMsgs">
-    ${limited?`<div class="limit-blocked">❌ ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ — รีเซ็ตในอีก ${usageResetIn()}</div>`:''}
+    ${!key?`<div class="no-key-box"><h3>ต้องมี OpenRouter API Key</h3><p>ไปที่ สแกน AI แล้วใส่ Key ก่อน</p></div>`:''}
     ${limited?`<div class="limit-blocked">ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}</div>`:''}
     ${msgsHtml}
   </div>
@@ -2174,7 +2126,7 @@ function renderCoach(){
 }
 function coachQuick(t){const inp=document.getElementById('coachInput');if(inp)inp.value=t;sendCoach();}
 async function sendCoach(){
-  if(isLimited()||coachTyping)return;
+  if(!getApiKey()||isLimited()||coachTyping)return;
   const inp=document.getElementById('coachInput');const txt=(inp?inp.value:'').trim();if(!txt)return;if(inp)inp.value='';
   const now=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
   coachMessages.push({role:'user',text:txt,time:now});coachTyping=true;renderCoach();
