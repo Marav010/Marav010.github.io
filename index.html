@@ -1716,6 +1716,7 @@ function addFromRecentScan(idx){
   log[meal].push({food:m.food||m.foodName,calories:m.calories||0,protein:m.protein||0,fat:m.fat||0,carbs:m.carbs||0,emoji:'🍽️',meal});
   saveState();updateHomeUI();showToast(`เพิ่ม ${m.food||m.foodName} แล้ว`);
 }
+function addNutrToLog(){
   if(!currentNutrResult)return;
   const m=currentNutrResult;
   if(m.isWater){addWater(m.waterMl||600);return;}
@@ -1969,16 +1970,8 @@ async function askNutrition(){
     nutrQueryHistory.unshift(r);if(nutrQueryHistory.length>8)nutrQueryHistory.pop();
     renderRecentScans();
     const inp=document.getElementById('nutrInput');if(inp)inp.value='';
-  }
-  function addNutrToLog(){
-  if(!currentNutrResult)return;
-  const m=currentNutrResult;
-  if(m.isWater){addWater(m.waterMl||600);return;}
-  const log=getDayLog();
-  const hr=new Date().getHours();
-  const meal=hr<11?'breakfast':hr<15?'lunch':hr<20?'dinner':'snack';
-  log[meal].push({food:m.food||m.foodName,calories:m.calories||0,protein:m.protein||0,fat:m.fat||0,carbs:m.carbs||0,emoji:'🍽️',meal});
-  saveState();updateHomeUI();showToast(`เพิ่ม ${m.food||m.foodName} แล้ว`);
+  }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px;padding:8px">ไม่สำเร็จ: ${e.message}</div>`;}
+  if(askBtn)askBtn.textContent='ถาม';
 }
 function showMealInfo(idx){currentNutrResult=MY_MEALS[idx];displayNutrResult(MY_MEALS[idx]);nutrQueryHistory.unshift(MY_MEALS[idx]);if(nutrQueryHistory.length>8)nutrQueryHistory.pop();renderRecentScans();setTimeout(()=>document.getElementById('nutrResult')?.scrollIntoView({behavior:'smooth',block:'nearest'}),80);}
 function displayNutrResult(info){
