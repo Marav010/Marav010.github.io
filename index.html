@@ -1435,13 +1435,21 @@ function renderApiCard() {
       <div class="apikey-hint">ฟรี 200 req/วัน — <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai → Keys</a></div>`;
     return;
   }
+  const cur = getSelectedModel();
+  const modelOpts = OPENROUTER_FREE_MODELS.map(m =>
+    `<option value="${m.id}" ${cur === m.id ? 'selected' : ''}>${m.label}</option>`
+  ).join('');
   el.className = 'apikey-card has-key';
   el.innerHTML = `
     <div class="apikey-top">
       <span class="apikey-title">OpenRouter API Key</span>
       <span class="apikey-status ok">พร้อมใช้</span>
     </div>
-    <div style="font-size:11px;color:var(--text-3);margin-bottom:6px">sk-or-···${key.slice(-6)}</div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">sk-or-···${key.slice(-6)}</div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:4px">🤖 AI Model</div>
+      <select class="form-select" style="font-size:12px;padding:7px 10px" onchange="setModel(this.value)">${modelOpts}</select>
+    </div>
     <div class="limit-track" style="margin:4px 0"><div class="limit-fill" style="width:${pct}%;background:${barColor};transition:width .5s"></div></div>
     <div class="limit-info">
       <span>ใช้ไป <b>${used}</b> / ${AI_DAILY_LIMIT} ครั้งวันนี้</span>
@@ -1449,32 +1457,39 @@ function renderApiCard() {
     </div>
     ${pct >= 75 && !isLimited() ? `<div style="background:var(--yellow-lt);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:#92400E;margin-top:6px">⚠️ ใกล้ครบ limit — รีเซ็ตในอีก ${usageResetIn()}</div>` : ''}
     ${isLimited() ? `<div class="limit-blocked" style="margin-top:6px">❌ ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ — รีเซ็ตในอีก ${usageResetIn()}</div>` : ''}
-    <div style="font-size:10px;color:var(--text-3);margin-top:6px">รีเซ็ตทุกวันเที่ยงคืน · ใช้ free models จาก OpenRouter</div>
+    <div style="font-size:10px;color:var(--text-3);margin-top:6px">รีเซ็ตทุกวันเที่ยงคืน · free models จาก OpenRouter</div>
     <button class="apikey-clear" onclick="clearApiKey()" style="margin-top:8px">เปลี่ยน / ลบ Key</button>
   `;
 }
 
 // ─── free models (ข้อความ) ───
-const OR_MODELS = [
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-4-31b-it:free',
-  'qwen/qwen3-235b-a22b:free',
-  'mistralai/mistral-7b-instruct:free',
+// ─── Text models (user เลือกได้) ───
+const OPENROUTER_FREE_MODELS = [
+  { id: 'openrouter/free',                           label: '🎲 Auto (เลือกอัตโนมัติ)' },
+  { id: 'meta-llama/llama-3.3-70b-instruct:free',    label: 'Llama 3.3 70B ⭐' },
+  { id: 'openai/gpt-oss-120b:free',                  label: 'GPT OSS 120B' },
+  { id: 'nvidia/nemotron-3-super-120b-a12b:free',    label: 'Nemotron 120B' },
+  { id: 'google/gemma-4-31b-it:free',                label: 'Gemma 4 31B' },
+  { id: 'qwen/qwen3-coder:free',                     label: 'Qwen3 Coder' },
+  { id: 'nousresearch/hermes-3-llama-3.1-405b:free', label: 'Hermes 405B' },
+  { id: 'google/gemma-3-27b-it:free',                label: 'Gemma 3 27B' },
+  { id: 'minimax/minimax-m2.5:free',                 label: 'MiniMax M2.5' },
 ];
-// ─── free models ที่รองรับรูปภาพ (vision) ───
+// ─── Vision models (วิเคราะห์รูปภาพ) — ลองทีละตัว fallback ───
 const IMG_MODELS = [
+  'qwen/qwen2.5-vl-72b-instruct:free',
   'google/gemma-3-27b-it:free',
   'google/gemma-4-31b-it:free',
-  'qwen/qwen2.5-vl-72b-instruct:free',
-  'meta-llama/llama-3.2-90b-vision-instruct:free',
 ];
+const getSelectedModel = () => localStorage.getItem('fitstreak_model') || 'meta-llama/llama-3.3-70b-instruct:free';
+function setModel(id) { localStorage.setItem('fitstreak_model', id); showToast('เปลี่ยน model แล้ว'); renderApiCard(); }
 
 async function callOR(prompt, maxT = 600, withImg = null) {
   if (isLimited()) throw new Error(`ครบ ${AI_DAILY_LIMIT} ครั้งแล้ววันนี้ รีเซ็ตในอีก ${usageResetIn()}`);
   const key = localStorage.getItem('fitstreak_or_key') || '';
   if (!key) throw new Error('ยังไม่ได้ใส่ OpenRouter API Key');
-  const models = withImg ? IMG_MODELS : OR_MODELS;
+  // vision: ลองหลาย model / text: ใช้ model ที่ user เลือก
+  const models = withImg ? IMG_MODELS : [getSelectedModel()];
   let lastErr = '';
   for (const model of models) {
     try {
@@ -1488,7 +1503,7 @@ async function callOR(prompt, maxT = 600, withImg = null) {
       });
       if (res.status === 429) { lastErr = `${model}: rate limit`; continue; }
       const d = await res.json();
-      if (d.error) { lastErr = d.error.message || 'API error'; continue; }
+      if (d.error) { lastErr = d.error.message || d.error.code || 'API error'; continue; }
       const raw = (d.choices?.[0]?.message?.content || '').replace(/```json|```/g, '').trim();
       if (!raw) { lastErr = 'ไม่ได้รับข้อมูล'; continue; }
       return raw;
