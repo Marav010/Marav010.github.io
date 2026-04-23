@@ -1468,8 +1468,15 @@ async function callOR(prompt,maxT=600,withImg=null){
       }
       const d=await res.json();
       if(d.error){lastErr=d.error.message||d.error.code||'API error';continue;}
-      const raw=(d.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
+      let raw=(d.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
       if(!raw){lastErr='ไม่ได้รับข้อมูล';continue;}
+      // ซ่อม JSON ที่ถูกตัดกลาง
+      if(raw.startsWith('{')){
+        const opens=(raw.match(/{/g)||[]).length,closes=(raw.match(/}/g)||[]).length;
+        if(opens>closes)raw+=Array(opens-closes).fill('}').join('');
+        // ลบ trailing comma ก่อน }
+        raw=raw.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
+      }
       return raw;
     }catch(e){lastErr=e.message||'Network error';continue;}
   }
@@ -1780,7 +1787,7 @@ async function analyzePhoto(){
   btn.style.display='none';document.getElementById('scanLoading').style.display='block';document.getElementById('photoAiResult').classList.remove('visible');
   const prompt=`วิเคราะห์รูปอาหารนี้ ตอบเป็น JSON เท่านั้น:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
   try{
-    const raw=await callOR(prompt,600,imgData);incUsage();
+    const raw=await callOR(prompt,1200,imgData);incUsage();
     const r=JSON.parse(raw);lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     document.getElementById('photoFoodName').textContent=r.foodName;document.getElementById('photoNutrition').innerHTML=buildNutritionHTML(r);
     document.getElementById('photoAiResult').classList.add('visible');document.getElementById('addPhotoBtn').style.display='block';
@@ -1803,7 +1810,7 @@ function handleQRUpload(inp){const f=inp.files[0];if(!f)return;const r=new FileR
 async function analyzeQRImg(imgData){
   document.getElementById('qrLoading').style.display='block';
   const prompt=`วิเคราะห์สินค้าจากรูปนี้ ตอบ JSON:\n{"productName":"ชื่อ","brand":"แบรนด์","calories":0,"carbs":0,"protein":0,"fat":0,"sugar":0,"sodium":0,"fiber":0,"servingSize":"ขนาด","servingsPerPack":1,"ingredients":"ส่วนประกอบ"}`;
-  try{const raw=await callOR(prompt,500,imgData);incUsage();showQRResult(JSON.parse(raw));}catch(e){showToast('อ่าน Barcode ไม่สำเร็จ');}
+  try{const raw=await callOR(prompt,800,imgData);incUsage();showQRResult(JSON.parse(raw));}catch(e){showToast('อ่าน Barcode ไม่สำเร็จ');}
   document.getElementById('qrLoading').style.display='none';
 }
 function simulateQR(){
@@ -1834,7 +1841,7 @@ async function analyzeTextFood(){
   el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
   const prompt=`ให้ข้อมูลโภชนาการของ "${txt}" ตอบ JSON:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
   try{
-    const raw=await callOR(prompt,500);incUsage();const r=JSON.parse(raw);
+    const raw=await callOR(prompt,700);incUsage();const r=JSON.parse(raw);
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>`;
     el.classList.add('visible');
@@ -1999,7 +2006,7 @@ async function askNutrition(){
   el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
   const prompt=`โภชนาการของ "${q}" ตอบ JSON:\n{"food":"ชื่อ","serving":"ขนาด","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sugar":0,"note":"หมายเหตุ"}`;
   try{
-    const raw=await callOR(prompt,500);incUsage();const r=JSON.parse(raw);currentNutrResult=r;displayNutrResult(r);
+    const raw=await callOR(prompt,800);incUsage();const r=JSON.parse(raw);currentNutrResult=r;displayNutrResult(r);
     nutrQueryHistory.unshift(r);if(nutrQueryHistory.length>8)nutrQueryHistory.pop();
     renderRecentScans();
     const inp=document.getElementById('nutrInput');if(inp)inp.value='';
