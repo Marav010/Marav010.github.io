@@ -1269,7 +1269,7 @@ function loadState(){
   try{
     const raw=localStorage.getItem('fitstreak_v4');
     if(!raw)return {};
-    return JSON.parse(raw);
+    return safeParseJSON(raw);
   }catch{return {};}
 }
 function saveState(){
@@ -1444,6 +1444,31 @@ const IMG_MODELS=[
   'meta-llama/llama-3.2-11b-vision-instruct:free', // อันดับ 7 — Llama vision (20 req/นาที, 200/วัน)
   'mistralai/mistral-small-3.1-24b-instruct:free', // อันดับ 8 — Mistral vision (20 req/นาที, 200/วัน)
 ];
+// ── JSON helpers ──
+function repairAndExtractJSON(raw){
+  if(!raw)return raw;
+  // ดึง JSON block ออกจากข้อความที่อาจมี prose นำหน้า/ตามหลัง
+  const m=raw.match(/\{[\s\S]*\}/);
+  if(m)raw=m[0];
+  if(!raw.startsWith('{'))return raw;
+  // ตัด field/value ที่ยังค้างอยู่
+  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*"[^"]*$/,'');  // key:"unterminated
+  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*[\d.]*$/,'');  // key:123 (no close)
+  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*$/,'');         // key: (no value)
+  raw=raw.replace(/,?\s*"[^"]*"\s*$/,'');              // "key (no colon)
+  raw=raw.replace(/,\s*$/,'');                          // trailing comma
+  // ปิด } ที่ขาด
+  const o=(raw.match(/\{/g)||[]).length,c=(raw.match(/\}/g)||[]).length;
+  if(o>c)raw+=Array(o-c).fill('}').join('');
+  // ลบ trailing comma ก่อน }]
+  raw=raw.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
+  return raw;
+}
+function safeParseJSON(raw){
+  const fixed=repairAndExtractJSON(raw);
+  return JSON.parse(fixed);
+}
+
 async function callOR(prompt,maxT=600,withImg=null){
   const key=getApiKey();if(!key)throw new Error('ไม่มี API Key');
   if(isLimited())throw new Error(`ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}`);
@@ -1475,21 +1500,7 @@ async function callOR(prompt,maxT=600,withImg=null){
       if(d.error){lastErr=d.error.message||d.error.code||'API error';continue;}
       let raw=(d.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
       if(!raw){lastErr='ไม่ได้รับข้อมูล';continue;}
-      // ── JSON repair: แก้ JSON ที่ถูกตัดกลาง ──
-      if(raw.startsWith('{')){
-        // 1) ตัด field สุดท้ายที่ยังไม่สมบูรณ์ออก (unterminated string/value)
-        // หา position ของ comma สุดท้ายที่อยู่หลัง value ที่สมบูรณ์
-        raw=raw.replace(/,\s*"[^"]*$/, '');      // ตัด key ที่ยังไม่มี value
-        raw=raw.replace(/:\s*"[^"]*$/, '');      // ตัด value string ที่ขาดปิด
-        raw=raw.replace(/:\s*[\d.]+$/, '');     // ตัด value number ที่ค้าง
-        raw=raw.replace(/,\s*$/, '');            // ตัด trailing comma
-        // 2) ปิด } ที่ขาด
-        const opens=(raw.match(/{/g)||[]).length,closes=(raw.match(/}/g)||[]).length;
-        if(opens>closes)raw+=Array(opens-closes).fill('}').join('');
-        // 3) ลบ trailing comma ก่อน } หรือ ]
-        raw=raw.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
-      }
-      return raw;
+      return repairAndExtractJSON(raw);
     }catch(e){lastErr=e.message||'Network error';continue;}
   }
   // แสดง error ที่ชัดขึ้น พร้อมข้อมูล limit
@@ -1828,7 +1839,7 @@ async function analyzePhoto(){
   const prompt=`วิเคราะห์รูปอาหารนี้ ตอบ JSON เท่านั้น ห้ามพิมพ์อื่น:\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"ขนาด","healthScore":0,"note":"หมายเหตุสั้น"}`;
   try{
     const raw=await callOR(prompt,1500,imgData);incUsage();
-    const r=JSON.parse(raw);lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
+    const r=safeParseJSON(raw);lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     document.getElementById('photoFoodName').textContent=r.foodName;document.getElementById('photoNutrition').innerHTML=buildNutritionHTML(r);
     document.getElementById('photoAiResult').classList.add('visible');
     const pab=document.getElementById('photoActionBtns');if(pab)pab.style.display='flex';
@@ -1853,7 +1864,7 @@ function handleQRUpload(inp){const f=inp.files[0];if(!f)return;const r=new FileR
 async function analyzeQRImg(imgData){
   document.getElementById('qrLoading').style.display='block';
   const prompt=`วิเคราะห์สินค้าจากรูปนี้ ตอบ JSON:\n{"productName":"ชื่อ","brand":"แบรนด์","calories":0,"carbs":0,"protein":0,"fat":0,"sugar":0,"sodium":0,"fiber":0,"servingSize":"ขนาด","servingsPerPack":1,"ingredients":"ส่วนประกอบ"}`;
-  try{const raw=await callOR(prompt,800,imgData);incUsage();showQRResult(JSON.parse(raw));}catch(e){showToast('อ่าน Barcode ไม่สำเร็จ');}
+  try{const raw=await callOR(prompt,800,imgData);incUsage();showQRResult(safeParseJSON(raw));}catch(e){showToast('อ่าน Barcode ไม่สำเร็จ');}
   document.getElementById('qrLoading').style.display='none';
 }
 function simulateQR(){
@@ -1878,92 +1889,17 @@ function addQRToLog(){
 // TEXT AI SCAN
 // ═══════════════════════════════════════
 async function analyzeTextFood(){
-
- const txt=document.getElementById('textFoodInput')?.value?.trim();
- if(!txt) return;
-
- if(!getApiKey()){
-   showToast('ใส่ API Key ก่อน');
-   return;
- }
-
- const el=document.getElementById('scanAiResult');
- el.classList.add('visible');
- el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
-
- const prompt=`
-ตอบกลับเป็น JSON เท่านั้น ไม่มี markdown ไม่มีข้อความอื่น
-
-{
-"foodName":"ชื่ออาหาร",
-"calories":0,
-"carbs":0,
-"protein":0,
-"fat":0,
-"fiber":0,
-"sugar":0,
-"sodium":0,
-"vitaminC":0,
-"calcium":0,
-"servingSize":"ขนาดเสิร์ฟ",
-"healthScore":0,
-"note":"หมายเหตุ"
-}
-
-อาหาร: ${txt}
-`;
-
- try{
-
-   const raw=await callOR(prompt,700);
-   incUsage();
-
-   let cleaned=raw
-      .replace(/```json/g,'')
-      .replace(/```/g,'')
-      .trim();
-
-   const r=safeParseJSON(cleaned);
-
-   lastAIFood={
-      name:r.foodName,
-      emoji:'🍽️',
-      kcal:r.calories,
-      carb:r.carbs,
-      protein:r.protein,
-      fat:r.fat
-   };
-
-   el.innerHTML=
-   `<div class="ai-badge">AI วิเคราะห์</div>
-    <div class="ai-food-name">${r.foodName}</div>
-    ${buildNutritionHTML(r)}
-    <button class="btn btn-primary btn-block"
-    style="margin-top:10px;padding:11px;font-size:13px"
-    onclick="addScanAIToLog()">
-      เพิ่มในบันทึก
-    </button>`;
-
- }catch(e){
-
-   console.error(raw);
-
-   el.innerHTML=
-   `<div style="color:#DC2626;font-size:13px">
-      วิเคราะห์ไม่สำเร็จ: ${e.message}
-    </div>`;
- }
-}
-
-function safeParseJSON(str){
- try{
-   return JSON.parse(str);
- }catch{
-   str=str
-    .replace(/(\w+):/g,'"$1":')
-    .replace(/,\s*}/g,'}');
-   return JSON.parse(str);
- }
+  const txt=document.getElementById('textFoodInput')?.value?.trim();if(!txt)return;
+  if(!getApiKey()){showToast('ใส่ API Key ก่อน');return;}
+  const el=document.getElementById('scanAiResult');el.classList.add('visible');
+  el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
+  const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${txt}":\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"1 จาน","healthScore":0,"note":"หมายเหตุสั้น"}`;
+  try{
+    const raw=await callOR(prompt,700);incUsage();const r=safeParseJSON(raw);
+    lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
+    el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>`;
+    el.classList.add('visible');
+  }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
 }
 function addScanAIToLog(){
   if(!lastAIFood)return;
@@ -2122,9 +2058,9 @@ async function askNutrition(){
   const el=document.getElementById('nutrResult');if(!el)return;
   const askBtn=document.getElementById('nutrAskBtn');if(askBtn)askBtn.textContent='...';
   el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
-  const prompt=`โภชนาการของ "${q}" ตอบ JSON:\n{"food":"ชื่อ","serving":"ขนาด","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sugar":0,"note":"หมายเหตุ"}`;
+  const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${q}":\n{"food":"ชื่ออาหาร","serving":"1 จาน","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"note":"หมายเหตุสั้น"}`;
   try{
-    const raw=await callOR(prompt,800);incUsage();const r=JSON.parse(raw);currentNutrResult=r;displayNutrResult(r);
+    const raw=await callOR(prompt,800);incUsage();const r=safeParseJSON(raw);if(r.food&&!r.foodName)r.foodName=r.food;if(!r.calories&&!r.foodName){throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');}currentNutrResult=r;displayNutrResult(r);
     nutrQueryHistory.unshift(r);if(nutrQueryHistory.length>8)nutrQueryHistory.pop();
     renderRecentScans();
     const inp=document.getElementById('nutrInput');if(inp)inp.value='';
@@ -2213,7 +2149,7 @@ async function generatePlan(){
   const mealNames=plannerState.mealCount===2?['มื้อกลางวัน (12:00)','มื้อเย็น (20:00-21:00)']:['มื้อเช้า-กลางวัน (11:00)','มื้อบ่าย (16:00)','มื้อเย็น (20:00-21:00)'];
   plannerState.loading=true;plannerState.result=null;renderPlanner();
   const prompt=`วางแผนมื้ออาหาร ${plannerState.mealCount} มื้อ วัน${sch.name} (${goals.label})\nเป้า${useRem?'ที่เหลือ':''}: ${useRem?rem.cal:goals.cal}kcal P${useRem?rem.protein:goals.protein}g F${useRem?rem.fat:goals.fat}g C${useRem?rem.carb:goals.carb}g\nสไตล์${plannerState.style} ออกกำลังกาย 4-5 ทุ่ม มื้อ: ${mealNames.join(' | ')}\nตอบ JSON:\n{"meals":[{"name":"ชื่อมื้อ","icon":"emoji","items":[{"name":"ชื่ออาหาร+ขนาด","emoji":"emoji","calories":0,"protein":0,"fat":0,"carbs":0,"note":"เหตุผล"}]}],"tip":"เคล็ดลับ"}`;
-  try{const raw=await callOR(prompt,1800);incUsage();plannerState.result=JSON.parse(raw);plannerState.loading=false;renderPlanner();showToast('แผนมื้ออาหารพร้อมแล้ว!');}
+  try{const raw=await callOR(prompt,1800);incUsage();plannerState.result=safeParseJSON(raw);plannerState.loading=false;renderPlanner();showToast('แผนมื้ออาหารพร้อมแล้ว!');}
   catch(e){plannerState.loading=false;renderPlanner();showToast('ไม่สำเร็จ: '+(e.message||'ลองใหม่'));}
 }
 function addPlanMeal(idx){if(!plannerState.result)return;const m=plannerState.result.meals[idx];const k=today();if(!S.foodLog[k])S.foodLog[k]=[];m.items.forEach(it=>S.foodLog[k].push({food:it.name,calories:it.calories||0,protein:it.protein||0,fat:it.fat||0,carbs:it.carbs||0}));saveState();showToast(`บันทึก ${m.name} แล้ว`);}
