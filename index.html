@@ -1475,11 +1475,18 @@ async function callOR(prompt,maxT=600,withImg=null){
       if(d.error){lastErr=d.error.message||d.error.code||'API error';continue;}
       let raw=(d.choices?.[0]?.message?.content||'').replace(/```json|```/g,'').trim();
       if(!raw){lastErr='ไม่ได้รับข้อมูล';continue;}
-      // ซ่อม JSON ที่ถูกตัดกลาง
+      // ── JSON repair: แก้ JSON ที่ถูกตัดกลาง ──
       if(raw.startsWith('{')){
+        // 1) ตัด field สุดท้ายที่ยังไม่สมบูรณ์ออก (unterminated string/value)
+        // หา position ของ comma สุดท้ายที่อยู่หลัง value ที่สมบูรณ์
+        raw=raw.replace(/,\s*"[^"]*$/, '');      // ตัด key ที่ยังไม่มี value
+        raw=raw.replace(/:\s*"[^"]*$/, '');      // ตัด value string ที่ขาดปิด
+        raw=raw.replace(/:\s*[\d.]+$/, '');     // ตัด value number ที่ค้าง
+        raw=raw.replace(/,\s*$/, '');            // ตัด trailing comma
+        // 2) ปิด } ที่ขาด
         const opens=(raw.match(/{/g)||[]).length,closes=(raw.match(/}/g)||[]).length;
         if(opens>closes)raw+=Array(opens-closes).fill('}').join('');
-        // ลบ trailing comma ก่อน }
+        // 3) ลบ trailing comma ก่อน } หรือ ]
         raw=raw.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
       }
       return raw;
@@ -1818,9 +1825,9 @@ async function analyzePhoto(){
   const key=getApiKey();if(!key){showToast('ใส่ API Key ก่อน');return;}
   const btn=document.getElementById('analyzePhotoBtn');const imgData=btn.dataset.img;if(!imgData)return;
   btn.style.display='none';document.getElementById('scanLoading').style.display='block';document.getElementById('photoAiResult').classList.remove('visible');
-  const prompt=`วิเคราะห์รูปอาหารนี้ ตอบเป็น JSON เท่านั้น:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
+  const prompt=`วิเคราะห์รูปอาหารนี้ ตอบ JSON เท่านั้น ห้ามพิมพ์อื่น:\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"ขนาด","healthScore":0,"note":"หมายเหตุสั้น"}`;
   try{
-    const raw=await callOR(prompt,1200,imgData);incUsage();
+    const raw=await callOR(prompt,1500,imgData);incUsage();
     const r=JSON.parse(raw);lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     document.getElementById('photoFoodName').textContent=r.foodName;document.getElementById('photoNutrition').innerHTML=buildNutritionHTML(r);
     document.getElementById('photoAiResult').classList.add('visible');
