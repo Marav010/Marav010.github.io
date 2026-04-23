@@ -1128,7 +1128,10 @@ circle.tr-fg.warn { stroke: #EF4444; }
       <div class="ai-badge">AI วิเคราะห์</div>
       <div class="ai-food-name" id="scanFoodName"></div>
       <div id="scanNutrition"></div>
-      <button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+        <button class="btn btn-teal btn-block" style="padding:11px;font-size:13px" onclick="addScanAIToLog()">+ เพิ่มในบันทึกวันนี้</button>
+        <button class="btn btn-outline btn-block" style="padding:11px;font-size:13px" onclick="addScanAIToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
+      </div>
     </div>
     <div class="sec-label">เมนูล่าสุด</div>
     <div id="recentScans"><div style="text-align:center;padding:16px;color:var(--text-3);font-size:13px">ยังไม่มีประวัติ — ลองสแกนหรือถามดูก่อนเลย</div></div>
@@ -1917,9 +1920,15 @@ async function analyzeTextFood(){
   try{
     const raw=await callOR(prompt,700);incUsage();const r=safeParseJSON(raw);
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
-    el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>`;
+    document.getElementById('scanFoodName').textContent=r.foodName;
+    document.getElementById('scanNutrition').innerHTML=buildNutritionHTML(r);
+    el.classList.add('visible');
     el.classList.add('visible');
   }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
+}
+function addScanAIToFav(){
+  if(!lastAIFood)return;
+  addToFav({food:lastAIFood.name,calories:lastAIFood.kcal,protein:lastAIFood.protein,fat:lastAIFood.fat,carbs:lastAIFood.carb,emoji:'🍽️'});
 }
 function addScanAIToLog(){
   if(!lastAIFood)return;
