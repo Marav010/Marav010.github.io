@@ -244,6 +244,7 @@ body {
   font-family: inherit; font-weight: 700; transition: all .15s;
   display: inline-flex; align-items: center; justify-content: center;
 }
+.btn-outline { background: transparent !important; color: var(--accent) !important; border: 1.5px solid var(--accent) !important; }
 .btn:active { transform: scale(.96); }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:disabled { opacity: .45; cursor: default; transform: none; }
@@ -834,7 +835,10 @@ circle.tr-fg.warn { stroke: #EF4444; }
       <div id="photoNutrition"></div>
     </div>
     <button class="btn btn-primary btn-block" id="analyzePhotoBtn" style="display:none;margin-top:10px" onclick="analyzePhoto()">วิเคราะห์โภชนาการ</button>
-    <button class="btn btn-teal btn-block" id="addPhotoBtn" style="display:none;margin-top:8px" onclick="addPhotoToLog()">เพิ่มในบันทึก</button>
+    <div id="photoActionBtns" style="display:none;margin-top:8px;display:none">
+      <button class="btn btn-teal btn-block" style="margin-bottom:6px" onclick="addPhotoToLog()">+ เพิ่มในบันทึกวันนี้</button>
+      <button class="btn btn-outline btn-block" onclick="addPhotoToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
+    </div>
     <button class="modal-cancel" onclick="closeModal('photoModal')">ยกเลิก</button>
   </div>
 </div>
@@ -866,7 +870,10 @@ circle.tr-fg.warn { stroke: #EF4444; }
       <div class="ai-food-name" id="qrProductName"></div>
       <div id="qrNutrition"></div>
     </div>
-    <button class="btn btn-teal btn-block" id="addQRBtn" style="display:none;margin-top:10px" onclick="addQRToLog()">เพิ่มในบันทึก</button>
+    <div id="qrActionBtns" style="display:none;margin-top:10px">
+      <button class="btn btn-teal btn-block" style="margin-bottom:6px" onclick="addQRToLog()">+ เพิ่มในบันทึกวันนี้</button>
+      <button class="btn btn-outline btn-block" onclick="addQRToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
+    </div>
     <button class="modal-cancel" onclick="closeModal('qrModal')">ยกเลิก</button>
   </div>
 </div>
@@ -1024,12 +1031,9 @@ circle.tr-fg.warn { stroke: #EF4444; }
         <div id="snItems"></div>
       </div>
 
-      <!-- เพิ่มอาหารจาก dropdown + ถาม AI -->
+      <!-- เมนูที่กินบ่อย + ถาม AI -->
       <div style="padding:10px 16px 14px;border-top:1px solid var(--border)">
-        <div class="quick-add-row" style="margin-bottom:10px">
-          <select class="form-select" id="homeFoodSel" style="flex:1"><option value="">— เลือกเมนูที่กินบ่อย —</option></select>
-          <button class="btn btn-primary btn-sm" onclick="addFoodFromHomeSel()">เพิ่ม</button>
-        </div>
+        <div id="favMealsSection" style="margin-bottom:10px"></div>
         <div class="search-row" style="margin:0">
           <input class="search-input" type="text" id="nutrInput" placeholder="ถาม AI เช่น ข้าวผัดกุ้ง 1 จาน..." onkeydown="if(event.key==='Enter')askNutrition()">
           <button class="search-btn" id="nutrAskBtn" onclick="askNutrition()">AI</button>
@@ -1277,6 +1281,7 @@ if(!S.foodLog||typeof S.foodLog!=='object'||Array.isArray(S.foodLog)) S.foodLog=
 if(!S.checkins||typeof S.checkins!=='object')   S.checkins={};
 if(!S.totalPoints) S.totalPoints=0;
 if(!S.waterLog||typeof S.waterLog!=='object')    S.waterLog={};
+if(!S.favMeals||!Array.isArray(S.favMeals))      S.favMeals=[];
 if(!S.profileName) S.profileName='ผู้ใช้ FitStreak';
 
 // migrate old S.meals → foodLog
@@ -1518,7 +1523,7 @@ function buildDateStrip(){
   }
 }
 // ─── updateHomeUI — single call updates everything ───
-function updateHomeUI(){
+function updateHomeUI(){renderFavMeals();
   const t=getTotals();
   const goals=getNutrGoals();
   // g = เป้าแคลของวันนี้ (จาก NUTR_GOALS ตามวัน) หรือ manual override ถ้าตั้งไว้
@@ -1652,39 +1657,35 @@ function quickAddFood(name,emoji,kcal,carb,protein,fat){
   saveState();updateHomeUI();showToast(`เพิ่ม ${name} แล้ว`);
 }
 
-// ─── Meal cards (เมนูที่กินบ่อย) ───
-let homeActiveCat='ทั้งหมด';
-function renderHomeMealCards(){
-  const chipEl=document.getElementById('homeMealCatChips');
-  const cardEl=document.getElementById('homeMealCards');
-  if(!chipEl||!cardEl)return;
-  const goals=getNutrGoals();
-  chipEl.innerHTML=MY_MEAL_CATS.map(c=>`<div class="chip ${homeActiveCat===c?'active':''}" onclick="setHomeCat('${c}')">${c}</div>`).join('');
-  const list=homeActiveCat==='ทั้งหมด'?MY_MEALS:MY_MEALS.filter(m=>m.cat===homeActiveCat);
-  cardEl.innerHTML=list.map(m=>{
-    const ri=MY_MEALS.indexOf(m);const isW=m.isWater;
-    const calCol=m.calories>700?'#DC2626':m.calories>400?'var(--orange)':'var(--teal)';
-    return`<div class="meal-card" onclick="addFromMealCard(${ri})">
-      <div class="mc-icon">${m.emoji}</div>
-      <div class="mc-name">${m.food}</div>
-      ${isW
-        ?`<div class="mc-kcal" style="color:var(--blue);font-size:16px">${m.waterMl}ml</div>`
-        :`<div class="mc-kcal" style="color:${calCol}">${m.calories}</div>
-          <div class="mc-chips">
-            <span class="mc-chip" style="color:var(--teal)">P${m.protein}</span>
-            <span class="mc-chip" style="color:var(--yellow)">F${m.fat}</span>
-            <span class="mc-chip" style="color:var(--orange)">C${m.carbs}</span>
-          </div>`}
-      <div class="mc-bar"><div class="mc-barfill" style="width:${isW?100:Math.min(Math.round((m.protein/goals.protein)*100),100)}%;background:${isW?'var(--blue)':'var(--teal)'}"></div></div>
-    </div>`;
-  }).join('');
+// ─── เมนูที่กินบ่อย (favMeals) ───
+function getFavMeals(){return S.favMeals||[];}
+
+function addToFav(meal){
+  if(!meal||!meal.food)return;
+  const favs=getFavMeals();
+  // ป้องกันซ้ำ (ชื่อเดียวกัน)
+  if(favs.some(f=>f.food===meal.food)){showToast(`"${meal.food}" มีในเมนูที่กินบ่อยแล้ว`);return;}
+  favs.unshift({food:meal.food,calories:meal.calories||0,protein:meal.protein||0,fat:meal.fat||0,carbs:meal.carbs||0,emoji:meal.emoji||'🍽️'});
+  S.favMeals=favs;
+  saveState();
+  renderFavMeals();
+  showToast(`⭐ เพิ่ม "${meal.food}" ในเมนูที่กินบ่อยแล้ว`);
 }
-function setHomeCat(c){homeActiveCat=c;renderHomeMealCards();}
-function addFromMealCard(idx){
-  const m=MY_MEALS[idx];if(!m)return;
-  if(m.isWater){addWater(m.waterMl||600);return;}
+
+function removeFavMeal(idx){
+  const favs=getFavMeals();
+  const name=favs[idx]?.food||'';
+  favs.splice(idx,1);
+  S.favMeals=favs;
+  saveState();
+  renderFavMeals();
+  populateHomeFoodSel();
+  showToast(`ลบ "${name}" ออกแล้ว`);
+}
+
+function addFavToLog(idx){
+  const m=getFavMeals()[idx];if(!m)return;
   const log=getDayLog();
-  // ตรวจเวลา → ใส่มื้อที่เหมาะสม
   const hr=new Date().getHours();
   const meal=hr<11?'breakfast':hr<15?'lunch':hr<20?'dinner':'snack';
   log[meal].push({food:m.food,calories:m.calories,protein:m.protein,fat:m.fat,carbs:m.carbs,emoji:m.emoji||'🍽️',meal});
@@ -1692,21 +1693,53 @@ function addFromMealCard(idx){
   showToast(`เพิ่ม ${m.food} — ${m.calories} kcal`);
 }
 
-// backward compat aliases
-function showMealInfoHome(idx){addFromMealCard(idx);}
-function showMealInfo(idx){addFromMealCard(idx);}
+function renderFavMeals(){
+  const el=document.getElementById('favMealsSection');if(!el)return;
+  const favs=getFavMeals();
+  if(!favs.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--text-3);text-align:center;padding:8px 0 2px">
+      ยังไม่มีเมนูที่กินบ่อย — สแกนรูป QR หรือถาม AI แล้วกด ⭐
+    </div>`;
+    return;
+  }
+  el.innerHTML=`
+    <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;letter-spacing:.3px">⭐ เมนูที่กินบ่อย</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      ${favs.map((m,i)=>`
+        <div style="display:flex;align-items:center;background:var(--surface2);border-radius:10px;padding:8px 10px;gap:8px">
+          <span style="font-size:18px">${m.emoji}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.food}</div>
+            <div style="font-size:11px;color:var(--text-3)">${m.calories} kcal · P${m.protein}g · C${m.carbs}g · F${m.fat}g</div>
+          </div>
+          <button onclick="addFavToLog(${i})" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ เพิ่ม</button>
+          <button onclick="removeFavMeal(${i})" style="background:none;border:none;color:var(--text-3);font-size:16px;cursor:pointer;flex-shrink:0;padding:0 2px">✕</button>
+        </div>`).join('')}
+    </div>`;
+}
 
-function populateHomeFoodSel(){
-  const sel=document.getElementById('homeFoodSel');if(!sel)return;
-  sel.innerHTML='<option value="">— เลือกเมนูที่กินบ่อย —</option>'+
-    MY_MEALS.filter(m=>!m.isWater).map((m,i)=>`<option value="${MY_MEALS.indexOf(m)}">${m.emoji} ${m.food} — ${m.calories}kcal</option>`).join('');
+// ── เพิ่มใน fav จากแต่ละ source ──
+function addPhotoToFav(){
+  if(!lastAIFood)return;
+  addToFav({food:lastAIFood.name,calories:lastAIFood.kcal,protein:lastAIFood.protein,fat:lastAIFood.fat,carbs:lastAIFood.carb,emoji:'📸'});
 }
-function addFoodFromHomeSel(){
-  const sel=document.getElementById('homeFoodSel');if(!sel||sel.value==='')return;
-  const m=MY_MEALS[parseInt(sel.value)];if(!m)return;
-  addFromMealCard(MY_MEALS.indexOf(m));
-  sel.value='';
+function addQRToFav(){
+  if(!lastAIFood)return;
+  addToFav({food:lastAIFood.name,calories:lastAIFood.kcal,protein:lastAIFood.protein,fat:lastAIFood.fat,carbs:lastAIFood.carb,emoji:'📦'});
 }
+function addNutrToFav(){
+  if(!currentNutrResult)return;
+  addToFav({food:currentNutrResult.foodName||currentNutrResult.food,calories:currentNutrResult.calories,protein:currentNutrResult.protein,fat:currentNutrResult.fat,carbs:currentNutrResult.carbs,emoji:'🍽️'});
+}
+
+// backward compat
+function renderHomeMealCards(){}
+function setHomeCat(c){}
+function addFromMealCard(idx){}
+function showMealInfoHome(idx){}
+function showMealInfo(idx){if(currentNutrResult)displayNutrResult(currentNutrResult);}
+function populateHomeFoodSel(){}
+function addFoodFromHomeSel(){}
 
 // ─── Food log: clear / remove ───
 function removeFoodLog(idx){
@@ -1776,7 +1809,7 @@ function renderHomeMacro4(){}
 // ═══════════════════════════════════════
 // PHOTO SCAN
 // ═══════════════════════════════════════
-function openPhotoModal(){document.getElementById('previewImg').style.display='none';document.getElementById('analyzePhotoBtn').style.display='none';document.getElementById('addPhotoBtn').style.display='none';document.getElementById('photoAiResult').classList.remove('visible');document.getElementById('scanLoading').style.display='none';openModal('photoModal');}
+function openPhotoModal(){document.getElementById('previewImg').style.display='none';document.getElementById('analyzePhotoBtn').style.display='none';const pab=document.getElementById('photoActionBtns');if(pab)pab.style.display='none';document.getElementById('photoAiResult').classList.remove('visible');document.getElementById('scanLoading').style.display='none';openModal('photoModal');}
 function handlePhotoUpload(inp){
   const f=inp.files[0];if(!f)return;
   const r=new FileReader();r.onload=e=>{const img=document.getElementById('previewImg');img.src=e.target.result;img.style.display='block';const btn=document.getElementById('analyzePhotoBtn');btn.style.display='block';btn.dataset.img=e.target.result.split(',')[1];};r.readAsDataURL(f);
@@ -1790,9 +1823,12 @@ async function analyzePhoto(){
     const raw=await callOR(prompt,1200,imgData);incUsage();
     const r=JSON.parse(raw);lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     document.getElementById('photoFoodName').textContent=r.foodName;document.getElementById('photoNutrition').innerHTML=buildNutritionHTML(r);
-    document.getElementById('photoAiResult').classList.add('visible');document.getElementById('addPhotoBtn').style.display='block';
+    document.getElementById('photoAiResult').classList.add('visible');
+    const pab=document.getElementById('photoActionBtns');if(pab)pab.style.display='flex';
+    if(pab)pab.style.flexDirection='column';
   }catch(e){showToast('วิเคราะห์ไม่สำเร็จ: '+e.message);}
   document.getElementById('scanLoading').style.display='none';btn.style.display='block';
+  // (photoActionBtns handled above)
 }
 function addPhotoToLog(){
   if(!lastAIFood)return;
@@ -1805,7 +1841,7 @@ function addPhotoToLog(){
 // ═══════════════════════════════════════
 // QR SCAN
 // ═══════════════════════════════════════
-function openQRModal(){document.getElementById('qrAiResult').classList.remove('visible');document.getElementById('addQRBtn').style.display='none';openModal('qrModal');}
+function openQRModal(){document.getElementById('qrAiResult').classList.remove('visible');const qab=document.getElementById('qrActionBtns');if(qab)qab.style.display='none';openModal('qrModal');}
 function handleQRUpload(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>analyzeQRImg(e.target.result.split(',')[1]);r.readAsDataURL(f);}
 async function analyzeQRImg(imgData){
   document.getElementById('qrLoading').style.display='block';
@@ -1821,7 +1857,7 @@ function showQRResult(r){
   lastAIFood={name:r.productName,emoji:'📦',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
   document.getElementById('qrProductName').textContent=`${r.productName} — ${r.brand||''}`;
   document.getElementById('qrNutrition').innerHTML=buildNutritionHTML(r)+`<div class="nutri-detail-row"><span>แบรนด์</span><b>${r.brand||'-'}</b></div><div class="nutri-detail-row"><span>จำนวนเสิร์ฟ/บรรจุ</span><b>${r.servingsPerPack||1}</b></div>`;
-  document.getElementById('qrAiResult').classList.add('visible');document.getElementById('addQRBtn').style.display='block';
+  document.getElementById('qrAiResult').classList.add('visible');const qab=document.getElementById('qrActionBtns');if(qab)qab.style.display='flex';if(qab)qab.style.flexDirection='column';
 }
 function addQRToLog(){
   if(!lastAIFood)return;
@@ -2034,10 +2070,13 @@ function displayNutrResult(info){
       ${[['แคลอรี่',pC,'var(--accent)'],['โปรตีน',pP,'var(--teal)'],['ไขมัน',pF,'var(--yellow)'],['คาร์บ',pCa,'var(--orange)']].map(([l,p,c])=>`<div class="vs-row"><span class="vs-lbl">${l}</span><div class="vs-bar-wrap"><div class="vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="vs-pct">${p}%</span></div>`).join('')}
     </div>
     ${info.note?`<div style="padding:9px;background:var(--surface2);border-radius:var(--r-sm);font-size:12px;color:var(--text-2);margin-bottom:10px">${info.note}</div>`:''}`}
-    <button class="btn btn-teal btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToLog()">+ บันทึกลงรายการวันนี้</button>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="btn btn-teal btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToLog()">+ บันทึกลงรายการวันนี้</button>
+      <button class="btn btn-outline btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
+    </div>
   </div></div>`;
 }
-function setMyCat(c){activeMyCat=c;homeActiveCat=c;renderHomeMealCards();}
+function setMyCat(c){}
 
 // ═══════════════════════════════════════
 // PLANNER
