@@ -1447,26 +1447,46 @@ const IMG_MODELS=[
 // ── JSON helpers ──
 function repairAndExtractJSON(raw){
   if(!raw)return raw;
-  // ดึง JSON block ออกจากข้อความที่อาจมี prose นำหน้า/ตามหลัง
-  const m=raw.match(/\{[\s\S]*\}/);
-  if(m)raw=m[0];
+  raw=raw.replace(/```json|```/g,'').trim();
+  // ── หา JSON object ที่สมบูรณ์ที่สุดโดย walk บัญชี { } ──
+  function extractBestJSON(s){
+    let best='',depth=0,start=-1;
+    for(let i=0;i<s.length;i++){
+      if(s[i]==='{'){if(depth===0)start=i;depth++;}
+      else if(s[i]==='}'){depth--;if(depth===0&&start>=0){const chunk=s.slice(start,i+1);if(chunk.length>best.length)best=chunk;start=-1;}}
+    }
+    // ถ้าไม่มี JSON สมบูรณ์เลย ให้ใช้ตั้งแต่ { แรกถึงท้าย string
+    if(!best&&start>=0)best=s.slice(start);
+    return best||s;
+  }
+  raw=extractBestJSON(raw);
   if(!raw.startsWith('{'))return raw;
-  // ตัด field/value ที่ยังค้างอยู่
-  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*"[^"]*$/,'');  // key:"unterminated
-  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*[\d.]*$/,'');  // key:123 (no close)
-  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*$/,'');         // key: (no value)
-  raw=raw.replace(/,?\s*"[^"]*"\s*$/,'');              // "key (no colon)
-  raw=raw.replace(/,\s*$/,'');                          // trailing comma
-  // ปิด } ที่ขาด
-  const o=(raw.match(/\{/g)||[]).length,c=(raw.match(/\}/g)||[]).length;
-  if(o>c)raw+=Array(o-c).fill('}').join('');
-  // ลบ trailing comma ก่อน }]
+  // ── ตัด field ที่ยังค้างอยู่ท้าย string ──
+  // key:"unterminated value
+  raw=raw.replace(/,?\s*"[^"\\]*"\s*:\s*"[^"]*$/,'');
+  // key: number_incomplete
+  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*[\d.]*$/,'');
+  // key: (no value at all)
+  raw=raw.replace(/,?\s*"[^"]*"\s*:\s*$/,'');
+  // bare key fragment
+  raw=raw.replace(/,?\s*"[^"]*"\s*$/,'');
+  // trailing comma
+  raw=raw.replace(/,\s*$/,'');
+  // ── ปิด } ที่ขาด (นับใหม่หลังตัด) ──
+  let depth=0;
+  for(const ch of raw){if(ch==='{')depth++;else if(ch==='}')depth--;}
+  if(depth>0)raw+=Array(depth).fill('}').join('');
+  // ── ลบ trailing comma ก่อน }] ──
   raw=raw.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
   return raw;
 }
 function safeParseJSON(raw){
-  const fixed=repairAndExtractJSON(raw);
-  return JSON.parse(fixed);
+  try{return JSON.parse(repairAndExtractJSON(raw));}
+  catch(e){
+    // fallback: ลอง parse raw ตรงๆ ก่อน repair
+    try{return JSON.parse(raw);}
+    catch{throw new Error('JSON Parse error: '+e.message);}
+  }
 }
 
 async function callOR(prompt,maxT=600,withImg=null){
