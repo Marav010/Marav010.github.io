@@ -1416,21 +1416,27 @@ function renderApiCard(){
   el.className='apikey-card has-key';el.innerHTML=`<div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status ok">พร้อมใช้</span></div><div style="font-size:11px;color:var(--text-3);margin-bottom:6px">${'sk-or-···'+key.slice(-6)}</div><div class="limit-track"><div class="limit-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="limit-info"><span>ใช้ไป ${used}/${OR_LIMIT} req วันนี้</span><span style="color:${barColor}">เหลือ ${rem}</span></div>${pct>=80&&!isLimited()?`<div style="background:var(--yellow-lt);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:#92400E;margin-top:6px">ใกล้ถึง limit — รีเซ็ตในอีก ${usageResetIn()}</div>`:''} ${isLimited()?`<div class="limit-blocked" style="margin-top:6px">ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}</div>`:''}  <button class="apikey-clear" onclick="clearApiKey()">เปลี่ยน / ลบ Key</button>`;
 }
 const OR_MODELS=[
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'openai/gpt-oss-120b:free',
-  'nvidia/nemotron-3-super-120b-a12b:free',
-  'google/gemma-4-31b-it:free',
-  'qwen/qwen3-coder:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
-  'google/gemma-3-27b-it:free',
-  'minimax/minimax-m2.5:free',
-  'openrouter/free',
+  // โมเดลฟรี 100% — ไม่มีค่าใช้จ่าย รองรับภาษาไทย ตอบคำถามได้ดี
+  'google/gemini-2.0-flash-exp:free',        // Gemini 2.0 Flash — ฉลาด ตอบไทยดีมาก (limit: 10 req/นาที, 200/วัน)
+  'google/gemma-3-27b-it:free',              // Gemma 3 27B — Google (limit: 30 req/นาที, 1000/วัน)
+  'google/gemma-4-31b-it:free',              // Gemma 4 31B — รุ่นใหม่จาก Google (limit: 30 req/นาที, 1000/วัน)
+  'meta-llama/llama-4-scout:free',           // Llama 4 Scout — Meta รุ่นใหม่ล่าสุด (limit: 20 req/นาที, 500/วัน)
+  'meta-llama/llama-3.3-70b-instruct:free',  // Llama 3.3 70B — แกร่ง ตอบไทยดี (limit: 20 req/นาที, 500/วัน)
+  'qwen/qwen3-235b-a22b:free',               // Qwen3 235B — ใหญ่มาก ตอบไทยได้ดี (limit: 10 req/นาที, 200/วัน)
+  'qwen/qwen3-30b-a3b:free',                 // Qwen3 30B — เร็ว ตอบไทยได้ (limit: 20 req/นาที, 500/วัน)
+  'mistralai/mistral-small-3.2-24b-instruct:free', // Mistral Small 3.2 — ยุโรป เร็ว (limit: 20 req/นาที, 500/วัน)
+  'deepseek/deepseek-r1-0528:free',          // DeepSeek R1 — reasoning เก่ง (limit: 20 req/นาที, 200/วัน)
+  'openrouter/free',                         // fallback ทั่วไป
 ];
-// model ที่รองรับ vision (วิเคราะห์รูปภาพ)
+// model ที่รองรับ vision (วิเคราะห์รูปภาพ + QR Code) — ฟรีทั้งหมด
 const IMG_MODELS=[
-  'google/gemini-2.0-flash-lite-001',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-4-31b-it:free',
+  'google/gemini-2.0-flash-exp:free',        // ⭐ ดีที่สุด — Gemini 2.0 วิเคราะห์รูป/QR แม่นยำมาก (limit: 10 req/นาที, 200/วัน)
+  'google/gemini-2.0-flash-lite-001',        // Gemini 2.0 Flash Lite — เร็ว ฟรี (limit: 30 req/นาที, 1500/วัน)
+  'google/gemma-3-27b-it:free',              // Gemma 3 27B — vision ดี (limit: 30 req/นาที, 1000/วัน)
+  'google/gemma-4-31b-it:free',              // Gemma 4 31B — vision รุ่นใหม่ (limit: 30 req/นาที, 1000/วัน)
+  'meta-llama/llama-4-scout:free',           // Llama 4 Scout — vision multimodal (limit: 20 req/นาที, 500/วัน)
+  'meta-llama/llama-4-maverick:free',        // Llama 4 Maverick — vision ขั้นสูง (limit: 10 req/นาที, 200/วัน)
+  'mistralai/mistral-small-3.2-24b-instruct:free', // Mistral Small 3.2 vision (limit: 20 req/นาที, 500/วัน)
 ];
 async function callOR(prompt,maxT=600,withImg=null){
   const key=getApiKey();if(!key)throw new Error('ไม่มี API Key');
@@ -1446,14 +1452,16 @@ async function callOR(prompt,maxT=600,withImg=null){
         // อ่าน response body เพื่อดูว่าเป็น limit แบบไหน
         let body='';
         try{body=await res.text();}catch{}
-        const isRPM=body.includes('per minute')||body.includes('rpm')||body.includes('rate_limit_exceeded');
-        const isRPD=body.includes('per day')||body.includes('rpd')||body.includes('daily');
+        const isRPM=body.includes('per minute')||body.includes('rpm')||body.includes('rate_limit_exceeded')||body.includes('RateLimitError');
+        const isRPD=body.includes('per day')||body.includes('rpd')||body.includes('daily')||body.includes('quota');
+        // ดึงชื่อโมเดลแบบสั้น เช่น gemini-2.0-flash-exp
+        const shortName=model.split('/').pop().replace(':free','');
         if(isRPD){
-          lastErr=`${model}: ถึง limit รายวัน (ครบโควต้าวันนี้แล้ว)`;
+          lastErr=`⛔ ${shortName}: ถึง limit รายวัน (ครบโควต้าแล้ว — รีเซ็ตพรุ่งนี้)`;
         }else if(isRPM){
-          lastErr=`${model}: ถึง limit รายนาที — รอสักครู่แล้วลองใหม่`;
+          lastErr=`⏱️ ${shortName}: ถึง limit รายนาที — รอ ~60 วินาทีแล้วลองใหม่`;
         }else{
-          lastErr=`${model}: rate limit — ลองใหม่สักครู่`;
+          lastErr=`${shortName}: rate limit — ลองใหม่สักครู่`;
         }
         continue;
       }
@@ -1464,11 +1472,11 @@ async function callOR(prompt,maxT=600,withImg=null){
       return raw;
     }catch(e){lastErr=e.message||'Network error';continue;}
   }
-  // แสดง error ที่ชัดขึ้น
+  // แสดง error ที่ชัดขึ้น พร้อมข้อมูล limit
   const isRPM = lastErr.includes('รายนาที');
   const isRPD = lastErr.includes('รายวัน');
-  if(isRPD) throw new Error('Model ถึง limit รายวัน (ครบโควต้าวันนี้แล้ว) — ลองพรุ่งนี้หรือใช้ model อื่น');
-  if(isRPM) throw new Error('Model ถึง limit รายนาที — รอ 60 วินาทีแล้วลองใหม่');
+  if(isRPD) throw new Error('⛔ ทุก Model ถึง limit รายวันแล้ว\n• Gemini 2.0 Flash: 200 req/วัน\n• Gemma 3/4: 1000 req/วัน\n• Llama 4: 500 req/วัน\n→ ลองใหม่พรุ่งนี้ หรือสร้าง API Key ใหม่');
+  if(isRPM) throw new Error('⏱️ ทุก Model ถึง limit รายนาทีแล้ว\n• Gemini 2.0 Flash: 10 req/นาที\n• Gemma 3/4: 30 req/นาที\n• Llama 4: 20 req/นาที\n→ รอ 60 วินาทีแล้วลองใหม่');
   throw new Error(lastErr||'ทุก model ไม่ว่าง — ลองใหม่สักครู่');
 }
 
