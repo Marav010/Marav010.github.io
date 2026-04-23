@@ -1878,17 +1878,92 @@ function addQRToLog(){
 // TEXT AI SCAN
 // ═══════════════════════════════════════
 async function analyzeTextFood(){
-  const txt=document.getElementById('textFoodInput')?.value?.trim();if(!txt)return;
-  if(!getApiKey()){showToast('ใส่ API Key ก่อน');return;}
-  const el=document.getElementById('scanAiResult');el.classList.add('visible');
-  el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
-  const prompt=`ให้ข้อมูลโภชนาการของ "${txt}" ตอบ JSON:\n{"foodName":"ชื่ออาหาร","calories":0,"carbs":0,"protein":0,"fat":0,"fiber":0,"sugar":0,"sodium":0,"vitaminC":0,"calcium":0,"servingSize":"ขนาดเสิร์ฟ","healthScore":0,"note":"หมายเหตุ"}`;
-  try{
-    const raw=await callOR(prompt,700);incUsage();const r=JSON.parse(raw);
-    lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
-    el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>`;
-    el.classList.add('visible');
-  }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
+
+ const txt=document.getElementById('textFoodInput')?.value?.trim();
+ if(!txt) return;
+
+ if(!getApiKey()){
+   showToast('ใส่ API Key ก่อน');
+   return;
+ }
+
+ const el=document.getElementById('scanAiResult');
+ el.classList.add('visible');
+ el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
+
+ const prompt=`
+ตอบกลับเป็น JSON เท่านั้น ไม่มี markdown ไม่มีข้อความอื่น
+
+{
+"foodName":"ชื่ออาหาร",
+"calories":0,
+"carbs":0,
+"protein":0,
+"fat":0,
+"fiber":0,
+"sugar":0,
+"sodium":0,
+"vitaminC":0,
+"calcium":0,
+"servingSize":"ขนาดเสิร์ฟ",
+"healthScore":0,
+"note":"หมายเหตุ"
+}
+
+อาหาร: ${txt}
+`;
+
+ try{
+
+   const raw=await callOR(prompt,700);
+   incUsage();
+
+   let cleaned=raw
+      .replace(/```json/g,'')
+      .replace(/```/g,'')
+      .trim();
+
+   const r=safeParseJSON(cleaned);
+
+   lastAIFood={
+      name:r.foodName,
+      emoji:'🍽️',
+      kcal:r.calories,
+      carb:r.carbs,
+      protein:r.protein,
+      fat:r.fat
+   };
+
+   el.innerHTML=
+   `<div class="ai-badge">AI วิเคราะห์</div>
+    <div class="ai-food-name">${r.foodName}</div>
+    ${buildNutritionHTML(r)}
+    <button class="btn btn-primary btn-block"
+    style="margin-top:10px;padding:11px;font-size:13px"
+    onclick="addScanAIToLog()">
+      เพิ่มในบันทึก
+    </button>`;
+
+ }catch(e){
+
+   console.error(raw);
+
+   el.innerHTML=
+   `<div style="color:#DC2626;font-size:13px">
+      วิเคราะห์ไม่สำเร็จ: ${e.message}
+    </div>`;
+ }
+}
+
+function safeParseJSON(str){
+ try{
+   return JSON.parse(str);
+ }catch{
+   str=str
+    .replace(/(\w+):/g,'"$1":')
+    .replace(/,\s*}/g,'}');
+   return JSON.parse(str);
+ }
 }
 function addScanAIToLog(){
   if(!lastAIFood)return;
