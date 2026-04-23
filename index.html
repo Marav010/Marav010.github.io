@@ -1278,6 +1278,7 @@ if(!S.checkins||typeof S.checkins!=='object')   S.checkins={};
 if(!S.totalPoints) S.totalPoints=0;
 if(!S.waterLog||typeof S.waterLog!=='object')    S.waterLog={};
 if(!S.profileName) S.profileName='ผู้ใช้ FitStreak';
+if(!S.favMeals||!Array.isArray(S.favMeals)) S.favMeals=[];
 
 // migrate old S.meals → foodLog
 try{
@@ -1828,7 +1829,7 @@ async function analyzeTextFood(){
   try{
     const raw=await callOR(prompt,500);incUsage();const r=JSON.parse(raw);
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
-    el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<button class="btn btn-primary btn-block" style="margin-top:10px;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button>`;
+    el.innerHTML=`<div class="ai-badge">AI วิเคราะห์</div><div class="ai-food-name">${r.foodName}</div>${buildNutritionHTML(r)}<div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" style="flex:1;padding:11px;font-size:13px" onclick="addScanAIToLog()">เพิ่มในบันทึก</button><button class="btn btn-ghost" style="flex:1;padding:11px;font-size:13px" onclick="saveToFavorite()">⭐ เมนูที่กินบ่อย</button></div>`;
     el.classList.add('visible');
   }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
 }
@@ -1838,6 +1839,32 @@ function addScanAIToLog(){
   const meal=hr<11?'breakfast':hr<15?'lunch':hr<20?'dinner':'snack';
   log[meal].push({food:lastAIFood.name,calories:lastAIFood.kcal||0,protein:lastAIFood.protein||0,fat:lastAIFood.fat||0,carbs:lastAIFood.carb||0,emoji:'🍽️',meal});
   saveState();updateHomeUI();showToast(`เพิ่ม ${lastAIFood.name} แล้ว`);
+}
+function saveToFavorite(){
+  if(!lastAIFood)return;
+  if(!S.favMeals)S.favMeals=[];
+  const already=S.favMeals.find(m=>m.food===lastAIFood.name);
+  if(already){showToast(`"${lastAIFood.name}" มีในเมนูที่กินบ่อยแล้ว`);return;}
+  const newMeal={food:lastAIFood.name,emoji:'🍽️',calories:lastAIFood.kcal||0,protein:lastAIFood.protein||0,fat:lastAIFood.fat||0,carbs:lastAIFood.carb||0,cat:'สแกน AI'};
+  S.favMeals.push(newMeal);
+  syncFavMeals();
+  saveState();
+  showToast(`⭐ เพิ่ม "${lastAIFood.name}" ในเมนูที่กินบ่อยแล้ว`);
+  // อัปเดตปุ่มให้รู้ว่าบันทึกแล้ว
+  const el=document.getElementById('scanAiResult');
+  if(el){const favBtn=el.querySelector('button:last-child');if(favBtn){favBtn.textContent='✅ บันทึกแล้ว';favBtn.disabled=true;favBtn.style.opacity='0.6';}}
+}
+function syncFavMeals(){
+  if(!S.favMeals)return;
+  // เอา favMeals ใส่ MY_MEALS (เฉพาะที่ไม่ซ้ำ)
+  MY_MEALS.length=0;
+  // เพิ่มน้ำก่อน
+  MY_MEALS.push({food:'น้ำเปล่า',emoji:'💧',calories:0,protein:0,fat:0,carbs:0,cat:'น้ำ',isWater:true,waterMl:600});
+  S.favMeals.forEach(m=>MY_MEALS.push(m));
+  // sync หมวดหมู่
+  MY_MEAL_CATS.length=0;
+  MY_MEAL_CATS.push('ทั้งหมด');
+  S.favMeals.forEach(m=>{if(m.cat&&!MY_MEAL_CATS.includes(m.cat))MY_MEAL_CATS.push(m.cat);});
 }
 
 async function openMealPlanAI(){
@@ -2223,6 +2250,7 @@ document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click
 // ═══════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
   try{ applyThemeOnLoad(); }catch(e){}
+  try{ if(S.favMeals&&S.favMeals.length)syncFavMeals(); }catch(e){}
   try{ buildDateStrip(); }catch(e){ console.warn('dateStrip error:',e); }
   try{
     const initDate=new Date(selectedDateKey+'T00:00:00');
