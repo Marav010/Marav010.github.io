@@ -1416,27 +1416,28 @@ function renderApiCard(){
   el.className='apikey-card has-key';el.innerHTML=`<div class="apikey-top"><span class="apikey-title">OpenRouter API Key</span><span class="apikey-status ok">พร้อมใช้</span></div><div style="font-size:11px;color:var(--text-3);margin-bottom:6px">${'sk-or-···'+key.slice(-6)}</div><div class="limit-track"><div class="limit-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="limit-info"><span>ใช้ไป ${used}/${OR_LIMIT} req วันนี้</span><span style="color:${barColor}">เหลือ ${rem}</span></div>${pct>=80&&!isLimited()?`<div style="background:var(--yellow-lt);border-radius:var(--r-sm);padding:6px 10px;font-size:11px;color:#92400E;margin-top:6px">ใกล้ถึง limit — รีเซ็ตในอีก ${usageResetIn()}</div>`:''} ${isLimited()?`<div class="limit-blocked" style="margin-top:6px">ถึง limit วันนี้แล้ว รีเซ็ตในอีก ${usageResetIn()}</div>`:''}  <button class="apikey-clear" onclick="clearApiKey()">เปลี่ยน / ลบ Key</button>`;
 }
 const OR_MODELS=[
-  // โมเดลฟรี 100% — ไม่มีค่าใช้จ่าย รองรับภาษาไทย ตอบคำถามได้ดี
-  'google/gemini-2.0-flash-exp:free',        // Gemini 2.0 Flash — ฉลาด ตอบไทยดีมาก (limit: 10 req/นาที, 200/วัน)
-  'google/gemma-3-27b-it:free',              // Gemma 3 27B — Google (limit: 30 req/นาที, 1000/วัน)
-  'google/gemma-4-31b-it:free',              // Gemma 4 31B — รุ่นใหม่จาก Google (limit: 30 req/นาที, 1000/วัน)
-  'meta-llama/llama-4-scout:free',           // Llama 4 Scout — Meta รุ่นใหม่ล่าสุด (limit: 20 req/นาที, 500/วัน)
-  'meta-llama/llama-3.3-70b-instruct:free',  // Llama 3.3 70B — แกร่ง ตอบไทยดี (limit: 20 req/นาที, 500/วัน)
-  'qwen/qwen3-235b-a22b:free',               // Qwen3 235B — ใหญ่มาก ตอบไทยได้ดี (limit: 10 req/นาที, 200/วัน)
-  'qwen/qwen3-30b-a3b:free',                 // Qwen3 30B — เร็ว ตอบไทยได้ (limit: 20 req/นาที, 500/วัน)
-  'mistralai/mistral-small-3.2-24b-instruct:free', // Mistral Small 3.2 — ยุโรป เร็ว (limit: 20 req/นาที, 500/วัน)
-  'deepseek/deepseek-r1-0528:free',          // DeepSeek R1 — reasoning เก่ง (limit: 20 req/นาที, 200/วัน)
-  'openrouter/free',                         // fallback ทั่วไป
+  // โมเดลฟรี 100% ยืนยันแล้วว่าใช้ได้จริง เมษายน 2026
+  'meta-llama/llama-3.3-70b-instruct:free',        // Llama 3.3 70B — แกร่ง ตอบไทยดี (20 req/นาที, 200/วัน)
+  'google/gemma-3-27b-it:free',                    // Gemma 3 27B — Google ตอบไทยได้ (20 req/นาที, 200/วัน)
+  'google/gemma-4-31b-it:free',                    // Gemma 4 31B — Google multimodal (20 req/นาที, 200/วัน)
+  'qwen/qwen2.5-vl-72b-instruct:free',             // Qwen2.5 VL 72B — ตอบไทยดี+vision (20 req/นาที, 200/วัน)
+  'qwen/qwen2.5-vl-32b-instruct:free',             // Qwen2.5 VL 32B — เร็วกว่า 72B (20 req/นาที, 200/วัน)
+  'mistralai/mistral-small-3.1-24b-instruct:free', // Mistral Small 3.1 — เสถียร (20 req/นาที, 200/วัน)
+  'nvidia/nemotron-nano-12b-v2-vl:free',           // NVIDIA Nemotron Nano VL (20 req/นาที, 200/วัน)
+  'moonshotai/kimi-vl-a3b-thinking:free',          // Kimi VL — vision reasoning (20 req/นาที, 200/วัน)
+  'openai/gpt-oss-120b:free',                      // GPT-OSS 120B — OpenAI open-weight (20 req/นาที, 200/วัน)
+  'openrouter/free',                               // fallback อัตโนมัติ
 ];
-// model ที่รองรับ vision (วิเคราะห์รูปภาพ + QR Code) — ฟรีทั้งหมด
+// โมเดลสำหรับวิเคราะห์รูปภาพ + QR Code — ฟรีทั้งหมด ยืนยันแล้ว
 const IMG_MODELS=[
-  'google/gemini-2.0-flash-exp:free',        // ⭐ ดีที่สุด — Gemini 2.0 วิเคราะห์รูป/QR แม่นยำมาก (limit: 10 req/นาที, 200/วัน)
-  'google/gemini-2.0-flash-lite-001',        // Gemini 2.0 Flash Lite — เร็ว ฟรี (limit: 30 req/นาที, 1500/วัน)
-  'google/gemma-3-27b-it:free',              // Gemma 3 27B — vision ดี (limit: 30 req/นาที, 1000/วัน)
-  'google/gemma-4-31b-it:free',              // Gemma 4 31B — vision รุ่นใหม่ (limit: 30 req/นาที, 1000/วัน)
-  'meta-llama/llama-4-scout:free',           // Llama 4 Scout — vision multimodal (limit: 20 req/นาที, 500/วัน)
-  'meta-llama/llama-4-maverick:free',        // Llama 4 Maverick — vision ขั้นสูง (limit: 10 req/นาที, 200/วัน)
-  'mistralai/mistral-small-3.2-24b-instruct:free', // Mistral Small 3.2 vision (limit: 20 req/นาที, 500/วัน)
+  'qwen/qwen2.5-vl-72b-instruct:free',             // อันดับ 1 — Qwen VL 72B วิเคราะห์รูป/QR ดีมาก (20 req/นาที, 200/วัน)
+  'qwen/qwen2.5-vl-32b-instruct:free',             // อันดับ 2 — Qwen VL 32B เร็วกว่า (20 req/นาที, 200/วัน)
+  'google/gemma-4-31b-it:free',                    // อันดับ 3 — Gemma 4 multimodal (20 req/นาที, 200/วัน)
+  'google/gemma-3-27b-it:free',                    // อันดับ 4 — Gemma 3 vision (20 req/นาที, 200/วัน)
+  'nvidia/nemotron-nano-12b-v2-vl:free',           // อันดับ 5 — NVIDIA vision+OCR (20 req/นาที, 200/วัน)
+  'moonshotai/kimi-vl-a3b-thinking:free',          // อันดับ 6 — Kimi VL reasoning (20 req/นาที, 200/วัน)
+  'meta-llama/llama-3.2-11b-vision-instruct:free', // อันดับ 7 — Llama vision (20 req/นาที, 200/วัน)
+  'mistralai/mistral-small-3.1-24b-instruct:free', // อันดับ 8 — Mistral vision (20 req/นาที, 200/วัน)
 ];
 async function callOR(prompt,maxT=600,withImg=null){
   const key=getApiKey();if(!key)throw new Error('ไม่มี API Key');
