@@ -1139,12 +1139,12 @@ function displayNutrResult(info){
       <div class="nutri-chip"><div class="nc-val" style="color:var(--teal)">${info.protein||0}g</div><div class="nc-lbl">โปรตีน</div></div>
       <div class="nutri-chip"><div class="nc-val" style="color:var(--yellow)">${info.fat||0}g</div><div class="nc-lbl">ไขมัน</div></div>
       <div class="nutri-chip"><div class="nc-val" style="color:var(--orange)">${info.carbs||0}g</div><div class="nc-lbl">คาร์บ</div></div>
-    </div>
+    </div>`}
     <div style="margin-bottom:12px">
       ${[['แคลอรี่',pC,'var(--accent)'],['โปรตีน',pP,'var(--teal)'],['ไขมัน',pF,'var(--yellow)'],['คาร์บ',pCa,'var(--orange)']].map(([l,p,c])=>`<div class="vs-row"><span class="vs-lbl">${l}</span><div class="vs-bar-wrap"><div class="vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="vs-pct">${p}%</span></div>`).join('')}
     </div>
     ${info.note?`<div style="padding:9px;background:var(--surface2);border-radius:var(--r-sm);font-size:12px;color:var(--text-2);margin-bottom:10px">${info.note}</div>`:''}
-    ${info.source==='LOCAL_DB'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📚 ฐานข้อมูล INMU/USDA</div>':info.source==='OFF'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📦 Open Food Facts</div>':'<div style="font-size:10px;color:var(--text-3);margin-bottom:8px;text-align:right">🤖 AI ประมาณการ</div>'}}
+    ${info.source==='LOCAL_DB'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📚 ฐานข้อมูล INMU/USDA</div>':info.source==='OFF'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📦 Open Food Facts</div>':'<div style="font-size:10px;color:var(--text-3);margin-bottom:8px;text-align:right">🤖 AI ประมาณการ</div>'}
     <div style="display:flex;flex-direction:column;gap:6px">
       <button class="btn btn-teal btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToLog()">+ บันทึกลงรายการวันนี้</button>
       <button class="btn btn-outline btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
