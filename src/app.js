@@ -905,19 +905,23 @@ async function analyzeTextFood(){
   const txt=document.getElementById('textFoodInput')?.value?.trim();if(!txt)return;
   if(!getApiKey()){showToast('ใส่ API Key ก่อน');return;}
   const el=document.getElementById('scanAiResult');
+  const nameEl=document.getElementById('scanFoodName');
+  const nutrEl=document.getElementById('scanNutrition');
   el.classList.add('visible');
+  // แสดง loading โดยไม่ทับ static elements
+  if(nameEl) nameEl.textContent='';
+  if(nutrEl) nutrEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:20px;height:20px"></div><span style="font-size:13px;color:var(--text-3)">ค้นหาในฐานข้อมูล...</span></div>';
   try{
     // ── Step 1: ค้น Local DB ก่อน (เร็ว แม่น ไม่ใช้ quota) ──
-    el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาในฐานข้อมูล...</div>';
     let r=lookupLocalFood(txt);
     // ── Step 2: ค้น Open Food Facts ──
     if(!r){
-      el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
+      if(nutrEl) nutrEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:20px;height:20px"></div><span style="font-size:13px;color:var(--text-3)">ค้นหาใน Open Food Facts...</span></div>';
       r=await searchOpenFoodFacts(txt);
     }
     // ── Step 3: fallback AI ──
     if(!r){
-      el.innerHTML='<div class="spinner"></div><div class="loading-txt">AI กำลังวิเคราะห์...</div>';
+      if(nutrEl) nutrEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:20px;height:20px"></div><span style="font-size:13px;color:var(--text-3)">AI กำลังวิเคราะห์...</span></div>';
       const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${txt}":\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"1 จาน","healthScore":0,"note":"หมายเหตุสั้น"}`;
       const raw=await callOR(prompt,700);incUsage();
       r=safeParseJSON(raw);
@@ -925,14 +929,17 @@ async function analyzeTextFood(){
     }
     if(r.food&&!r.foodName)r.foodName=r.food||txt;
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
-    document.getElementById('scanFoodName').textContent=r.foodName;
+    // เขียนลง static elements โดยตรง (ไม่ overwrite innerHTML ของ parent)
+    if(nameEl) nameEl.textContent=r.foodName;
     const srcBadge=r.source==='LOCAL_DB'
       ?'<div style="font-size:10px;color:var(--teal);margin-top:4px;text-align:right">📚 ฐานข้อมูล INMU/USDA</div>'
       :r.source==='OFF'
       ?'<div style="font-size:10px;color:var(--teal);margin-top:4px;text-align:right">📦 Open Food Facts</div>'
       :'<div style="font-size:10px;color:var(--text-3);margin-top:4px;text-align:right">🤖 AI ประมาณการ</div>';
-    document.getElementById('scanNutrition').innerHTML=buildNutritionHTML(r)+srcBadge;
-  }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
+    if(nutrEl) nutrEl.innerHTML=buildNutritionHTML(r)+srcBadge;
+  }catch(e){
+    if(nutrEl) nutrEl.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;
+  }
 }
 function addScanAIToFav(){
   if(!lastAIFood)return;
