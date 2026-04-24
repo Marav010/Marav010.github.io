@@ -269,7 +269,8 @@ function _matchScore(item, q){
   if(words.length>1){
     const hit=words.filter(w=>th.includes(w)||en.includes(w)).length;
     if(hit===words.length)return 60;
-    if(hit>0)return 20+hit*10;
+    // partial word match only if majority match
+    if(hit>=Math.ceil(words.length*0.75))return 50;
   }
   return 0;
 }
@@ -302,7 +303,7 @@ function searchLocalDB(query, limit=5){
   if(!q)return[];
   return _LOCAL_DB
     .map(item=>{return{item,score:_matchScore(item,q)};  })
-    .filter(x=>x.score>0)
+    .filter(x=>x.score>=60)
     .sort((a,b)=>b.score-a.score)
     .slice(0,limit)
     .map(x=>_dbToNutr(x.item));
@@ -922,10 +923,13 @@ async function analyzeTextFood(){
     // ── Step 3: fallback AI ──
     if(!r){
       if(nutrEl) nutrEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:8px 0"><div class="spinner" style="width:20px;height:20px"></div><span style="font-size:13px;color:var(--text-3)">AI กำลังวิเคราะห์...</span></div>';
-      const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${txt}":\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"1 จาน","healthScore":0,"note":"หมายเหตุสั้น"}`;
+      const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ห้ามมีข้อความนอก JSON\nให้ข้อมูลโภชนาการของ "${txt}" โดยใช้ foodName ตามที่ระบุ อย่าเปลี่ยนชื่อเป็นอาหารอื่น:\n{"foodName":"${txt}","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"1 หน่วยบริโภค","healthScore":0,"note":"หมายเหตุสั้น"}`;
       const raw=await callOR(prompt,700);incUsage();
       r=safeParseJSON(raw);
-      r.note='ประมาณการโดย AI';
+      // ตรวจสอบว่า AI ไม่เปลี่ยนชื่ออาหาร
+      if(!r.foodName||r.foodName.trim()==='ชื่ออาหาร')r.foodName=txt;
+      r.note=r.note||'ประมาณการโดย AI';
+      r.source='AI';
     }
     if(r.food&&!r.foodName)r.foodName=r.food||txt;
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
