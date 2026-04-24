@@ -260,17 +260,21 @@ function _normalize(str){
 }
 
 function _matchScore(item, q){
-  if(!q)return 0;
+  if(!q||q.length<2)return 0;
   const th=_normalize(item.name_th), en=_normalize(item.name_en);
+  // exact match
   if(th===q||en===q)return 100;
-  if(th.startsWith(q)||en.startsWith(q))return 85;
-  if(th.includes(q)||en.includes(q))return 70;
-  const words=q.split(' ').filter(w=>w.length>1);
-  if(words.length>1){
-    const hit=words.filter(w=>th.includes(w)||en.includes(w)).length;
+  // query ต้องยาวอย่างน้อย 50% ของชื่ออาหารถึงจะ startsWith/includes ได้
+  const minLen=Math.max(4, Math.floor(Math.min(th.length,en.length||99)*0.5));
+  if(q.length>=minLen){
+    if(th.startsWith(q)||en.startsWith(q))return 85;
+    if(th.includes(q)||en.includes(q))return 70;
+  }
+  // multi-word: แยกคำแล้วตรวจแต่ละคำ (ต้องมากกว่า 1 คำ และแต่ละคำยาว>=2)
+  const words=q.split(' ').filter(w=>w.length>=2);
+  if(words.length>=2){
+    const hit=words.filter(w=>w.length>=2&&(th.includes(w)||en.includes(w))).length;
     if(hit===words.length)return 60;
-    // partial word match only if majority match
-    if(hit>=Math.ceil(words.length*0.75))return 50;
   }
   return 0;
 }
