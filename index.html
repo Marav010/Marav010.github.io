@@ -1447,56 +1447,165 @@ const IMG_MODELS=[
   'meta-llama/llama-3.2-11b-vision-instruct:free', // อันดับ 7 — Llama vision (20 req/นาที, 200/วัน)
   'mistralai/mistral-small-3.1-24b-instruct:free', // อันดับ 8 — Mistral vision (20 req/นาที, 200/วัน)
 ];
+
+// ══════════════════════════════════════════════════════════════
+// LOCAL NUTRITION DATABASE (INMU Thai FCD 2025 + USDA FoodData)
+// รวม 100 รายการ: อาหารไทย + วัตถุดิบ + นานาชาติ
+// ══════════════════════════════════════════════════════════════
+const _THAI_FOODS    = [{"id": "TH001", "name_th": "ข้าวเจ้า สุก", "name_en": "Rice, polished, cooked", "category": "grain", "calories": 130, "protein": 2.3, "fat": 0.2, "carbs": 28.6, "fiber": 0.3, "sugar": 0, "sodium": 1, "serving": "1 ถ้วย (150g)", "source": "INMU Thai FCD 2025"}, {"id": "TH002", "name_th": "ข้าวกล้อง สุก", "name_en": "Rice, brown, cooked", "category": "grain", "calories": 111, "protein": 2.6, "fat": 0.9, "carbs": 23.0, "fiber": 1.8, "sugar": 0, "sodium": 5, "serving": "1 ถ้วย (150g)", "source": "INMU Thai FCD 2025"}, {"id": "TH003", "name_th": "ข้าวเหนียว สุก", "name_en": "Glutinous rice, cooked", "category": "grain", "calories": 169, "protein": 3.5, "fat": 0.3, "carbs": 37.1, "fiber": 0.5, "sugar": 0, "sodium": 9, "serving": "1 ถ้วย (150g)", "source": "INMU Thai FCD 2025"}, {"id": "TH004", "name_th": "ข้าวผัดกระเพรา หมูสับ ไข่ดาว", "name_en": "Basil fried rice with pork and fried egg", "category": "thai_dish", "calories": 480, "protein": 22, "fat": 18, "carbs": 58, "fiber": 1.5, "sugar": 3, "sodium": 890, "serving": "1 จาน (350g)", "source": "INMU Thai FCD 2025"}, {"id": "TH005", "name_th": "ผัดกระเพราหมูสับ", "name_en": "Stir-fried basil with minced pork", "category": "thai_dish", "calories": 285, "protein": 20, "fat": 18, "carbs": 8, "fiber": 1.2, "sugar": 2, "sodium": 720, "serving": "1 จาน (200g)", "source": "INMU Thai FCD 2025"}, {"id": "TH006", "name_th": "ต้มยำกุ้ง", "name_en": "Spicy shrimp soup (Tom Yum Goong)", "category": "thai_dish", "calories": 120, "protein": 14, "fat": 5, "carbs": 6, "fiber": 1.5, "sugar": 2, "sodium": 980, "serving": "1 ถ้วย (250ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH007", "name_th": "แกงเขียวหวาน ไก่", "name_en": "Green curry with chicken", "category": "thai_dish", "calories": 180, "protein": 14, "fat": 11, "carbs": 8, "fiber": 2, "sugar": 3, "sodium": 650, "serving": "1 ถ้วย (200g)", "source": "INMU Thai FCD 2025"}, {"id": "TH008", "name_th": "ส้มตำไทย", "name_en": "Thai papaya salad (Som Tam)", "category": "thai_dish", "calories": 75, "protein": 3, "fat": 1, "carbs": 14, "fiber": 3, "sugar": 7, "sodium": 580, "serving": "1 จาน (150g)", "source": "INMU Thai FCD 2025"}, {"id": "TH009", "name_th": "ลาบหมู", "name_en": "Spicy minced pork salad (Larb Moo)", "category": "thai_dish", "calories": 220, "protein": 18, "fat": 12, "carbs": 10, "fiber": 1.5, "sugar": 2, "sodium": 650, "serving": "1 จาน (150g)", "source": "INMU Thai FCD 2025"}, {"id": "TH010", "name_th": "ผัดไทย กุ้งสด", "name_en": "Pad Thai with shrimp", "category": "thai_dish", "calories": 400, "protein": 18, "fat": 12, "carbs": 55, "fiber": 2, "sugar": 6, "sodium": 820, "serving": "1 จาน (300g)", "source": "INMU Thai FCD 2025"}, {"id": "TH011", "name_th": "ก๋วยเตี๋ยวเส้นใหญ่ น้ำ หมู", "name_en": "Rice noodle soup with pork", "category": "thai_dish", "calories": 310, "protein": 20, "fat": 8, "carbs": 40, "fiber": 1.2, "sugar": 2, "sodium": 1200, "serving": "1 ชาม (450g)", "source": "INMU Thai FCD 2025"}, {"id": "TH012", "name_th": "ข้าวมันไก่", "name_en": "Hainanese chicken rice", "category": "thai_dish", "calories": 420, "protein": 28, "fat": 12, "carbs": 52, "fiber": 0.8, "sugar": 1, "sodium": 760, "serving": "1 จาน (350g)", "source": "INMU Thai FCD 2025"}, {"id": "TH013", "name_th": "ข้าวหน้าเป็ด", "name_en": "Rice with roasted duck", "category": "thai_dish", "calories": 510, "protein": 30, "fat": 20, "carbs": 52, "fiber": 0.5, "sugar": 3, "sodium": 980, "serving": "1 จาน (380g)", "source": "INMU Thai FCD 2025"}, {"id": "TH014", "name_th": "ไข่เจียว", "name_en": "Thai omelette", "category": "thai_dish", "calories": 220, "protein": 12, "fat": 18, "carbs": 2, "fiber": 0, "sugar": 0, "sodium": 380, "serving": "1 ฟอง ใหญ่ (120g)", "source": "INMU Thai FCD 2025"}, {"id": "TH015", "name_th": "ไข่ดาว", "name_en": "Fried egg", "category": "thai_dish", "calories": 110, "protein": 7, "fat": 9, "carbs": 0.5, "fiber": 0, "sugar": 0, "sodium": 180, "serving": "1 ฟอง (60g)", "source": "INMU Thai FCD 2025"}, {"id": "TH016", "name_th": "แกงจืดเต้าหู้หมูสับ", "name_en": "Clear soup with tofu and minced pork", "category": "thai_dish", "calories": 95, "protein": 10, "fat": 4, "carbs": 5, "fiber": 0.5, "sugar": 1, "sodium": 750, "serving": "1 ถ้วย (250ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH017", "name_th": "ยำวุ้นเส้น", "name_en": "Glass noodle salad (Yum Woonsen)", "category": "thai_dish", "calories": 165, "protein": 12, "fat": 5, "carbs": 18, "fiber": 1, "sugar": 5, "sodium": 650, "serving": "1 จาน (180g)", "source": "INMU Thai FCD 2025"}, {"id": "TH018", "name_th": "ต้มข่าไก่", "name_en": "Chicken in coconut milk soup (Tom Kha Gai)", "category": "thai_dish", "calories": 210, "protein": 16, "fat": 13, "carbs": 7, "fiber": 1.5, "sugar": 3, "sodium": 580, "serving": "1 ถ้วย (250ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH019", "name_th": "มะม่วงข้าวเหนียว", "name_en": "Mango sticky rice", "category": "dessert", "calories": 380, "protein": 5, "fat": 8, "carbs": 72, "fiber": 2.5, "sugar": 35, "sodium": 120, "serving": "1 จาน (250g)", "source": "INMU Thai FCD 2025"}, {"id": "TH020", "name_th": "ขนมปังปิ้ง ไข่ นมข้น", "name_en": "Toast with egg and condensed milk", "category": "breakfast", "calories": 320, "protein": 10, "fat": 12, "carbs": 44, "fiber": 1.5, "sugar": 18, "sodium": 320, "serving": "2 แผ่น (120g)", "source": "INMU Thai FCD 2025"}, {"id": "TH021", "name_th": "โจ๊กหมู", "name_en": "Rice porridge with pork", "category": "breakfast", "calories": 180, "protein": 12, "fat": 5, "carbs": 22, "fiber": 0.5, "sugar": 1, "sodium": 680, "serving": "1 ชาม (350g)", "source": "INMU Thai FCD 2025"}, {"id": "TH022", "name_th": "กาแฟเย็น นม", "name_en": "Thai iced coffee with milk", "category": "beverage", "calories": 180, "protein": 4, "fat": 5, "carbs": 30, "fiber": 0, "sugar": 28, "sodium": 80, "serving": "1 แก้ว (300ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH023", "name_th": "ชาเย็นไทย", "name_en": "Thai iced tea", "category": "beverage", "calories": 150, "protein": 2, "fat": 3, "carbs": 28, "fiber": 0, "sugar": 26, "sodium": 50, "serving": "1 แก้ว (300ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH024", "name_th": "น้ำมะพร้าว", "name_en": "Coconut water", "category": "beverage", "calories": 46, "protein": 1.7, "fat": 0.5, "carbs": 8.9, "fiber": 1.1, "sugar": 6, "sodium": 105, "serving": "1 ลูก (240ml)", "source": "INMU Thai FCD 2025"}, {"id": "TH025", "name_th": "ผัดผักรวม", "name_en": "Stir-fried mixed vegetables", "category": "thai_dish", "calories": 120, "protein": 5, "fat": 7, "carbs": 10, "fiber": 3, "sugar": 4, "sodium": 580, "serving": "1 จาน (200g)", "source": "INMU Thai FCD 2025"}, {"id": "TH026", "name_th": "หมูกระทะ", "name_en": "Thai BBQ pork (Moo Kata)", "category": "thai_dish", "calories": 520, "protein": 38, "fat": 28, "carbs": 25, "fiber": 2, "sugar": 5, "sodium": 890, "serving": "1 มื้อ (400g)", "source": "INMU Thai FCD 2025"}, {"id": "TH027", "name_th": "สุกี้น้ำ", "name_en": "Thai suki soup", "category": "thai_dish", "calories": 380, "protein": 25, "fat": 10, "carbs": 48, "fiber": 3, "sugar": 6, "sodium": 1100, "serving": "1 มื้อ (500g)", "source": "INMU Thai FCD 2025"}, {"id": "TH028", "name_th": "ไก่ทอด", "name_en": "Thai fried chicken", "category": "thai_dish", "calories": 290, "protein": 22, "fat": 18, "carbs": 10, "fiber": 0.5, "sugar": 1, "sodium": 540, "serving": "2 ชิ้น (180g)", "source": "INMU Thai FCD 2025"}, {"id": "TH029", "name_th": "หมูปิ้ง", "name_en": "Grilled pork skewer", "category": "street_food", "calories": 180, "protein": 16, "fat": 10, "carbs": 8, "fiber": 0, "sugar": 6, "sodium": 420, "serving": "3 ไม้ (90g)", "source": "INMU Thai FCD 2025"}, {"id": "TH030", "name_th": "ไก่ย่าง", "name_en": "Grilled chicken", "category": "thai_dish", "calories": 220, "protein": 28, "fat": 10, "carbs": 4, "fiber": 0, "sugar": 2, "sodium": 580, "serving": "2 ชิ้น (200g)", "source": "INMU Thai FCD 2025"}];
+const _INGREDIENTS   = [{"id": "ING001", "name_th": "เนื้อหมู (ไม่ติดมัน)", "name_en": "Pork, lean", "category": "meat", "calories": 143, "protein": 21.5, "fat": 6.0, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 62, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING002", "name_th": "เนื้อไก่ (อก ไม่มีหนัง)", "name_en": "Chicken breast, skinless", "category": "meat", "calories": 110, "protein": 23.1, "fat": 1.2, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 74, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING003", "name_th": "เนื้อวัว (ไม่ติดมัน)", "name_en": "Beef, lean", "category": "meat", "calories": 189, "protein": 26.1, "fat": 9.1, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 72, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING004", "name_th": "ปลาทู สด", "name_en": "Mackerel, fresh", "category": "seafood", "calories": 158, "protein": 23.6, "fat": 6.8, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 91, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING005", "name_th": "กุ้งขาว สด", "name_en": "Shrimp, white, fresh", "category": "seafood", "calories": 85, "protein": 18.8, "fat": 0.9, "carbs": 0.9, "fiber": 0, "sugar": 0, "sodium": 148, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING006", "name_th": "ปลาแซลมอน", "name_en": "Salmon, Atlantic", "category": "seafood", "calories": 208, "protein": 20.4, "fat": 13.4, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 59, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING007", "name_th": "ไข่ไก่", "name_en": "Chicken egg", "category": "egg", "calories": 155, "protein": 12.6, "fat": 10.6, "carbs": 1.1, "fiber": 0, "sugar": 1.1, "sodium": 124, "serving": "1 ฟอง (60g)", "source": "USDA FoodData Central"}, {"id": "ING008", "name_th": "นม วัว สด", "name_en": "Cow milk, whole", "category": "dairy", "calories": 61, "protein": 3.2, "fat": 3.3, "carbs": 4.8, "fiber": 0, "sugar": 5.1, "sodium": 43, "serving": "100ml", "source": "USDA FoodData Central"}, {"id": "ING009", "name_th": "โยเกิร์ตธรรมชาติ", "name_en": "Yogurt, plain", "category": "dairy", "calories": 59, "protein": 3.5, "fat": 3.3, "carbs": 4.7, "fiber": 0, "sugar": 4.7, "sodium": 46, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING010", "name_th": "เต้าหู้ขาว (แข็ง)", "name_en": "Tofu, firm", "category": "plant_protein", "calories": 76, "protein": 8.0, "fat": 4.2, "carbs": 1.9, "fiber": 0.3, "sugar": 0.9, "sodium": 7, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING011", "name_th": "ถั่วเหลือง (ต้มสุก)", "name_en": "Soybean, boiled", "category": "legume", "calories": 173, "protein": 16.6, "fat": 9.0, "carbs": 9.9, "fiber": 6.0, "sugar": 3.0, "sodium": 1, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING012", "name_th": "ถั่วแดง (ต้มสุก)", "name_en": "Red kidney bean, boiled", "category": "legume", "calories": 127, "protein": 8.7, "fat": 0.5, "carbs": 22.8, "fiber": 7.4, "sugar": 0.3, "sodium": 2, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING013", "name_th": "บรอกโคลี", "name_en": "Broccoli, raw", "category": "vegetable", "calories": 34, "protein": 2.8, "fat": 0.4, "carbs": 6.6, "fiber": 2.6, "sugar": 1.7, "sodium": 33, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING014", "name_th": "ผักโขม", "name_en": "Spinach, raw", "category": "vegetable", "calories": 23, "protein": 2.9, "fat": 0.4, "carbs": 3.6, "fiber": 2.2, "sugar": 0.4, "sodium": 79, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING015", "name_th": "คะน้า", "name_en": "Chinese kale (Kailan)", "category": "vegetable", "calories": 32, "protein": 2.2, "fat": 0.5, "carbs": 5.6, "fiber": 2.0, "sugar": 2, "sodium": 26, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING016", "name_th": "ผักบุ้ง", "name_en": "Water morning glory", "category": "vegetable", "calories": 25, "protein": 2.5, "fat": 0.3, "carbs": 3.5, "fiber": 2.1, "sugar": 0.5, "sodium": 78, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING017", "name_th": "มะเขือเทศ", "name_en": "Tomato, raw", "category": "vegetable", "calories": 18, "protein": 0.9, "fat": 0.2, "carbs": 3.9, "fiber": 1.2, "sugar": 2.6, "sodium": 5, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING018", "name_th": "แครอท", "name_en": "Carrot, raw", "category": "vegetable", "calories": 41, "protein": 0.9, "fat": 0.2, "carbs": 9.6, "fiber": 2.8, "sugar": 4.7, "sodium": 69, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING019", "name_th": "มันฝรั่ง (ต้ม)", "name_en": "Potato, boiled", "category": "vegetable", "calories": 87, "protein": 1.9, "fat": 0.1, "carbs": 20.1, "fiber": 1.8, "sugar": 0.9, "sodium": 4, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING020", "name_th": "ฟักทอง (นึ่ง)", "name_en": "Pumpkin, steamed", "category": "vegetable", "calories": 26, "protein": 1.0, "fat": 0.1, "carbs": 6.5, "fiber": 0.5, "sugar": 2.8, "sodium": 1, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING021", "name_th": "กล้วยหอม", "name_en": "Banana, ripe", "category": "fruit", "calories": 89, "protein": 1.1, "fat": 0.3, "carbs": 22.8, "fiber": 2.6, "sugar": 12.2, "sodium": 1, "serving": "1 ผล (100g)", "source": "USDA FoodData Central"}, {"id": "ING022", "name_th": "มะม่วง สุก", "name_en": "Mango, ripe", "category": "fruit", "calories": 65, "protein": 0.5, "fat": 0.3, "carbs": 17.0, "fiber": 1.6, "sugar": 14.8, "sodium": 2, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING023", "name_th": "ฝรั่ง", "name_en": "Guava", "category": "fruit", "calories": 68, "protein": 2.6, "fat": 1.0, "carbs": 14.3, "fiber": 5.4, "sugar": 8.9, "sodium": 2, "serving": "100g", "source": "INMU Thai FCD 2025"}, {"id": "ING024", "name_th": "แตงโม", "name_en": "Watermelon", "category": "fruit", "calories": 30, "protein": 0.6, "fat": 0.2, "carbs": 7.6, "fiber": 0.4, "sugar": 6.2, "sodium": 1, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING025", "name_th": "ส้ม", "name_en": "Orange", "category": "fruit", "calories": 47, "protein": 0.9, "fat": 0.1, "carbs": 11.8, "fiber": 2.4, "sugar": 9.4, "sodium": 0, "serving": "1 ผล (130g)", "source": "USDA FoodData Central"}, {"id": "ING026", "name_th": "แอปเปิ้ล", "name_en": "Apple", "category": "fruit", "calories": 52, "protein": 0.3, "fat": 0.2, "carbs": 13.8, "fiber": 2.4, "sugar": 10.4, "sodium": 1, "serving": "1 ผล (182g)", "source": "USDA FoodData Central"}, {"id": "ING027", "name_th": "น้ำมันมะพร้าว", "name_en": "Coconut oil", "category": "oil", "calories": 862, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 0, "serving": "1 ช้อนโต๊ะ (14g)", "source": "USDA FoodData Central"}, {"id": "ING028", "name_th": "น้ำมันมะกอก", "name_en": "Olive oil, extra virgin", "category": "oil", "calories": 884, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 2, "serving": "1 ช้อนโต๊ะ (14g)", "source": "USDA FoodData Central"}, {"id": "ING029", "name_th": "น้ำมันรำข้าว", "name_en": "Rice bran oil", "category": "oil", "calories": 884, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0, "sugar": 0, "sodium": 0, "serving": "1 ช้อนโต๊ะ (14g)", "source": "USDA FoodData Central"}, {"id": "ING030", "name_th": "ข้าวโอ๊ต (แห้ง)", "name_en": "Oats, rolled, dry", "category": "grain", "calories": 389, "protein": 16.9, "fat": 6.9, "carbs": 66.3, "fiber": 10.6, "sugar": 0, "sodium": 2, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING031", "name_th": "ขนมปังโฮลวีต", "name_en": "Bread, whole wheat", "category": "grain", "calories": 247, "protein": 13.0, "fat": 3.4, "carbs": 41.3, "fiber": 7.0, "sugar": 5.7, "sodium": 400, "serving": "2 แผ่น (60g)", "source": "USDA FoodData Central"}, {"id": "ING032", "name_th": "พาสต้า (ต้มสุก)", "name_en": "Pasta, cooked", "category": "grain", "calories": 158, "protein": 5.8, "fat": 0.9, "carbs": 30.9, "fiber": 1.8, "sugar": 0.6, "sodium": 1, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "ING033", "name_th": "อัลมอนด์", "name_en": "Almonds", "category": "nut", "calories": 579, "protein": 21.2, "fat": 49.9, "carbs": 21.6, "fiber": 12.5, "sugar": 4.4, "sodium": 1, "serving": "30g (หนึ่งกำมือ)", "source": "USDA FoodData Central"}, {"id": "ING034", "name_th": "วอลนัท", "name_en": "Walnuts", "category": "nut", "calories": 654, "protein": 15.2, "fat": 65.2, "carbs": 13.7, "fiber": 6.7, "sugar": 2.6, "sodium": 2, "serving": "30g", "source": "USDA FoodData Central"}, {"id": "ING035", "name_th": "เนยถั่ว", "name_en": "Peanut butter", "category": "nut", "calories": 588, "protein": 25.1, "fat": 50.4, "carbs": 20.1, "fiber": 5.9, "sugar": 9.2, "sodium": 459, "serving": "2 ช้อนโต๊ะ (32g)", "source": "USDA FoodData Central"}, {"id": "ING036", "name_th": "กะทิ (กระป๋อง)", "name_en": "Coconut milk, canned", "category": "dairy_alternative", "calories": 197, "protein": 2.0, "fat": 21.3, "carbs": 2.8, "fiber": 0, "sugar": 3.3, "sodium": 15, "serving": "100ml", "source": "USDA FoodData Central"}, {"id": "ING037", "name_th": "นมอัลมอนด์ (ไม่หวาน)", "name_en": "Almond milk, unsweetened", "category": "dairy_alternative", "calories": 17, "protein": 0.6, "fat": 1.1, "carbs": 1.5, "fiber": 0.2, "sugar": 0, "sodium": 72, "serving": "100ml", "source": "USDA FoodData Central"}, {"id": "ING038", "name_th": "นมถั่วเหลือง (ไม่หวาน)", "name_en": "Soy milk, unsweetened", "category": "dairy_alternative", "calories": 33, "protein": 3.3, "fat": 1.7, "carbs": 1.7, "fiber": 0.4, "sugar": 1.0, "sodium": 51, "serving": "100ml", "source": "USDA FoodData Central"}, {"id": "ING039", "name_th": "ชีส เชดดาร์", "name_en": "Cheese, cheddar", "category": "dairy", "calories": 403, "protein": 25.0, "fat": 33.1, "carbs": 1.3, "fiber": 0, "sugar": 0.5, "sodium": 621, "serving": "30g (1 แผ่น)", "source": "USDA FoodData Central"}, {"id": "ING040", "name_th": "เนย (จืด)", "name_en": "Butter, unsalted", "category": "dairy", "calories": 717, "protein": 0.9, "fat": 81.1, "carbs": 0.1, "fiber": 0, "sugar": 0.1, "sodium": 11, "serving": "1 ช้อนโต๊ะ (14g)", "source": "USDA FoodData Central"}, {"id": "ING041", "name_th": "น้ำตาลทราย", "name_en": "Sugar, white", "category": "condiment", "calories": 387, "protein": 0, "fat": 0, "carbs": 100, "fiber": 0, "sugar": 100, "sodium": 0, "serving": "1 ช้อนชา (5g)", "source": "USDA FoodData Central"}, {"id": "ING042", "name_th": "น้ำปลา", "name_en": "Fish sauce", "category": "condiment", "calories": 35, "protein": 5.0, "fat": 0.1, "carbs": 3.6, "fiber": 0, "sugar": 0, "sodium": 5800, "serving": "1 ช้อนโต๊ะ (15ml)", "source": "INMU Thai FCD 2025"}, {"id": "ING043", "name_th": "ซีอิ๊วดำ", "name_en": "Soy sauce, dark", "category": "condiment", "calories": 60, "protein": 5.6, "fat": 0.1, "carbs": 8.6, "fiber": 0.9, "sugar": 1.7, "sodium": 5720, "serving": "1 ช้อนโต๊ะ (16g)", "source": "USDA FoodData Central"}, {"id": "ING044", "name_th": "น้ำมันหอย", "name_en": "Oyster sauce", "category": "condiment", "calories": 51, "protein": 1.3, "fat": 0.3, "carbs": 10.7, "fiber": 0.1, "sugar": 5.2, "sodium": 2733, "serving": "1 ช้อนโต๊ะ (16g)", "source": "USDA FoodData Central"}, {"id": "ING045", "name_th": "ซอสพริก", "name_en": "Chili sauce (Sriracha)", "category": "condiment", "calories": 93, "protein": 0.8, "fat": 0.9, "carbs": 21.6, "fiber": 1.5, "sugar": 14.6, "sodium": 2185, "serving": "1 ช้อนโต๊ะ (16g)", "source": "USDA FoodData Central"}, {"id": "ING046", "name_th": "กระเทียม", "name_en": "Garlic, raw", "category": "herb_spice", "calories": 149, "protein": 6.4, "fat": 0.5, "carbs": 33.1, "fiber": 2.1, "sugar": 1.0, "sodium": 17, "serving": "3 กลีบ (9g)", "source": "USDA FoodData Central"}, {"id": "ING047", "name_th": "ขิง สด", "name_en": "Ginger, fresh", "category": "herb_spice", "calories": 80, "protein": 1.8, "fat": 0.8, "carbs": 17.8, "fiber": 2.0, "sugar": 1.7, "sodium": 13, "serving": "1 ช้อนชา (5g)", "source": "USDA FoodData Central"}, {"id": "ING048", "name_th": "พริกขี้หนู สด", "name_en": "Thai chili, fresh", "category": "herb_spice", "calories": 40, "protein": 1.9, "fat": 0.4, "carbs": 8.8, "fiber": 1.5, "sugar": 5.1, "sodium": 9, "serving": "10g", "source": "INMU Thai FCD 2025"}, {"id": "ING049", "name_th": "ใบกระเพรา", "name_en": "Thai holy basil", "category": "herb_spice", "calories": 22, "protein": 3.2, "fat": 0.6, "carbs": 2.7, "fiber": 1.6, "sugar": 0.3, "sodium": 4, "serving": "10g", "source": "INMU Thai FCD 2025"}, {"id": "ING050", "name_th": "ตะไคร้", "name_en": "Lemongrass", "category": "herb_spice", "calories": 99, "protein": 1.8, "fat": 0.5, "carbs": 25.3, "fiber": 0, "sugar": 0, "sodium": 6, "serving": "1 ต้น (30g)", "source": "INMU Thai FCD 2025"}];
+const _INTL_FOODS    = [{"id": "INT001", "name_th": "พิซซ่า มาการิต้า (1 ชิ้น)", "name_en": "Pizza, Margherita, 1 slice", "category": "western", "calories": 250, "protein": 10, "fat": 9, "carbs": 33, "fiber": 2, "sugar": 3, "sodium": 500, "serving": "1 ชิ้น (100g)", "source": "USDA FoodData Central"}, {"id": "INT002", "name_th": "แฮมเบอร์เกอร์ (เบสิค)", "name_en": "Hamburger, plain", "category": "western", "calories": 295, "protein": 17, "fat": 14, "carbs": 24, "fiber": 1, "sugar": 5, "sodium": 396, "serving": "1 ชิ้น (150g)", "source": "USDA FoodData Central"}, {"id": "INT003", "name_th": "เฟรนช์ฟราย (ขนาดกลาง)", "name_en": "French fries, medium", "category": "western", "calories": 365, "protein": 4.5, "fat": 17, "carbs": 48, "fiber": 4, "sugar": 0.3, "sodium": 400, "serving": "1 ถุง (117g)", "source": "USDA FoodData Central"}, {"id": "INT004", "name_th": "ซีซาร์ สลัด", "name_en": "Caesar salad", "category": "western", "calories": 190, "protein": 7, "fat": 14, "carbs": 11, "fiber": 2, "sugar": 2, "sodium": 520, "serving": "1 จาน (200g)", "source": "USDA FoodData Central"}, {"id": "INT005", "name_th": "สปาเกตตี้ โบโลเนส", "name_en": "Spaghetti Bolognese", "category": "western", "calories": 420, "protein": 22, "fat": 14, "carbs": 52, "fiber": 3.5, "sugar": 6, "sodium": 650, "serving": "1 จาน (300g)", "source": "USDA FoodData Central"}, {"id": "INT006", "name_th": "ราเมน (น้ำซุปหมู)", "name_en": "Ramen, pork broth", "category": "japanese", "calories": 430, "protein": 20, "fat": 14, "carbs": 57, "fiber": 2, "sugar": 4, "sodium": 1500, "serving": "1 ชาม (450g)", "source": "Japan Nutrition DB"}, {"id": "INT007", "name_th": "ซูชิ (ข้าวปั้น แซลมอน)", "name_en": "Sushi, salmon nigiri", "category": "japanese", "calories": 60, "protein": 4, "fat": 1.5, "carbs": 8, "fiber": 0, "sugar": 1, "sodium": 200, "serving": "2 ชิ้น (50g)", "source": "Japan Nutrition DB"}, {"id": "INT008", "name_th": "ข้าวหน้าเนื้อ (Gyudon)", "name_en": "Gyudon, beef rice bowl", "category": "japanese", "calories": 580, "protein": 24, "fat": 16, "carbs": 80, "fiber": 2, "sugar": 10, "sodium": 820, "serving": "1 ชาม (400g)", "source": "Japan Nutrition DB"}, {"id": "INT009", "name_th": "ข้าวผัด (จีน)", "name_en": "Fried rice, Chinese style", "category": "chinese", "calories": 370, "protein": 11, "fat": 12, "carbs": 55, "fiber": 2, "sugar": 2, "sodium": 900, "serving": "1 จาน (300g)", "source": "USDA FoodData Central"}, {"id": "INT010", "name_th": "ติ่มซำ (ฮาเกา 3 ชิ้น)", "name_en": "Dim sum, Har Gow, 3 pieces", "category": "chinese", "calories": 160, "protein": 9, "fat": 4, "carbs": 22, "fiber": 1, "sugar": 0, "sodium": 450, "serving": "3 ชิ้น (75g)", "source": "USDA FoodData Central"}, {"id": "INT011", "name_th": "กิมจิ", "name_en": "Kimchi", "category": "korean", "calories": 15, "protein": 1.1, "fat": 0.5, "carbs": 2.4, "fiber": 1.6, "sugar": 1.1, "sodium": 498, "serving": "100g", "source": "Korea Nutrition DB"}, {"id": "INT012", "name_th": "บิบิมบับ", "name_en": "Bibimbap", "category": "korean", "calories": 490, "protein": 20, "fat": 12, "carbs": 73, "fiber": 4, "sugar": 5, "sodium": 840, "serving": "1 ชาม (500g)", "source": "Korea Nutrition DB"}, {"id": "INT013", "name_th": "ชาวาร์ม่า (ไก่)", "name_en": "Shawarma, chicken", "category": "middle_eastern", "calories": 430, "protein": 26, "fat": 18, "carbs": 40, "fiber": 3, "sugar": 4, "sodium": 750, "serving": "1 ม้วน (280g)", "source": "USDA FoodData Central"}, {"id": "INT014", "name_th": "ฮัมมัส", "name_en": "Hummus", "category": "middle_eastern", "calories": 166, "protein": 7.9, "fat": 9.6, "carbs": 14.3, "fiber": 6.0, "sugar": 0.3, "sodium": 379, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "INT015", "name_th": "กะหรี่ไก่ (อินเดีย)", "name_en": "Chicken curry, Indian style", "category": "indian", "calories": 290, "protein": 22, "fat": 15, "carbs": 16, "fiber": 3, "sugar": 4, "sodium": 650, "serving": "1 ถ้วย (250g)", "source": "USDA FoodData Central"}, {"id": "INT016", "name_th": "นาน", "name_en": "Naan bread", "category": "indian", "calories": 262, "protein": 8.7, "fat": 5.1, "carbs": 45.0, "fiber": 1.9, "sugar": 3.1, "sodium": 536, "serving": "1 แผ่น (90g)", "source": "USDA FoodData Central"}, {"id": "INT017", "name_th": "แกงมัสมั่น (ไก่)", "name_en": "Massaman curry, chicken", "category": "thai_dish", "calories": 320, "protein": 18, "fat": 18, "carbs": 22, "fiber": 3, "sugar": 6, "sodium": 680, "serving": "1 ถ้วย (250g)", "source": "INMU Thai FCD 2025"}, {"id": "INT018", "name_th": "แซนด์วิช ไก่ ผัก (โฮลวีต)", "name_en": "Chicken salad sandwich, whole wheat", "category": "western", "calories": 340, "protein": 24, "fat": 10, "carbs": 38, "fiber": 4, "sugar": 5, "sodium": 680, "serving": "1 ชิ้น (200g)", "source": "USDA FoodData Central"}, {"id": "INT019", "name_th": "กรีก โยเกิร์ต (ธรรมชาติ)", "name_en": "Greek yogurt, plain, full fat", "category": "western", "calories": 97, "protein": 9.0, "fat": 5.0, "carbs": 3.6, "fiber": 0, "sugar": 3.2, "sodium": 36, "serving": "100g", "source": "USDA FoodData Central"}, {"id": "INT020", "name_th": "กราโนล่า (น้ำผึ้ง ถั่ว)", "name_en": "Granola, honey nut", "category": "western", "calories": 471, "protein": 11, "fat": 21, "carbs": 65, "fiber": 5, "sugar": 22, "sodium": 290, "serving": "100g", "source": "USDA FoodData Central"}];
+const _LOCAL_DB      = [..._THAI_FOODS, ..._INGREDIENTS, ..._INTL_FOODS];
+
+function _normalize(str){
+  return (str||'').toLowerCase()
+    .replace(/\s+/g,' ')
+    .replace(/[^\u0E00-\u0E7Fa-z0-9 ]/g,'')
+    .trim();
+}
+
+function _matchScore(item, q){
+  if(!q)return 0;
+  const th=_normalize(item.name_th), en=_normalize(item.name_en);
+  if(th===q||en===q)return 100;
+  if(th.startsWith(q)||en.startsWith(q))return 85;
+  if(th.includes(q)||en.includes(q))return 70;
+  const words=q.split(' ').filter(w=>w.length>1);
+  if(words.length>1){
+    const hit=words.filter(w=>th.includes(w)||en.includes(w)).length;
+    if(hit===words.length)return 60;
+    if(hit>0)return 20+hit*10;
+  }
+  return 0;
+}
+
+function _calcHealthScore(item){
+  let s=60;
+  if((item.fiber||0)>3)s+=10;
+  if((item.protein||0)>15)s+=10;
+  if((item.sugar||0)>20)s-=15;
+  if((item.sodium||0)>1000)s-=10;
+  if((item.fat||0)>30)s-=5;
+  return Math.max(10,Math.min(100,s));
+}
+
+function _dbToNutr(item){
+  return{
+    foodName:item.name_th, name_en:item.name_en,
+    calories:item.calories||0, protein:item.protein||0,
+    fat:item.fat||0, carbs:item.carbs||0,
+    fiber:item.fiber||0, sugar:item.sugar||0,
+    sodium:item.sodium||0, servingSize:item.serving||'100g',
+    healthScore:_calcHealthScore(item),
+    note:`ข้อมูลจาก ${item.source}`,
+    source:'LOCAL_DB', dbId:item.id
+  };
+}
+
+function searchLocalDB(query, limit=5){
+  const q=_normalize(query);
+  if(!q)return[];
+  return _LOCAL_DB
+    .map(item=>{return{item,score:_matchScore(item,q)};  })
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,limit)
+    .map(x=>_dbToNutr(x.item));
+}
+
+function lookupLocalFood(query){
+  const r=searchLocalDB(query,1);
+  return r.length?r[0]:null;
+}
+
 // ══════════════════════════════════════════════════
 // OPEN FOOD FACTS API (ฟรี ไม่ต้อง key)
 // ══════════════════════════════════════════════════
 async function searchOpenFoodFacts(query){
-  // ค้นด้วยชื่ออาหาร
   try{
-    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=5&lc=th,en`;
-    const res=await fetch(url,{headers:{'User-Agent':'FitStreak/1.0'}});
+    // ค้นหลายภาษา รองรับทั้งไทยและอังกฤษ
+    const url=`https://world.openfoodfacts.org/cgi/search.pl?`+
+      `search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1`+
+      `&page_size=10&fields=product_name,product_name_th,product_name_en,brands,`+
+      `nutriments,serving_size,serving_quantity,product_quantity,nutriscore_grade,`+
+      `ingredients_text,ingredients_text_th`;
+    const res=await fetch(url,{headers:{'User-Agent':'FitStreak/1.0 (fitstreak@app)'}});
     if(!res.ok)return null;
     const d=await res.json();
-    const p=d.products?.[0];
-    if(!p||!p.nutriments)return null;
-    return offProductToNutr(p);
+    if(!d.products?.length)return null;
+    // เลือกสินค้าที่มีข้อมูลโภชนาการครบที่สุด
+    const valid=d.products.filter(p=>
+      p.nutriments&&
+      (p.nutriments['energy-kcal_100g']!=null||p.nutriments['energy-kcal_serving']!=null||p.nutriments['energy_100g']!=null)
+    );
+    if(!valid.length)return null;
+    return offProductToNutr(valid[0]);
   }catch{return null;}
 }
 
 async function lookupBarcodeOFF(barcode){
-  // ค้นด้วย barcode โดยตรง
+  if(!barcode||barcode.length<4)return null;
   try{
-    const res=await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`,{headers:{'User-Agent':'FitStreak/1.0'}});
+    const fields='product_name,product_name_th,product_name_en,brands,nutriments,'+
+      'serving_size,serving_quantity,product_quantity,nutriscore_grade,'+
+      'ingredients_text,ingredients_text_th';
+    const res=await fetch(
+      `https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=${fields}`,
+      {headers:{'User-Agent':'FitStreak/1.0 (fitstreak@app)'}}
+    );
     if(!res.ok)return null;
     const d=await res.json();
     if(d.status!==1||!d.product)return null;
-    return offProductToNutr(d.product);
+    const p=d.product;
+    // ตรวจว่ามีข้อมูลโภชนาการจริงๆ
+    const n=p.nutriments||{};
+    const hasNutr=n['energy-kcal_100g']!=null||n['energy-kcal_serving']!=null||n['energy_100g']!=null;
+    if(!hasNutr)return null;
+    return offProductToNutr(p);
   }catch{return null;}
 }
 
 function offProductToNutr(p){
   const n=p.nutriments||{};
-  const serving=p.serving_size||p.serving_quantity_unit||'100g';
-  // ค่าโภชนาการต่อ serving (หรือต่อ 100g ถ้าไม่มี serving)
-  const mul=p.serving_quantity?p.serving_quantity/100:1;
-  const cal=n['energy-kcal_serving']||n['energy-kcal_100g']&&Math.round(n['energy-kcal_100g']*mul)||0;
-  const name=p.product_name_th||p.product_name||p.abbreviated_product_name||'ไม่ทราบชื่อ';
+  // ── serving size ──
+  const servingG=parseFloat(p.serving_quantity)||100;
+  const mul=servingG/100;
+  const servingLabel=p.serving_size||`${servingG}g`;
+  // ── ชื่อสินค้า ──
+  const name=p.product_name_th||p.product_name_en||p.product_name||p.abbreviated_product_name||'ไม่ทราบชื่อ';
+  // ── calories: ใช้ _serving ก่อน ถ้าไม่มีคำนวณจาก _100g * mul ──
+  const kcal=n['energy-kcal_serving']!=null
+    ? n['energy-kcal_serving']
+    : (n['energy-kcal_100g']!=null ? n['energy-kcal_100g']*mul
+    : (n['energy_serving']!=null ? n['energy_serving']/4.184
+    : (n['energy_100g']!=null ? n['energy_100g']/4.184*mul : 0)));
+  // ── macro helper ──
+  const macro=(key)=>{
+    const s=n[key+'_serving'], h=n[key+'_100g'];
+    return s!=null?s:(h!=null?h*mul:0);
+  };
+  // ── sodium: OFF เก็บเป็น g/100g → แปลงเป็น mg ──
+  const sodiumG=macro('sodium');
+  const sodiumMg=sodiumG>1?sodiumG:sodiumG*1000; // ถ้า>1 น่าจะเป็น mg แล้ว
+  // ── health score จาก nutriscore (A=ดี E=แย่) ──
+  const nsGrade=p.nutriscore_grade||'';
+  const nsScore={'a':90,'b':75,'c':60,'d':40,'e':20}[nsGrade.toLowerCase()]||55;
   return{
     productName:name,
     foodName:name,
     brand:p.brands||'',
-    calories:Math.round(cal)||Math.round((n['energy-kcal_serving']||n.energy_serving/4.184||0)),
-    protein:Math.round((n.proteins_serving||n.proteins_100g*mul||0)*10)/10,
-    fat:Math.round((n.fat_serving||n.fat_100g*mul||0)*10)/10,
-    carbs:Math.round((n.carbohydrates_serving||n.carbohydrates_100g*mul||0)*10)/10,
-    fiber:Math.round((n.fiber_serving||n.fiber_100g*mul||0)*10)/10,
-    sugar:Math.round((n.sugars_serving||n.sugars_100g*mul||0)*10)/10,
-    sodium:Math.round((n.sodium_serving||n.sodium_100g*mul||0)*1000)||0,
-    servingSize:serving,
-    servingsPerPack:p.serving_quantity?Math.round((p.product_quantity||100)/p.serving_quantity):1,
+    calories:Math.round(kcal)||0,
+    protein:Math.round(macro('proteins')*10)/10,
+    fat:Math.round(macro('fat')*10)/10,
+    carbs:Math.round(macro('carbohydrates')*10)/10,
+    fiber:Math.round(macro('fiber')*10)/10,
+    sugar:Math.round(macro('sugars')*10)/10,
+    sodium:Math.round(sodiumMg)||0,
+    servingSize:servingLabel,
+    servingsPerPack:p.serving_quantity&&p.product_quantity?Math.round(p.product_quantity/servingG):1,
     ingredients:p.ingredients_text_th||p.ingredients_text||'',
-    healthScore:Math.round((p.nutriscore_score!=null?(100-p.nutriscore_score*5):50)),
-    note:'ข้อมูลจาก Open Food Facts',
+    healthScore:nsScore,
+    note:`ข้อมูลจาก Open Food Facts${nsGrade?' (Nutri-Score '+nsGrade.toUpperCase()+')':''}`,
     source:'OFF'
   };
 }
@@ -1832,7 +1941,6 @@ function renderHomeMealCards(){}
 function setHomeCat(c){}
 function addFromMealCard(idx){}
 function showMealInfoHome(idx){}
-function showMealInfo(idx){if(currentNutrResult)displayNutrResult(currentNutrResult);}
 function populateHomeFoodSel(){}
 function addFoodFromHomeSel(){}
 
@@ -1953,9 +2061,14 @@ async function analyzeQRImg(imgData){
       loadEl.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
       result=await lookupBarcodeOFF(barcodeData.barcode);
     }
-    // ── Step 3: ถ้าไม่เจอ barcode ค้นด้วยชื่อสินค้า ──
+    // ── Step 3: ค้น Local DB ด้วยชื่อสินค้า ──
     if(!result&&barcodeData.productName){
-      loadEl.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาข้อมูลโภชนาการ...</div>';
+      loadEl.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาในฐานข้อมูล...</div>';
+      result=lookupLocalFood(barcodeData.productName);
+    }
+    // ── Step 4: ค้น Open Food Facts ด้วยชื่อสินค้า ──
+    if(!result&&barcodeData.productName){
+      loadEl.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
       result=await searchOpenFoodFacts(barcodeData.productName);
     }
     // ── Step 4: fallback ให้ AI วิเคราะห์เต็มๆ ──
@@ -1999,10 +2112,15 @@ async function analyzeTextFood(){
   const el=document.getElementById('scanAiResult');
   el.classList.add('visible');
   try{
-    // ── Step 1: ค้น Open Food Facts ก่อน ──
-    el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
-    let r=await searchOpenFoodFacts(txt);
-    // ── Step 2: fallback AI ──
+    // ── Step 1: ค้น Local DB ก่อน (เร็ว แม่น ไม่ใช้ quota) ──
+    el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาในฐานข้อมูล...</div>';
+    let r=lookupLocalFood(txt);
+    // ── Step 2: ค้น Open Food Facts ──
+    if(!r){
+      el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
+      r=await searchOpenFoodFacts(txt);
+    }
+    // ── Step 3: fallback AI ──
     if(!r){
       el.innerHTML='<div class="spinner"></div><div class="loading-txt">AI กำลังวิเคราะห์...</div>';
       const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${txt}":\n{"foodName":"ชื่ออาหาร","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"sodium":0,"servingSize":"1 จาน","healthScore":0,"note":"หมายเหตุสั้น"}`;
@@ -2013,7 +2131,12 @@ async function analyzeTextFood(){
     if(r.food&&!r.foodName)r.foodName=r.food||txt;
     lastAIFood={name:r.foodName,emoji:'🍽️',kcal:r.calories,carb:r.carbs,protein:r.protein,fat:r.fat};
     document.getElementById('scanFoodName').textContent=r.foodName;
-    document.getElementById('scanNutrition').innerHTML=buildNutritionHTML(r)+(r.source==='OFF'?'<div style="font-size:10px;color:var(--teal);margin-top:4px;text-align:right">📦 Open Food Facts</div>':'<div style="font-size:10px;color:var(--text-3);margin-top:4px;text-align:right">🤖 AI ประมาณการ</div>');
+    const srcBadge=r.source==='LOCAL_DB'
+      ?'<div style="font-size:10px;color:var(--teal);margin-top:4px;text-align:right">📚 ฐานข้อมูล INMU/USDA</div>'
+      :r.source==='OFF'
+      ?'<div style="font-size:10px;color:var(--teal);margin-top:4px;text-align:right">📦 Open Food Facts</div>'
+      :'<div style="font-size:10px;color:var(--text-3);margin-top:4px;text-align:right">🤖 AI ประมาณการ</div>';
+    document.getElementById('scanNutrition').innerHTML=buildNutritionHTML(r)+srcBadge;
   }catch(e){el.innerHTML=`<div style="color:#DC2626;font-size:13px">วิเคราะห์ไม่สำเร็จ: ${e.message}</div>`;}
 }
 function addScanAIToFav(){
@@ -2037,13 +2160,16 @@ async function openMealPlanAI(){
 }
 
 function buildNutritionHTML(r){
-  const sc=r.healthScore;const scCol=sc>=7?'var(--green)':sc>=5?'var(--yellow)':'#DC2626';
+  // healthScore อาจมาจาก LocalDB (0-100) หรือ AI (0-10) — normalize เป็น 0-10 เสมอ
+  const rawSc=r.healthScore||0;
+  const sc=rawSc>10?Math.round(rawSc/10):rawSc;
+  const scCol=sc>=7?'var(--green)':sc>=5?'var(--yellow)':'#DC2626';
   return`<div class="nutri-grid">
     <div class="nutri-chip accent"><div class="nc-val">${r.calories||0}</div><div class="nc-lbl">แคลอรี่ kcal</div></div>
     <div class="nutri-chip"><div class="nc-val" style="color:var(--teal)">${r.protein||0}g</div><div class="nc-lbl">โปรตีน</div></div>
     <div class="nutri-chip"><div class="nc-val" style="color:var(--blue)">${r.fat||0}g</div><div class="nc-lbl">ไขมัน</div></div>
     <div class="nutri-chip"><div class="nc-val" style="color:var(--orange)">${r.carbs||0}g</div><div class="nc-lbl">คาร์บ</div></div>
-    <div class="nutri-chip"><div class="nc-val" style="color:${scCol}">${sc||'-'}/10</div><div class="nc-lbl">Health Score</div></div>
+    <div class="nutri-chip"><div class="nc-val" style="color:${scCol}">${sc>0?sc:'-'}/10</div><div class="nc-lbl">Health Score</div></div>
     <div class="nutri-chip"><div class="nc-val" style="color:var(--text-2);font-size:13px">${r.servingSize||'1 ที่'}</div><div class="nc-lbl">ขนาดเสิร์ฟ</div></div>
   </div>
   <div class="nutri-detail-row"><span>ไฟเบอร์</span><b>${r.fiber||0}g</b></div>
@@ -2178,10 +2304,15 @@ async function askNutrition(){
   const askBtn=document.getElementById('nutrAskBtn');if(askBtn)askBtn.textContent='...';
   el.innerHTML='<div class="spinner"></div><div class="loading-txt">กำลังวิเคราะห์...</div>';
   try{
-    // ── Step 1: ค้น Open Food Facts ก่อน ──
-    el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
-    let r=await searchOpenFoodFacts(q);
-    // ── Step 2: fallback AI ──
+    // ── Step 1: ค้น Local DB ก่อน (เร็วสุด แม่นสุด) ──
+    el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาในฐานข้อมูล...</div>';
+    let r=lookupLocalFood(q);
+    // ── Step 2: ค้น Open Food Facts ──
+    if(!r){
+      el.innerHTML='<div class="spinner"></div><div class="loading-txt">ค้นหาใน Open Food Facts...</div>';
+      r=await searchOpenFoodFacts(q);
+    }
+    // ── Step 3: fallback AI ──
     if(!r){
       el.innerHTML='<div class="spinner"></div><div class="loading-txt">AI กำลังวิเคราะห์...</div>';
       const prompt=`ตอบเฉพาะ JSON ไม่มีข้อความอื่น ข้อมูลโภชนาการของ "${q}":\n{"food":"ชื่ออาหาร","serving":"1 จาน","calories":0,"protein":0,"fat":0,"carbs":0,"fiber":0,"note":"หมายเหตุสั้น"}`;
@@ -2218,7 +2349,7 @@ function displayNutrResult(info){
       ${[['แคลอรี่',pC,'var(--accent)'],['โปรตีน',pP,'var(--teal)'],['ไขมัน',pF,'var(--yellow)'],['คาร์บ',pCa,'var(--orange)']].map(([l,p,c])=>`<div class="vs-row"><span class="vs-lbl">${l}</span><div class="vs-bar-wrap"><div class="vs-bar-fill" style="width:${p}%;background:${c}"></div></div><span class="vs-pct">${p}%</span></div>`).join('')}
     </div>
     ${info.note?`<div style="padding:9px;background:var(--surface2);border-radius:var(--r-sm);font-size:12px;color:var(--text-2);margin-bottom:10px">${info.note}</div>`:''}
-    ${info.source==='OFF'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📦 ข้อมูลจาก Open Food Facts</div>':'<div style="font-size:10px;color:var(--text-3);margin-bottom:8px;text-align:right">🤖 AI ประมาณการ</div>'}\`}
+    ${info.source==='LOCAL_DB'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📚 ฐานข้อมูล INMU/USDA</div>':info.source==='OFF'?'<div style="font-size:10px;color:var(--teal);margin-bottom:8px;text-align:right">📦 Open Food Facts</div>':'<div style="font-size:10px;color:var(--text-3);margin-bottom:8px;text-align:right">🤖 AI ประมาณการ</div>'}}
     <div style="display:flex;flex-direction:column;gap:6px">
       <button class="btn btn-teal btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToLog()">+ บันทึกลงรายการวันนี้</button>
       <button class="btn btn-outline btn-block btn-sm" style="padding:10px;font-size:13px" onclick="addNutrToFav()">⭐ เพิ่มในเมนูที่กินบ่อย</button>
@@ -2283,7 +2414,16 @@ async function generatePlan(){
   try{const raw=await callOR(prompt,1800);incUsage();plannerState.result=safeParseJSON(raw);plannerState.loading=false;renderPlanner();showToast('แผนมื้ออาหารพร้อมแล้ว!');}
   catch(e){plannerState.loading=false;renderPlanner();showToast('ไม่สำเร็จ: '+(e.message||'ลองใหม่'));}
 }
-function addPlanMeal(idx){if(!plannerState.result)return;const m=plannerState.result.meals[idx];const k=today();if(!S.foodLog[k])S.foodLog[k]=[];m.items.forEach(it=>S.foodLog[k].push({food:it.name,calories:it.calories||0,protein:it.protein||0,fat:it.fat||0,carbs:it.carbs||0}));saveState();showToast(`บันทึก ${m.name} แล้ว`);}
+function addPlanMeal(idx){
+  if(!plannerState.result)return;
+  const m=plannerState.result.meals[idx];
+  const log=getDayLog();
+  // map meal index to slot: 0=breakfast, 1=lunch, 2=dinner, 3+=snack
+  const slots=['breakfast','lunch','dinner','snack'];
+  const slot=slots[idx]||'snack';
+  m.items.forEach(it=>log[slot].push({food:it.name,calories:it.calories||0,protein:it.protein||0,fat:it.fat||0,carbs:it.carbs||0,emoji:it.emoji||'🍽️',meal:slot}));
+  saveState();updateHomeUI();showToast(`บันทึก ${m.name} แล้ว`);
+}
 
 // ═══════════════════════════════════════
 // AI COACH
@@ -2434,5 +2574,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   try{ updateHomeUI(); }catch(e){ console.error('updateHomeUI error:',e); }
 });
 </script>
+
+<!-- NutritionDB: โหลด JSON files และ merge กับ inline _LOCAL_DB -->
+<script src="src/nutrition-db.js"></script>
+
 </body>
 </html>
